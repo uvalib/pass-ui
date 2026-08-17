@@ -1,11 +1,797 @@
+/* UVA ePASS branding and accessibility overrides.
+   Loaded after branding.css. */
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-  --primary-500: #f88d2b;
-  --primary-600: #e37108;
-  --secondary-500: #3d3935;
-  --font-headline: 'Roboto', san serif;
-  --font-subhead: 'Roboto', san serif;
-  --font-bodycopy-accent: 'Roboto', san serif;
-  --font-bodycopy: 'Roboto', san serif;
+  --uva-brand-blue-300: #87B9D9;
+  --uva-brand-blue-200: #3395D4;
+  --uva-brand-blue-100: #0370B7;
+  --uva-brand-blue: #232D4B;
+  --uva-brand-blue-base: #232D4B;
+
+  --uva-brand-orange-300: #FFEAD6;
+  --uva-brand-orange-200: #FFC999;
+  --uva-brand-orange-100: #FFB370;
+  --uva-brand-orange: #E57200;
+  --uva-brand-orange-base: #E57200;
+  --uva-brand-orange-A: #B35900;
+  --uva-brand-orange-B: #854200;
+
+  --uva-blue-alt-400: #e6f2f7;
+  --uva-blue-alt-300: #BFE7F7;
+  --uva-blue-alt-200: #91D8F2;
+  --uva-blue-alt-100: #55C4EC;
+  --uva-blue-alt: #007BAC;
+  --uva-blue-alt-base: #007BAC;
+  --uva-blue-alt-A: #005679;
+  --uva-blue-alt-B: #141E3C;
+
+  --uva-teal-200: #C8F2F4;
+  --uva-teal-100: #5BD7DE;
+  --uva-teal: #25CAD3;
+  --uva-teal-base: #25CAD3;
+  --uva-teal-A: #1DA1A8;
+  --uva-teal-B: #16777C;
+
+  --uva-green-200: #DDEFDC;
+  --uva-green-100: #89CC74;
+  --uva-green: #62BB46;
+  --uva-green-base: #62BB46;
+  --uva-green-A: #4E9737;
+
+  --uva-red-100: #FBCFDA;
+  --uva-red: #EF3F6B;
+  --uva-red-base: #EF3F6B;
+  --uva-red-A: #DF1E43;
+  --uva-red-B: #B30000;
+
+  --uva-yellow-100: #FEF6C8;
+  --uva-yellow: #ECC602;
+  --uva-yellow-base: #ECC602;
+  --uva-yellow-A: #B99C02;
+
+  --uva-grey-200: #F1F1F1;
+  --uva-grey-100: #DADADA;
+  --uva-grey-50: #ADADAD;
+  --uva-grey: #808080;
+  --uva-grey-base: #808080;
+  --uva-grey-A: #4F4F4F;
+  --uva-grey-B: #2B2B2B;
+
+  --uva-text-color-base: var(--uva-grey-A);
+  --uva-text-color-dark: var(--uva-grey-B);
+  --primary-500: var(--uva-brand-blue);
+  --primary-600: var(--uva-blue-alt-A);
+  --secondary-500: #FFFFFF;
+  --font-headline: 'Roboto', sans-serif;
+  --font-subhead: 'Roboto', sans-serif;
+  --font-bodycopy-accent: 'Roboto', sans-serif;
+  --font-bodycopy: 'Roboto', sans-serif;
+  --warning: var(--uva-brand-orange);
+  --uva-font-size: 17px;
+}
+
+body {
+  font-size: var(--uva-font-size);
+}
+
+.info-banner {
+  background-color: var(--secondary-500);
+  color: var(--uva-text-color-dark);
+}
+
+.info-banner a {
+  text-decoration: underline !important;
+}
+
+.info-banner a:hover {
+  text-decoration: none !important;
+}
+
+
+/* Header */
+
+.navbar > .container {
+  flex-flow: row-reverse !important;
+}
+
+#brand-header {
+  border-bottom: 5px solid var(--uva-brand-blue) !important;
+}
+
+#brand-logo {
+  height: 50px;
+  width: 100%;
+  min-width: 150px;
+  margin: 0;
+}
+
+/* Two same-destination brand links exist in markup (full name vs P.A.S.S.).
+   Keep the full name at all widths and let it wrap. */
+#brand-header .navbar-brand.d-sm-none {
+  display: none !important;
+}
+
+#brand-header .navbar-brand.d-none.d-sm-block {
+  display: block !important;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+
+#brand-header .brand-header-title {
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  #brand-header > .container {
+    flex-flow: row wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  #brand-logo {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 50px !important;
+  }
+
+  #header-navbar .navbar-toggler {
+    display: none !important;
+  }
+
+  #navbar-supported-content {
+    display: flex !important;
+    height: auto !important;
+    flex-basis: 100% !important;
+    flex-wrap: wrap !important;
+  }
+
+  #navbar-supported-content .navbar-nav {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  #navbar-supported-content .dropdown.w-25,
+  #navbar-supported-content .dropdown {
+    width: 100% !important;
+  }
+
+  #header-navbar > .container {
+    flex-flow: row wrap !important;
+  }
+}
+
+
+/* Typography */
+
+h1,
+h2,
+h2.card-title,
+h4.card-title {
+  color: var(--uva-brand-blue) !important;
+}
+
+a,
+.btn-link {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+a:hover,
+.btn-link:hover,
+a:focus,
+.btn-link:focus,
+a:focus-visible,
+.btn-link:focus-visible {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+a.instructions-url {
+  text-decoration: underline !important;
+}
+
+
+/* Buttons */
+
+.btn-primary {
+  font-size: 1rem;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0.8rem 0.4rem;
+  padding: 0.6rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  border-color: var(--uva-blue-alt);
+  background-color: var(--uva-blue-alt);
+  color: var(--secondary-500);
+  border-radius: 5px !important;
+  font-weight: normal !important;
+}
+
+.btn-primary:visited {
+  color: var(--secondary-500);
+}
+
+.btn-primary:hover {
+  background-color: var(--uva-blue-alt-A) !important;
+}
+
+.uvalib-button:active {
+  background-color: var(--uva-brand-blue) !important;
+}
+
+.uvalib-button--subtle {
+  background-color: var(--uva-blue-alt-300);
+  color: var(--uva-grey-A);
+  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
+}
+
+.uvalib-button--subtle:hover {
+  background-color: var(--uva-blue-alt-200);
+  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
+}
+
+.uvalib-button--subtle:active {
+  background-color: var(--uva-blue-alt-100);
+  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
+}
+
+.btn-close:hover,
+.btn-close:focus {
+  color: var(--secondary-500);
+  background-color: #6c757d;
+}
+
+.swal2-confirm {
+  font-size: 1rem;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0.8rem 0.4rem;
+  padding: 0.6rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  border-radius: 5px;
+  font-weight: normal;
+  background-color: var(--uva-blue-alt-A) !important;
+  border-color: var(--uva-blue-alt-A) !important;
+  color: var(--secondary-500) !important;
+}
+
+.swal2-confirm:hover,
+.swal2-confirm:focus,
+.swal2-confirm:focus-visible {
+  background-color: var(--uva-brand-blue) !important;
+  border-color: var(--uva-brand-blue) !important;
+  color: var(--secondary-500) !important;
+}
+
+.swal2-confirm:active {
+  background-color: var(--uva-brand-blue) !important;
+}
+
+
+/* Details back control — branding.css uses white at 0.7 opacity */
+
+#grant-details-title .back-arrow,
+#submission-details-title .back-arrow,
+#grant-details-title a.back-arrow,
+#submission-details-title a.back-arrow,
+#grant-details-title .back-arrow svg,
+#submission-details-title .back-arrow svg {
+  color: var(--uva-blue-alt-A) !important;
+  opacity: 1 !important;
+}
+
+#grant-details-title .back-arrow:hover,
+#submission-details-title .back-arrow:hover,
+#grant-details-title .back-arrow:focus,
+#submission-details-title .back-arrow:focus,
+#grant-details-title .back-arrow:focus-visible,
+#submission-details-title .back-arrow:focus-visible {
+  color: var(--uva-brand-blue) !important;
+  opacity: 1 !important;
+}
+
+
+/* Forms */
+
+.form-control {
+  color: #212529;
+  background-color: var(--secondary-500);
+  border: 1px solid #ced4da;
+  appearance: none;
+}
+
+/* div.form-control matches :read-only even when enabled; limit the wash
+   to real disabled/readonly fields. */
+input.form-control:disabled,
+input.form-control:read-only,
+textarea.form-control:disabled,
+textarea.form-control:read-only {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+.sv-dropdown_select-wrapper .form-control,
+.form-control.sd-dropdown--empty:not(.sd-input--disabled) {
+  background-color: var(--secondary-500);
+  color: var(--uva-grey-A);
+}
+
+.sd-dropdown--empty:not(.sd-input--disabled),
+.sd-dropdown--empty:not(.sd-input--disabled) .sd-dropdown__value {
+  color: var(--uva-grey-A);
+}
+
+.ember-power-select-status-icon {
+  border-color: var(--uva-grey) transparent transparent;
+}
+
+.ember-power-select-trigger {
+  border-color: var(--uva-grey);
+}
+
+.sd-dropdown_chevron-button-svg,
+.sd-dropdown_clean-button-svg {
+  color: var(--uva-grey-A);
+}
+
+.sd-dropdown_chevron-button-svg use,
+.sd-dropdown_clean-button-svg use {
+  fill: var(--uva-grey-A);
+}
+
+.sv-string-viewer {
+  color: var(--uva-grey-A);
+}
+
+/* Yes/No track stays light so both labels meet 4.5:1. Identify the
+   control with a 3:1 grey edge instead of a dark fill. */
+.sd-boolean {
+  background-color: var(--uva-grey-200);
+  border: 2px solid var(--uva-grey-A);
+  box-shadow: none;
+}
+
+.sd-boolean .sd-boolean__label {
+  color: var(--uva-grey-A);
+}
+
+.sd-boolean.sd-boolean--checked .sd-boolean__label--true,
+.sd-boolean:not(.sd-boolean--checked) .sd-boolean__label--false {
+  color: transparent;
+}
+
+.sd-boolean .sd-boolean__thumb {
+  color: var(--uva-grey-B);
+  background-color: var(--secondary-500);
+  border: 2px solid var(--uva-grey-A);
+  box-sizing: border-box;
+}
+
+.sd-boolean.sd-boolean--allowhover:focus-within {
+  box-shadow: 0 0 0 2px var(--uva-grey-B);
+}
+
+.sd-error {
+  margin: 0;
+  padding-block-end: 0.25rem;
+  color: var(--uva-grey-B) !important;
+  background-color: var(--uva-red-100);
+  border: 2px solid var(--uva-red-B);
+  border-left-width: 10px;
+}
+
+.sd-error .sv-string-viewer {
+  color: var(--uva-grey-B) !important;
+}
+
+.sd-action.sd-paneldynamic__btn.sd-action--negative,
+.sd-paneldynamic__remove-btn.sd-action--negative,
+.sd-action--negative {
+  color: var(--uva-red-B) !important;
+  background-color: transparent !important;
+  border: 2px solid var(--uva-red-B) !important;
+  box-shadow: none !important;
+}
+
+.sd-action:not(.sd-action--pressed):hover.sd-action--negative,
+.sd-action:not(.sd-action--pressed):focus.sd-action--negative,
+.sd-action.sd-paneldynamic__btn.sd-action--negative:hover,
+.sd-action.sd-paneldynamic__btn.sd-action--negative:focus,
+.sd-paneldynamic__remove-btn.sd-action--negative:hover,
+.sd-paneldynamic__remove-btn.sd-action--negative:focus {
+  color: var(--uva-red-B) !important;
+  background-color: var(--uva-red-100) !important;
+  border-color: var(--uva-red-B) !important;
+}
+
+
+/* Submission wizard */
+
+.steps {
+  height: auto;
+  min-height: 2.1875rem;
+  align-items: center;
+  overflow: visible;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.steps .step {
+  width: auto;
+  flex: 1 1 8rem;
+  min-width: 0;
+  line-height: 1.3;
+  white-space: normal;
+  padding: 0.5rem 0.25rem;
+}
+
+.steps .step.btn-primary,
+.steps .btn-primary {
+  margin: 0 !important;
+  padding: 0.25rem 0.6rem !important;
+  height: 100% !important;
+  line-height: normal !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--uva-brand-blue) !important;
+  color: var(--secondary-500) !important;
+  border-radius: 0 !important;
+  font-weight: bold !important;
+  box-shadow: none !important;
+}
+
+.lead label,
+p.lead label {
+  margin-left: 1.25rem;
+  margin-right: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+[data-test-submission-funding-table] + button.btn-outline-primary,
+[data-test-submission-funding-table] + button.btn-outline-primary + button.btn-primary.next {
+  display: none !important;
+}
+
+.sd-paneldynamic__add-btn,
+.sd-action.sd-paneldynamic__btn,
+.sd-question--paneldynamic .sd-action,
+.sd-btn.sd-action {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--uva-blue-alt) !important;
+  background-color: var(--uva-blue-alt-300) !important;
+  border: 2px solid var(--uva-blue-alt) !important;
+  border-radius: 5px !important;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: all 0.15s ease-in-out;
+}
+
+.sd-paneldynamic__add-btn:hover,
+.sd-action.sd-paneldynamic__btn:hover,
+.sd-question--paneldynamic .sd-action:hover,
+.sd-paneldynamic__add-btn:focus,
+.sd-action.sd-paneldynamic__btn:focus {
+  background-color: var(--uva-blue-alt-200) !important;
+  color: var(--uva-blue-alt-A) !important;
+  border-color: var(--uva-blue-alt-A) !important;
+}
+
+
+/* List tables */
+
+.models-table-wrapper a,
+.models-table-wrapper .btn-link {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+.models-table-wrapper a:hover,
+.models-table-wrapper .btn-link:hover,
+.models-table-wrapper a:focus,
+.models-table-wrapper .btn-link:focus,
+.models-table-wrapper a:focus-visible,
+.models-table-wrapper .btn-link:focus-visible {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+.models-table-wrapper a:focus-visible,
+.models-table-wrapper .btn-link:focus-visible {
+  outline: 2px solid var(--uva-blue-alt-A);
+  outline-offset: 2px;
+}
+
+.models-table-wrapper .clearFilterIcon:hover:not(:disabled),
+.models-table-wrapper .clearFilters:hover:not(:disabled),
+.models-table-wrapper .clearFilterIcon:focus:not(:disabled),
+.models-table-wrapper .clearFilters:focus:not(:disabled),
+.models-table-wrapper .clearFilterIcon:focus-visible:not(:disabled),
+.models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
+  color: var(--secondary-500) !important;
+  background-color: var(--uva-grey-A) !important;
+  border-color: var(--uva-grey-A) !important;
+  text-decoration: none !important;
+}
+
+.models-table-wrapper .clearFilterIcon:focus-visible:not(:disabled),
+.models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
+  outline: 2px solid var(--uva-grey-A);
+  outline-offset: 2px;
+}
+
+.models-table-wrapper .globalSearch .form-control,
+.models-table-wrapper .globalSearch .input-group-text {
+  border-color: var(--uva-grey-A);
+}
+
+[data-test-added-manuscript-row] a,
+[data-test-added-supplemental-row] a {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+[data-test-added-manuscript-row] a:hover,
+[data-test-added-supplemental-row] a:hover,
+[data-test-added-manuscript-row] a:focus,
+[data-test-added-supplemental-row] a:focus,
+[data-test-added-manuscript-row] a:focus-visible,
+[data-test-added-supplemental-row] a:focus-visible {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+[data-test-added-manuscript-row] a:focus-visible,
+[data-test-added-supplemental-row] a:focus-visible {
+  outline: 2px solid var(--uva-blue-alt-A);
+  outline-offset: 2px;
+}
+
+
+/* Reflow (320px / 400% zoom). Data tables may scroll horizontally;
+   everything else stacks. */
+
+.row > * {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.pr-0.mr-0,
+td.awardnum-column,
+td.projectname-date-column {
+  min-width: 0;
+}
+
+table.table.d-flex {
+  display: table !important;
+}
+
+.files-table th,
+.files-table td {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+[data-test-add-file-link],
+[data-test-add-file-link] span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.d-flex:has([data-test-add-file-link]) {
+  min-width: 0;
+}
+
+@media (max-width: 400px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .row > * {
+    flex-shrink: 1;
+  }
+}
+
+@media (max-width: 575.98px) {
+  main {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  :has(> table.table) {
+    overflow-x: auto;
+    min-width: 0;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table.table {
+    width: max-content;
+    max-width: none;
+  }
+
+  table table,
+  table:has(table) {
+    width: max-content !important;
+    max-width: none !important;
+  }
+
+  table table th {
+    white-space: nowrap;
+  }
+
+  .files-table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  :has(> table.table.table-responsive-sm) {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table.table.table-responsive-sm {
+    width: max-content;
+    max-width: none;
+  }
+
+  table.table [data-test-remove-file-button],
+  table.table .btn-outline-danger {
+    white-space: nowrap;
+    height: auto;
+    min-width: fit-content;
+    writing-mode: horizontal-tb;
+  }
+
+  /* Review / details are label-value tables; stack instead of scrolling. */
+  #review-step-table,
+  #review-step-table > tbody,
+  #review-step-table > tbody > tr,
+  #review-step-table > tbody > tr > td,
+  #submission-details-body table.table.d-flex,
+  #submission-details-body table.table.d-flex > tbody,
+  #submission-details-body table.table.d-flex > tbody > tr,
+  #submission-details-body table.table.d-flex > tbody > tr > td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #review-step-table > tbody > tr,
+  #submission-details-body table.table.d-flex > tbody > tr {
+    margin-bottom: 1rem;
+  }
+
+  #review-step-table > tbody > tr > td:first-child,
+  #submission-details-body table.table.d-flex > tbody > tr > td:first-child {
+    padding-bottom: 0.25rem;
+    word-break: normal !important;
+    overflow-wrap: normal;
+  }
+
+  #review-step-table section,
+  #submission-details-body table.table.d-flex section {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  #review-step-table .max-width,
+  .max-width {
+    max-width: 100% !important;
+    white-space: normal;
+  }
+
+  .review-step-title > .d-flex.flex-row {
+    flex-direction: column !important;
+    align-items: flex-start;
+  }
+
+  .review-step-title h4,
+  .review-step-title small {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .submission-details-title > .d-flex {
+    flex-direction: column;
+  }
+
+  .submission-details-title h5,
+  .submission-details-title small {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .submission-details-title small {
+    text-align: left !important;
+  }
+
+  #submission-details-title {
+    flex-wrap: wrap;
+  }
+
+  #submission-details-title .col-6 {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .card.float-start {
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  .card.float-start .card-body .d-flex {
+    flex-wrap: wrap !important;
+  }
+
+  .card.float-start .card-body .d-flex > * {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+  }
+
+  table.table[data-test-submission-funding-table] {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table[data-test-submission-funding-table] td,
+  table[data-test-submission-funding-table] th {
+    white-space: nowrap;
+  }
+
+  .globalSearch.input-group {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .table-summary.col-5,
+  .col-2,
+  .table-nav.col-5 {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .table-nav.col-5 {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .pull-left,
+  .pull-right {
+    float: none;
+  }
 }
