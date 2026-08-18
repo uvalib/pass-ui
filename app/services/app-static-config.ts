@@ -7,6 +7,7 @@ export interface BrandingConfig {
   stylesheet?: string;
   overrides?: string;
   logo?: string;
+  logoAlt?: string;
   homepage?: string;
   contactUrl?: string;
   pages?: Record<string, string>;
