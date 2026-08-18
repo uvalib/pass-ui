@@ -37,7 +37,7 @@ interface Signature {
             <img
               id='brand-logo'
               src='{{@controller.logoUri}}'
-              alt='Logo'
+              alt={{@controller.logoAlt}}
               class='nav-item d-sm-down-none pull-right brand-logo pr-0'
             />
           </a>
