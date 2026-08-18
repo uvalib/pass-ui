@@ -161,12 +161,13 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
 
   // prettier-ignore
   <template>
-    {{! template-lint-disable no-invalid-interactive require-input-label }}
+    {{! template-lint-disable no-invalid-interactive }}
     <div class='models-table-wrapper'>
       {{#if this.showFilter}}
         <div class='globalSearch input-group'>
-          <label class='input-group-text'>Search:</label>
+          <label class='input-group-text' for='pass-table-filter-input'>Search:</label>
           <input
+            id='pass-table-filter-input'
             type='text'
             class='filterString form-control'
             value={{this._filterText}}
@@ -209,7 +210,7 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
         <div class='row'>
           <div class='table-summary col-5'>
             <div class='input-group'>
-              <label class='input-group-text'>Show {{this.showingStart}} - {{this.showingEnd}} of {{this.totalItemsDisplay}}</label>
+              <span class='input-group-text'>Show {{this.showingStart}} - {{this.showingEnd}} of {{this.totalItemsDisplay}}</span>
               <button
                 type='button'
                 class='clearFilters btn btn-outline-secondary btn-link'
@@ -223,9 +224,10 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
           </div>
           <div class='col-2'>
             <div class='input-group w-100'>
-              <label class='input-group-text'>Rows:</label>
               {{#if this.showPageSizeSelect}}
+                <label class='input-group-text' for='pass-table-page-size-select'>Rows:</label>
                 <select
+                  id='pass-table-page-size-select'
                   class='form-select'
                   {{on 'change' this.onPageSizeChange}}
                 >
@@ -236,6 +238,7 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
                   {{/each}}
                 </select>
               {{else}}
+                <span class='input-group-text'>Rows:</span>
                 <span class='input-group-text flex-grow-1'>{{@pageSize}}</span>
               {{/if}}
             </div>
@@ -277,9 +280,9 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
             </div>
             <div class='pull-right'>
               <div class='input-group'>
-                <label class='input-group-text'>Page:</label>
                 {{#if this.showPageNumberSelect}}
-                  <select class='form-select' {{on 'change' this.goToPage}}>
+                  <label class='input-group-text' for='pass-table-page-select'>Page:</label>
+                  <select id='pass-table-page-select' class='form-select' {{on 'change' this.goToPage}}>
                     {{#each (pageRange @totalPages) as |pageNum|}}
                       <option value={{pageNum}} selected={{eq pageNum @page}}>
                         {{pageNum}}
@@ -287,6 +290,7 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
                     {{/each}}
                   </select>
                 {{else}}
+                  <span class='input-group-text'>Page:</span>
                   <span class='input-group-text'>{{@page}}</span>
                 {{/if}}
               </div>
