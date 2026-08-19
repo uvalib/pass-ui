@@ -40,6 +40,10 @@ export default class ApplicationController extends Controller {
     return this.staticConfig?._config?.branding?.logo ?? '';
   }
 
+  get logoAlt(): string {
+    return this.staticConfig?._config?.branding?.logoAlt ?? 'Logo';
+  }
+
   get homepage(): string {
     return this.staticConfig?._config?.branding?.homepage ?? '';
   }

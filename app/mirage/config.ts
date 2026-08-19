@@ -135,6 +135,7 @@ export default function (config: Record<string, unknown> & { models?: Record<str
           branding: {
             homepage: 'https://www.eclipse.org/org/foundation/',
             logo: '/app/ef/eclipse_foundation_logo_wo/EF_WHT-OR_png.png',
+            logoAlt: 'Eclipse Foundation',
             favicon: 'favicon.ico',
             stylesheet: '/app/branding.css',
             overrides: '/app/branding-overrides.css',
