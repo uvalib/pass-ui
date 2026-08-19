@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { on } from '@ember/modifier';
+import { uniqueId } from '@ember/helper';
 import type Owner from '@ember/owner';
 
 const eq = (a: unknown, b: unknown) => a === b;
@@ -163,11 +164,12 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
   <template>
     {{! template-lint-disable no-invalid-interactive }}
     <div class='models-table-wrapper'>
+      {{#let (uniqueId) (uniqueId) (uniqueId) as |filterId pageSizeId pageId|}}
       {{#if this.showFilter}}
         <div class='globalSearch input-group'>
-          <label class='input-group-text' for='pass-table-filter-input'>Search:</label>
+          <label class='input-group-text' for={{filterId}}>Search:</label>
           <input
-            id='pass-table-filter-input'
+            id={{filterId}}
             type='text'
             class='filterString form-control'
             value={{this._filterText}}
@@ -225,9 +227,9 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
           <div class='col-2'>
             <div class='input-group w-100'>
               {{#if this.showPageSizeSelect}}
-                <label class='input-group-text' for='pass-table-page-size-select'>Rows:</label>
+                <label class='input-group-text' for={{pageSizeId}}>Rows:</label>
                 <select
-                  id='pass-table-page-size-select'
+                  id={{pageSizeId}}
                   class='form-select'
                   {{on 'change' this.onPageSizeChange}}
                 >
@@ -281,8 +283,8 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
             <div class='pull-right'>
               <div class='input-group'>
                 {{#if this.showPageNumberSelect}}
-                  <label class='input-group-text' for='pass-table-page-select'>Page:</label>
-                  <select id='pass-table-page-select' class='form-select' {{on 'change' this.goToPage}}>
+                  <label class='input-group-text' for={{pageId}}>Page:</label>
+                  <select id={{pageId}} class='form-select' {{on 'change' this.goToPage}}>
                     {{#each (pageRange @totalPages) as |pageNum|}}
                       <option value={{pageNum}} selected={{eq pageNum @page}}>
                         {{pageNum}}
@@ -298,6 +300,7 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
           </div>
         </div>
       {{/if}}
+      {{/let}}
     </div>
   </template>
 }
