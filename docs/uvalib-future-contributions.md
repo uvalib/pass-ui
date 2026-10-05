@@ -158,7 +158,7 @@ In `public/branding-overrides.css`, section `/* Submission wizard */`:
 - **Keep** UVA look on the active step: background `--uva-brand-blue`, color `--secondary-500`, `border-radius: 0`, `font-weight: bold`, `box-shadow: none`.
 - Merge `main` into `uvalib`, visual-check the wizard at 200% zoom, push `uvalib`, delete the contribution branch.
 
-### 2. Grants (and other wizard) pages scroll sideways at 320px (F2-3)
+### 2. Wizard pages scroll sideways at 320px (F2-3 + F6-5)
 
 Independent of #1350, #1351, and backlog item 1 (different CSS: `.row` / tables, not `.steps`).
 
@@ -167,14 +167,15 @@ UVA already works around this in `public/branding-overrides.css` (`/* Reflow (32
 | Audit | WCAG | What fails |
 | --- | --- | --- |
 | F2-3 Incorrect Reflow & Horizontal Scrolling | 1.4.10 Reflow | At 320px (or 1280px at 400% zoom), the **whole page** scrolls horizontally on Grants. Tables may 2D-scroll; the rest of the page must not. |
+| F6-5 Incorrect Reflow & Horizontal Scrolling | 1.4.10 Reflow | Same page-wide pan on Files. Same Bootstrap `.row` plus a wide files table. |
 
-The audit also noted the **Remove** button stretching vertically. That is UVA full-width button CSS inside a table cell, already patched locally (`table.table .btn-outline-danger { white-space: nowrap; height: auto; writing-mode: horizontal-tb; }`). Do **not** put that in the generic PR.
+The audit also noted the **Remove** button stretching vertically on both steps. That is UVA full-width button CSS inside a table cell, already patched locally (`table.table .btn-outline-danger { white-space: nowrap; height: auto; writing-mode: horizontal-tb; }`). Do **not** put that in the generic PR.
 
 **Where (generic `main`)**
 
-- Bootstrap 5: `.row > * { flex-shrink: 0; width: 100%; }` (the snippet in the audit)
+- Bootstrap 5: `.row > * { flex-shrink: 0; width: 100%; }` and `.row` negative gutters (the snippet in F6-5)
 - Column floors in `app/styles/app.css`: `.awardnum-column { min-width: 8rem; }`, `.projectname-date-column { min-width: 14rem; }`, plus other `*-column` min-widths
-- Markup: `app/components/workflow-grants/index.gts`, `app/components/submission-funding-table/index.gts` (same pattern on other list tables)
+- Markup: `app/components/workflow-grants/index.gts`, `app/components/submission-funding-table/index.gts`, `app/components/workflow-files/index.gts` (`<table class="table …">`)
 
 **Suggested generic fix (no UVA colors)**
 
@@ -195,12 +196,12 @@ Submission wizard causes page-wide horizontal scrolling at 320px
 
 ```markdown
 ## Summary
-On New Submission → Grants (and other table-heavy wizard steps), a 320px-wide viewport (WCAG 1.4.10) requires horizontal scrolling of the **whole page**. Data tables may scroll in two dimensions; surrounding layout must reflow.
+On New Submission → Grants and Files (and other table-heavy wizard steps), a 320px-wide viewport (WCAG 1.4.10) requires horizontal scrolling of the **whole page**. Data tables may scroll in two dimensions; surrounding layout must reflow.
 
 ## Steps to reproduce
 1. Start a new submission and add at least one grant so the “Grants added to submission” table is visible.
-2. Set the viewport to 320px wide (or 1280px at 400% zoom).
-3. Try to scroll.
+2. Set the viewport to 320px wide (or 1280px at 400% zoom) and try to scroll the page.
+3. Repeat on Files with at least one uploaded file.
 
 ## Expected
 Only the data table scrolls horizontally, if needed. The header, step bar, lead text, and Back/Next stay within the viewport width.
@@ -224,7 +225,7 @@ Contain table overflow so the submission wizard does not scroll the page at 320p
 ```markdown
 Fixes eclipse-pass/main#{N}
 
-At 320px the Grants step (and other table-heavy views) scrolled the whole page horizontally. 1.4.10 allows 2D scrolling for tables, not for the surrounding layout.
+At 320px the Grants and Files steps (and other table-heavy views) scrolled the whole page horizontally. 1.4.10 allows 2D scrolling for tables, not for the surrounding layout.
 
 Row children can shrink, and `table.table` overflow is contained in a horizontal scroller. Column min-widths stay on the table. Active-step and button colors are unchanged.
 ```
@@ -232,10 +233,10 @@ Row children can shrink, and `table.table` overflow is contained in a horizontal
 **How to verify**
 
 1. Branch from `main` (generic branding, not `uvalib`).
-2. New submission → Grants, with at least one grant selected.
+2. New submission → Grants, with at least one grant selected; Files, with at least one file.
 3. 320px width and 1280px at 400% zoom.
-4. Confirm `document.documentElement.scrollWidth` is not larger than the viewport (page does not pan). The grants table may have its own horizontal scrollbar.
-5. Spot-check Files and Submissions list tables the same way.
+4. Confirm `document.documentElement.scrollWidth` is not larger than the viewport (page does not pan). The grants/files table may have its own horizontal scrollbar.
+5. Spot-check Submissions list tables the same way.
 
 **uvalib cleanup after this merges**
 
@@ -251,7 +252,7 @@ In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
   - `.files-table` padding and add-file-link wrap
   - Review / submission-details stacked label-value tables (`#review-step-table`, `#submission-details-body`)
   - `td.awardnum-column` / `td.projectname-date-column { min-width: 0 }` if still needed on UVA
-- Merge `main` into `uvalib`, check Grants at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
+- Merge `main` into `uvalib`, check Grants and Files at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
 
 ### 3. SurveyJS Details contrast (F5-3 + F5-4 + F5-5 + F5-6 + F5-7 + F5-8 + F5-9 + F5-10 + F5-11)
 
@@ -431,7 +432,7 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 - Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A`, and `--sjs-special-red` to `--uva-red-B`, in the UVA `:root`.
 - Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No (text + track edge), Remove (text + edge), required-field errors (text + box edge), empty dropdowns, and dropdown icons, push `uvalib`, delete the contribution branch.
 
-### 4. SweetAlert “I Agree” fails 4.5:1 (F6-4)
+### 4. SweetAlert confirm fails 4.5:1 (F6-4 + F7-5)
 
 Independent of #1350, #1351 (1351 uses this dialog; it does not set button colors), and backlog items 1–3.
 
@@ -440,6 +441,7 @@ UVA already restyles `.swal2-confirm` in `branding-overrides.css`. No UVA produc
 | Audit | WCAG | What fails |
 | --- | --- | --- |
 | F6-4 Pop Up Button Contrast | 1.4.3 Contrast (Minimum) | Files “Remove file?” dialog **I Agree** is white on `#418fde` (~3.38:1). Needs 4.5:1. |
+| F7-5 Form Step 7 “Next” Pop Up Button Contrast | 1.4.3 Contrast (Minimum) | Review submit dialog **Next** / **Confirm** is the same `.swal2-confirm` (white on `#418fde`). Also on Submission Details (same template). |
 
 **Where (generic `main`)**
 
@@ -453,7 +455,7 @@ UVA already restyles `.swal2-confirm` in `branding-overrides.css`. No UVA produc
 }
 ```
 
-- Markup: SweetAlert2 confirm in `app/components/workflow-files/index.gts` (`deleteExistingFile` → “I Agree”). Same `.swal2-confirm` class is used anywhere else SweetAlert confirm is shown.
+- Markup: SweetAlert2 confirm in `app/components/workflow-files/index.gts` (`deleteExistingFile` → “I Agree”) and `app/components/workflow-review/index.gts` (Queue `confirmButtonText: 'Next →'`, final `Confirm`). Same `.swal2-confirm` class everywhere SweetAlert confirm is shown.
 
 **Suggested generic fix (no UVA colors)**
 
@@ -477,11 +479,11 @@ SweetAlert confirm button fails 4.5:1 contrast
 
 ```markdown
 ## Summary
-The SweetAlert confirm control (Files → Remove file → **I Agree**) is white text on `#418fde` (~3.38:1). WCAG 1.4.3 needs 4.5:1 for 16px regular text.
+The SweetAlert confirm control is white text on `#418fde` (~3.38:1). WCAG 1.4.3 needs 4.5:1 for 16px regular text. Same class on Files → Remove → **I Agree** and Review → submit → **Next** / **Confirm**.
 
 ## Steps to reproduce
-1. Open a new submission, add a file on Files, and click Remove.
-2. Inspect **I Agree** in the dialog.
+1. Open a new submission, add a file on Files, and click Remove. Inspect **I Agree**.
+2. On Review, start submit and inspect **Next** / **Confirm** in the dialog.
 
 ## Expected
 Confirm button text meets 4.5:1 against the button background.
@@ -505,7 +507,7 @@ Give SweetAlert confirm button 4.5:1 contrast
 ```markdown
 Fixes eclipse-pass/main#{N}
 
-`.swal2-confirm` (Files → Remove → I Agree, and other SweetAlert confirms) was white on `#418fde` (~3.38:1).
+`.swal2-confirm` (Files → Remove → I Agree, Review → Next/Confirm, and other SweetAlert confirms) was white on `#418fde` (~3.38:1).
 
 This uses `var(--primary-600)` for the confirm background (default `#1e40af`, ~8:1 with white). UVA branding is unchanged.
 ```
@@ -514,12 +516,12 @@ This uses `var(--primary-600)` for the confirm background (default `#1e40af`, ~8
 
 1. Branch from `main` (generic branding, not `uvalib`).
 2. New submission → Files → add a file → Remove → inspect **I Agree** (white on `--primary-600` / `#1e40af`, ≥ 4.5:1).
-3. Spot-check another SweetAlert confirm if one exists (same class).
+3. Review → submit → inspect **Next** / **Confirm** (same class, same contrast).
 
 **uvalib cleanup after this merges**
 
 - **Keep** the UVA `.swal2-confirm` block (`--uva-blue-alt-A` / `--uva-brand-blue`, white text). That is branding; core will use `--primary-600`, which UVA remaps to `--uva-blue-alt-A`, so the override may become redundant. Keep it until a visual check shows the token path is enough.
-- Merge `main` into `uvalib`, check Remove-file **I Agree**, push `uvalib`, delete the contribution branch.
+- Merge `main` into `uvalib`, check Remove-file **I Agree** and Review **Next** / **Confirm**, push `uvalib`, delete the contribution branch.
 
 ---
 
@@ -551,7 +553,7 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | D-5 header/nav reflow | Already in `branding-overrides.css`. |
 | F1-2 white `h1`/`h2` | `--secondary-500: #FFFFFF` is a UVA token used as button/banner color. Headings are forced to `--uva-brand-blue`. Generic `--secondary-500` is `#374151`. |
 | F1-3 / F1-4 on UVA | Already in `/* Submission wizard */` overrides; contribute the generic version via backlog item 1. |
-| F2-3 page scroll on UVA | Already in `/* Reflow (320px / 400% zoom) */`; contribute the generic page-scroll fix via backlog item 2. Remove-button vertical stretch stays UVA-only. |
+| F2-3 / F6-5 page scroll on UVA | Already in `/* Reflow (320px / 400% zoom) */` (Grants and Files); contribute the generic page-scroll fix via backlog item 2. Remove-button vertical stretch stays UVA-only. |
 | F5-3 SurveyJS placeholder on UVA | Already `.sv-string-viewer { color: var(--uva-grey-A) }`; contribute the generic token fix via backlog item 3. |
 | F5-4 Yes/No toggle on UVA | Already the `.sd-boolean` block in `branding-overrides.css`; fold the generic token fix into backlog item 3. Keep the UVA toggle restyle. |
 | F5-5 SurveyJS Remove on UVA | Already `.sd-action--negative` uses `--uva-red-B`; fold `--sjs-special-red` into backlog item 3. Keep the UVA Remove restyle. |
@@ -561,4 +563,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F5-10 Remove UI edge on UVA | Already 2px `--uva-red-B` border on transparent/light fill; fold a generic `.sd-action--negative` 3:1 edge into backlog item 3. Keep the UVA Remove restyle. |
 | F5-6 error text on UVA | Already `.sd-error` / `.sv-string-viewer` use `--uva-grey-B`; `--sjs-special-red` in item 3 covers generic error text. Keep the UVA error restyle. |
 | F5-11 error box on UVA | Already 2px/10px `--uva-red-B` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
-| F6-4 I Agree on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-A`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
+| F6-4 / F7-5 SweetAlert confirm on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-A`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
