@@ -158,6 +158,101 @@ In `public/branding-overrides.css`, section `/* Submission wizard */`:
 - **Keep** UVA look on the active step: background `--uva-brand-blue`, color `--secondary-500`, `border-radius: 0`, `font-weight: bold`, `box-shadow: none`.
 - Merge `main` into `uvalib`, visual-check the wizard at 200% zoom, push `uvalib`, delete the contribution branch.
 
+### 2. Grants (and other wizard) pages scroll sideways at 320px (F2-3)
+
+Independent of #1350, #1351, and backlog item 1 (different CSS: `.row` / tables, not `.steps`).
+
+UVA already works around this in `public/branding-overrides.css` (`/* Reflow (320px / 400% zoom) */`). No UVA production need until we want that override slimmed down.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| F2-3 Incorrect Reflow & Horizontal Scrolling | 1.4.10 Reflow | At 320px (or 1280px at 400% zoom), the **whole page** scrolls horizontally on Grants. Tables may 2D-scroll; the rest of the page must not. |
+
+The audit also noted the **Remove** button stretching vertically. That is UVA full-width button CSS inside a table cell, already patched locally (`table.table .btn-outline-danger { white-space: nowrap; height: auto; writing-mode: horizontal-tb; }`). Do **not** put that in the generic PR.
+
+**Where (generic `main`)**
+
+- Bootstrap 5: `.row > * { flex-shrink: 0; width: 100%; }` (the snippet in the audit)
+- Column floors in `app/styles/app.css`: `.awardnum-column { min-width: 8rem; }`, `.projectname-date-column { min-width: 14rem; }`, plus other `*-column` min-widths
+- Markup: `app/components/workflow-grants/index.gts`, `app/components/submission-funding-table/index.gts` (same pattern on other list tables)
+
+**Suggested generic fix (no UVA colors)**
+
+Keep data tables as tables (1.4.10 exception). Stop the **page** from scrolling sideways:
+
+- `.row > * { min-width: 0; }` so flex items can shrink
+- At a small breakpoint, `.row > * { flex-shrink: 1; }`
+- Wrap / contain `table.table` in `overflow-x: auto; max-width: 100%` (and `main { overflow-x: clip; }` if still needed)
+- Leave column `min-width`s on the table itself; the table scroller is the allowed 2D region
+
+Do not copy UVA review-details stacking, files-table padding, or Remove-button `writing-mode` into `app.css`.
+
+**Issue title (eclipse-pass/main)**
+
+Submission wizard causes page-wide horizontal scrolling at 320px
+
+**Issue body**
+
+```markdown
+## Summary
+On New Submission → Grants (and other table-heavy wizard steps), a 320px-wide viewport (WCAG 1.4.10) requires horizontal scrolling of the **whole page**. Data tables may scroll in two dimensions; surrounding layout must reflow.
+
+## Steps to reproduce
+1. Start a new submission and add at least one grant so the “Grants added to submission” table is visible.
+2. Set the viewport to 320px wide (or 1280px at 400% zoom).
+3. Try to scroll.
+
+## Expected
+Only the data table scrolls horizontally, if needed. The header, step bar, lead text, and Back/Next stay within the viewport width.
+
+## Actual
+Bootstrap `.row > * { flex-shrink: 0; width: 100%; }` plus column `min-width`s in `app/styles/app.css` (for example `.awardnum-column`, `.projectname-date-column`) make the page wider than 320px, so the entire view scrolls sideways.
+
+## Suggested direction
+Let row children shrink (`min-width: 0` / `flex-shrink: 1`) and contain table overflow (`overflow-x: auto` on the table wrapper, not the document). Keep tables as tables.
+
+## WCAG
+1.4.10 Reflow (Level AA)
+```
+
+**PR title**
+
+Contain table overflow so the submission wizard does not scroll the page at 320px
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+At 320px the Grants step (and other table-heavy views) scrolled the whole page horizontally. 1.4.10 allows 2D scrolling for tables, not for the surrounding layout.
+
+Row children can shrink, and `table.table` overflow is contained in a horizontal scroller. Column min-widths stay on the table. Active-step and button colors are unchanged.
+```
+
+**How to verify**
+
+1. Branch from `main` (generic branding, not `uvalib`).
+2. New submission → Grants, with at least one grant selected.
+3. 320px width and 1280px at 400% zoom.
+4. Confirm `document.documentElement.scrollWidth` is not larger than the viewport (page does not pan). The grants table may have its own horizontal scrollbar.
+5. Spot-check Files and Submissions list tables the same way.
+
+**uvalib cleanup after this merges**
+
+In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
+
+- **Remove** layout duplicates that core now owns:
+  - `.row > * { min-width: 0; overflow-wrap }`
+  - `@media (max-width: 400px)` row column / `flex-shrink: 1`
+  - `main { overflow-x: clip }` if core covers it
+  - `:has(> table.table)` / `table.table` overflow-x scroller rules that match the generic fix
+- **Keep** UVA-only rules:
+  - Remove-button `writing-mode` / `white-space` on `table.table .btn-outline-danger`
+  - `.files-table` padding and add-file-link wrap
+  - Review / submission-details stacked label-value tables (`#review-step-table`, `#submission-details-body`)
+  - `td.awardnum-column` / `td.projectname-date-column { min-width: 0 }` if still needed on UVA
+- Merge `main` into `uvalib`, check Grants at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
+
 ---
 
 ## Optional / low priority (not needed for UVA)
@@ -188,3 +283,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | D-5 header/nav reflow | Already in `branding-overrides.css`. |
 | F1-2 white `h1`/`h2` | `--secondary-500: #FFFFFF` is a UVA token used as button/banner color. Headings are forced to `--uva-brand-blue`. Generic `--secondary-500` is `#374151`. |
 | F1-3 / F1-4 on UVA | Already in `/* Submission wizard */` overrides; contribute the generic version via backlog item 1. |
+| F2-3 page scroll on UVA | Already in `/* Reflow (320px / 400% zoom) */`; contribute the generic page-scroll fix via backlog item 2. Remove-button vertical stretch stays UVA-only. |
