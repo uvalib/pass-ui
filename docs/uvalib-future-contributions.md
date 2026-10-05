@@ -253,9 +253,9 @@ In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
   - `td.awardnum-column` / `td.projectname-date-column { min-width: 0 }` if still needed on UVA
 - Merge `main` into `uvalib`, check Grants at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
 
-### 3. SurveyJS Details contrast (F5-3 + F5-4 + F5-5 + F5-7 + F5-8 + F5-9 + F5-10)
+### 3. SurveyJS Details contrast (F5-3 + F5-4 + F5-5 + F5-6 + F5-7 + F5-8 + F5-9 + F5-10 + F5-11)
 
-Do this as **one** generic PR. Same SurveyJS token family, plus `form-control` scoping, 3:1 Yes/No and Remove edges, and dropdown icon fills. Independent of #1350, #1351, and backlog items 1–2.
+Do this as **one** generic PR. Same SurveyJS token family, plus `form-control` scoping, 3:1 Yes/No, Remove, and error edges, and dropdown icon fills. Independent of #1350, #1351, and backlog items 1–2.
 
 UVA already covers these in `branding-overrides.css`. No UVA production need until we want those overrides slimmed down.
 
@@ -264,10 +264,12 @@ UVA already covers these in `branding-overrides.css`. No UVA production need unt
 | F5-3 Failed Color Contrast - Text | 1.4.3 Contrast (Minimum) | Authors empty-state and Embargo help text on Details are SurveyJS description/placeholder copy at `rgba(0, 0, 0, 0.45)` on white (~3.36:1). Body text needs 4.5:1. |
 | F5-4 Failed Color Contrast - Toggle Button Text | 1.4.3 Contrast (Minimum) | Unselected Yes/No on the Details boolean toggle is `#909090` on the light track (~3:1). Enabled-but-unselected still needs 4.5:1. |
 | F5-5 Failed Color Contrast - Remove Button | 1.4.3 Contrast (Minimum) | SurveyJS “Remove” (ISSN / Authors) is `--sjs-special-red` `#e60a3e` on white (~3.94:1). Needs 4.5:1. |
+| F5-6 Failed Color Contrast - Error Message | 1.4.3 Contrast (Minimum) | Required-field errors use `--sjs-special-red` `#e60a3e` on the light red wash (~3.94:1). Same token as F5-5. |
 | F5-7 Failed Color Contrast - Dropdown Bar | 1.4.3 Contrast (Minimum) | Empty enabled SurveyJS dropdown looks disabled. Text is `#909090` on a `:read-only` grey wash (`#e9ecef`), ~2.69:1. The control is enabled; 4.5:1 still applies. |
 | F5-8 Toggle Switch Button Background Color Contrast | 1.4.11 Non-text Contrast | Yes/No track is `#f9f9f9` on white with a faint inner shadow (~1.07:1 fill, ~1.30:1 shadow). Enabled UI needs 3:1. Do not darken the fill (that would break F5-4 label text). |
 | F5-9 Failed Color Contrast - Icon Buttons | 1.4.11 Non-text Contrast | Publication Type Clear and chevron SVGs are `#909090` (~2.69:1 on the grey wash; still under 3:1 on white). Enabled UI icons need 3:1. |
 | F5-10 Failed Color UI Component Contrast - Remove Button | 1.4.11 Non-text Contrast | Remove fill vs page is `rgba(230, 10, 62, 0.1)` (~1.16:1). F5-5 is the text; this is the UI boundary. Keep fill light/transparent; add a 3:1 edge. |
+| F5-11 Failed Color Contrast - Error Message | 1.4.11 Non-text Contrast | Error alert fill vs page is `rgba(230, 10, 62, 0.1)` (~1.16:1). F5-6 is the text; this is the UI boundary. Keep fill light; add a 3:1 edge. |
 
 **Where (generic `main`)**
 
@@ -277,11 +279,12 @@ UVA already covers these in `branding-overrides.css`. No UVA production need unt
   - `.sd-boolean__thumb, .sd-boolean__label { color: var(--sjs-font-editorfont-placeholdercolor, var(--sjs-general-forecolor-light, var(--foreground-light, #909090))); }`
   - Toggle track default: `#f9f9f9` on white, inner shadow `rgba(0, 0, 0, 0.15)` (fails 1.4.11)
   - `.sd-action--negative { color: var(--sjs-special-red, var(--red, #e60a3e)); }` hover/focus fill `rgba(230, 10, 62, 0.1)` (~1.16:1 vs page)
+  - `.sd-error { color: var(--sjs-special-red, #e60a3e); background-color: var(--sjs-special-red-light, rgba(230, 10, 62, 0.1)); }`
   - `.sd-dropdown--empty:not(.sd-input--disabled) { color: var(--sjs-general-forecolor-light, #909090); }`
   - `.sd-dropdown_chevron-button-svg` / `.sd-dropdown_clean-button-svg` (`<svg class="sv-svg-icon">` with `#icon-cancel-24x24`); fill follows `#909090`
 - Bootstrap: `.form-control:read-only { background-color: #e9ecef; }` matches SurveyJS’s `div.form-control` even when the dropdown is enabled
 - `app/styles/app.css`: `.form-control[readonly] { background-color: #eff7fb !important; }` can also wash enabled dropdowns
-- Markup: SurveyJS on `app/components/workflow-metadata/` (Details step). Authors empty: “No entries yet…”. Embargo: “The material being submitted is published under an embargo.” Yes/No boolean questions. Remove appears after adding an Author or ISSN entry. Empty dropdowns (journal, etc.) show placeholder text on a grey bar.
+- Markup: SurveyJS on `app/components/workflow-metadata/` (Details step). Authors empty: “No entries yet…”. Embargo: “The material being submitted is published under an embargo.” Yes/No boolean questions. Remove appears after adding an Author or ISSN entry. Empty dropdowns (journal, etc.) show placeholder text on a grey bar. Required-field errors use `.sd-error`.
 
 **Suggested generic fix (no UVA colors)**
 
@@ -338,11 +341,21 @@ Do not apply `:read-only` / `[readonly]` background to `div.form-control`. Empty
 }
 ```
 
-`#b00000` on white is about **7:1**. Do **not** copy UVA greys, UVA’s transparent selected-label trick, UVA Remove hover `--uva-red-100`, or UVA dropdown colors. Do not restyle SurveyJS layout.
+`#b00000` on white is about **7:1**.
+
+6. Give required-field errors a **3:1 edge**, keep fill light (F5-6 is the text; `--sjs-special-red` already darkens it):
+
+```css
+.sd-error {
+  border: 2px solid #b00000;
+}
+```
+
+Do **not** copy UVA greys, UVA’s transparent selected-label trick, UVA Remove hover `--uva-red-100`, UVA `.sd-error` 10px left bar / grey-B text, or UVA dropdown colors. Do not restyle SurveyJS layout.
 
 **Issue title (eclipse-pass/main)**
 
-SurveyJS Details controls fail contrast (text 4.5:1, Yes/No, Remove, and dropdown icons 3:1)
+SurveyJS Details controls fail contrast (text 4.5:1, Yes/No, Remove, errors, and dropdown icons 3:1)
 
 **Issue body**
 
@@ -354,6 +367,8 @@ On New Submission → Details, several SurveyJS controls fail WCAG 1.4.3 (16px t
 - Unselected Yes/No on the boolean toggle: `#909090` on the light track (~3:1). The control is still enabled, so both faces need 4.5:1.
 - Remove text (after adding Author or ISSN): `#e60a3e` on white (~3.94:1).
 - Remove as a UI component: hover/focus fill `rgba(230, 10, 62, 0.1)` vs the page (~1.16:1). Needs a 3:1 edge; keep the fill light.
+- Required-field error text: `#e60a3e` on the light red wash (~3.94:1). Same token as Remove.
+- Required-field error alert vs the page: fill `rgba(230, 10, 62, 0.1)` (~1.16:1). Needs a 3:1 edge; keep the fill light.
 - Empty enabled dropdown: `#909090` on a grey `:read-only` wash (~2.69:1). `div.form-control` matches `:read-only` even when the dropdown is enabled, so it looks disabled.
 - Yes/No track fill `#f9f9f9` on white (~1.07:1) with a faint inner shadow (~1.30:1). Enabled UI needs 3:1. Keep the fill light so label text still meets 4.5:1; add a 3:1 edge instead.
 - Dropdown Clear and chevron icons: `#909090` (~2.69:1 on the grey wash; still under 3:1 on white).
@@ -363,16 +378,17 @@ On New Submission → Details, several SurveyJS controls fail WCAG 1.4.3 (16px t
 2. Inspect the Authors empty-state copy (“No entries yet…”), the Embargo description, and a Yes/No toggle in both states.
 3. Add an Author (or ISSN) entry and inspect the red Remove control (text and the control’s edge vs the page, including hover/focus).
 4. Inspect an empty dropdown (placeholder text, background, Clear and chevron icons).
-5. Check text contrast against the panel / toggle track / dropdown background, the Yes/No track edge against the page, and dropdown icon fill against the dropdown background.
+5. Leave a required field empty (or submit) and inspect the error alert (text and the box vs the page).
+6. Check text contrast against the panel / toggle track / dropdown background, and UI edges (Yes/No, Remove, error) against the page.
 
 ## Expected
-Description, placeholder, unselected Yes/No, Remove, and empty-dropdown text meet 4.5:1. Empty enabled dropdowns look enabled. Yes/No and Remove have a 3:1 boundary against the page. Dropdown Clear and chevron icons meet 3:1.
+Description, placeholder, unselected Yes/No, Remove, error, and empty-dropdown text meet 4.5:1. Empty enabled dropdowns look enabled. Yes/No, Remove, and error alerts have a 3:1 boundary against the page. Dropdown Clear and chevron icons meet 3:1.
 
 ## Actual
-`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`. `.sd-boolean__label` uses `--sjs-font-editorfont-placeholdercolor` → `--sjs-general-forecolor-light` → `#909090`. `.sd-action--negative` uses `--sjs-special-red` → `#e60a3e` with hover fill `rgba(230, 10, 62, 0.1)`. Empty `.sd-dropdown` uses `#909090` on Bootstrap `.form-control:read-only` `#e9ecef`. `.sd-boolean` is `#f9f9f9` on white. Dropdown icon `<use>` fill stays `#909090`.
+`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`. `.sd-boolean__label` uses `--sjs-font-editorfont-placeholdercolor` → `--sjs-general-forecolor-light` → `#909090`. `.sd-action--negative` uses `--sjs-special-red` → `#e60a3e` with hover fill `rgba(230, 10, 62, 0.1)`. `.sd-error` uses the same red on `rgba(230, 10, 62, 0.1)`. Empty `.sd-dropdown` uses `#909090` on Bootstrap `.form-control:read-only` `#e9ecef`. `.sd-boolean` is `#f9f9f9` on white. Dropdown icon `<use>` fill stays `#909090`.
 
 ## Suggested direction
-Set those SurveyJS CSS variables in `public/branding.css` to colors that meet 4.5:1 (for example `#595959` for muted text and `#b00000` for destructive actions). Scope `:read-only` / `[readonly]` grey wash to `input` and `textarea`, not `div.form-control`. Add a 3:1 border on `.sd-boolean` and on `.sd-action--negative`; keep fills light. Set `fill` on `.sd-dropdown_chevron-button-svg use` and `.sd-dropdown_clean-button-svg use` to the same 3:1+ grey.
+Set those SurveyJS CSS variables in `public/branding.css` to colors that meet 4.5:1 (for example `#595959` for muted text and `#b00000` for destructive actions). Scope `:read-only` / `[readonly]` grey wash to `input` and `textarea`, not `div.form-control`. Add a 3:1 border on `.sd-boolean`, `.sd-action--negative`, and `.sd-error`; keep fills light. Set `fill` on `.sd-dropdown_chevron-button-svg use` and `.sd-dropdown_clean-button-svg use` to the same 3:1+ grey.
 
 ## WCAG
 1.4.3 Contrast (Minimum) (Level AA)
@@ -388,9 +404,9 @@ Give SurveyJS Details controls passing text and UI-component contrast
 ```markdown
 Fixes eclipse-pass/main#{N}
 
-SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1), unselected Yes/No labels to `#909090` (~3:1), and Remove to `#e60a3e` (~3.94:1). Empty enabled dropdowns also look disabled: `div.form-control` matches `:read-only` and gets a grey wash, so placeholder text is ~2.69:1. The Yes/No track is `#f9f9f9` on white (~1.07:1), which fails 1.4.11.
+SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1), unselected Yes/No labels to `#909090` (~3:1), and Remove and error text to `#e60a3e` (~3.94:1). Empty enabled dropdowns also look disabled: `div.form-control` matches `:read-only` and gets a grey wash, so placeholder text is ~2.69:1. The Yes/No track is `#f9f9f9` on white (~1.07:1). Remove hover and error fills are `rgba(230, 10, 62, 0.1)` vs the page (~1.16:1). Those UI edges fail 1.4.11.
 
-This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light`, `--sjs-font-editorfont-placeholdercolor`, and `--sjs-special-red` in `branding.css` to 4.5:1 colors, scopes the disabled/readonly background to real input and textarea fields, gives `.sd-boolean` and `.sd-action--negative` a 3:1 border while keeping fills light, and sets dropdown Clear/chevron SVG `fill` to a 3:1 grey. Layout and UVA branding are unchanged.
+This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light`, `--sjs-font-editorfont-placeholdercolor`, and `--sjs-special-red` in `branding.css` to 4.5:1 colors, scopes the disabled/readonly background to real input and textarea fields, gives `.sd-boolean`, `.sd-action--negative`, and `.sd-error` a 3:1 border while keeping fills light, and sets dropdown Clear/chevron SVG `fill` to a 3:1 grey. Layout and UVA branding are unchanged.
 ```
 
 **How to verify**
@@ -401,17 +417,19 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 4. Toggle a Yes/No control both ways; unselected “Yes” and “No” each meet 4.5:1 on the track; selected face stays readable; track edge vs page is at least 3:1.
 5. Add an Author or ISSN row; Remove text meets 4.5:1; Remove’s edge vs the page meets 3:1 (rest and hover/focus).
 6. Empty dropdown: white (or default editor) background, placeholder ≥ 4.5:1, does not look disabled. Clear and chevron icons ≥ 3:1 against that background. A truly disabled/readonly `input.form-control` still gets the grey wash.
-7. Spot-check other SurveyJS helper text on that step (not error text).
+7. Trigger a required-field error; error text meets 4.5:1; error box edge vs the page meets 3:1.
+8. Spot-check other SurveyJS helper text on that step.
 
 **uvalib cleanup after this merges**
 
 - **Keep** `.sv-string-viewer { color: var(--uva-grey-A); }` in `branding-overrides.css` (UVA grey, not the generic token).
 - **Keep** the UVA `.sd-boolean` block (UVA greys, thumb colors). Core will add a generic 3:1 edge; UVA’s more specific border/fill still wins.
 - **Keep** the UVA `.sd-action--negative` block (`--uva-red-B`, hover `--uva-red-100`). Core will add a generic 3:1 edge; UVA’s more specific border/hover still wins.
+- **Keep** the UVA `.sd-error` block (grey-B text, `--uva-red-100` fill, `--uva-red-B` 10px left bar).
 - **Keep** UVA empty-dropdown `color: var(--uva-grey-A)` and `.sd-dropdown_*_svg use { fill: var(--uva-grey-A) }` if we still want UVA grey rather than the generic token.
 - **Remove** the `input.form-control:disabled` / `:read-only` scoping block if core now owns it (duplicate of the generic fix).
 - Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A`, and `--sjs-special-red` to `--uva-red-B`, in the UVA `:root`.
-- Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No (text + track edge), Remove (text + edge), empty dropdowns, and dropdown icons, push `uvalib`, delete the contribution branch.
+- Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No (text + track edge), Remove (text + edge), required-field errors (text + box edge), empty dropdowns, and dropdown icons, push `uvalib`, delete the contribution branch.
 
 ---
 
@@ -451,3 +469,5 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F5-8 Yes/No track on UVA | Already 2px `--uva-grey-A` edge on a light fill; fold a generic 3:1 `.sd-boolean` border into backlog item 3. Keep the UVA toggle restyle. |
 | F5-9 dropdown icons on UVA | Already `.sd-dropdown_*_svg use { fill: var(--uva-grey-A) }`; fold generic icon `fill` into backlog item 3. Keep UVA fill if desired. |
 | F5-10 Remove UI edge on UVA | Already 2px `--uva-red-B` border on transparent/light fill; fold a generic `.sd-action--negative` 3:1 edge into backlog item 3. Keep the UVA Remove restyle. |
+| F5-6 error text on UVA | Already `.sd-error` / `.sv-string-viewer` use `--uva-grey-B`; `--sjs-special-red` in item 3 covers generic error text. Keep the UVA error restyle. |
+| F5-11 error box on UVA | Already 2px/10px `--uva-red-B` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
