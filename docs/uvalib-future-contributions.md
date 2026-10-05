@@ -431,6 +431,96 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 - Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A`, and `--sjs-special-red` to `--uva-red-B`, in the UVA `:root`.
 - Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No (text + track edge), Remove (text + edge), required-field errors (text + box edge), empty dropdowns, and dropdown icons, push `uvalib`, delete the contribution branch.
 
+### 4. SweetAlert “I Agree” fails 4.5:1 (F6-4)
+
+Independent of #1350, #1351 (1351 uses this dialog; it does not set button colors), and backlog items 1–3.
+
+UVA already restyles `.swal2-confirm` in `branding-overrides.css`. No UVA production need until we want that override slimmed down.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| F6-4 Pop Up Button Contrast | 1.4.3 Contrast (Minimum) | Files “Remove file?” dialog **I Agree** is white on `#418fde` (~3.38:1). Needs 4.5:1. |
+
+**Where (generic `main`)**
+
+- `app/styles/app.css`:
+
+```css
+.swal2-confirm {
+  background-color: #418fde !important;
+  border-color: #418fde !important;
+  color: white !important;
+}
+```
+
+- Markup: SweetAlert2 confirm in `app/components/workflow-files/index.gts` (`deleteExistingFile` → “I Agree”). Same `.swal2-confirm` class is used anywhere else SweetAlert confirm is shown.
+
+**Suggested generic fix (no UVA colors)**
+
+Use a 4.5:1 pair with white. Default `--primary-600` in `branding.css` is `#1e40af` (~8:1 with white):
+
+```css
+.swal2-confirm {
+  background-color: var(--primary-600) !important;
+  border-color: var(--primary-600) !important;
+  color: #fff !important;
+}
+```
+
+Do not copy `--uva-blue-alt-A`. If a site remaps `--primary-600` to a light color (stock sample overlay orange), that site’s confirm button would fail again; that is the sample-overlay issue in Optional (D-4), not this PR.
+
+**Issue title (eclipse-pass/main)**
+
+SweetAlert confirm button fails 4.5:1 contrast
+
+**Issue body**
+
+```markdown
+## Summary
+The SweetAlert confirm control (Files → Remove file → **I Agree**) is white text on `#418fde` (~3.38:1). WCAG 1.4.3 needs 4.5:1 for 16px regular text.
+
+## Steps to reproduce
+1. Open a new submission, add a file on Files, and click Remove.
+2. Inspect **I Agree** in the dialog.
+
+## Expected
+Confirm button text meets 4.5:1 against the button background.
+
+## Actual
+`app/styles/app.css` sets `.swal2-confirm { background-color: #418fde; color: white; }`.
+
+## Suggested direction
+Use `var(--primary-600)` (default `#1e40af`, ~8:1 with white) for the confirm background, keep white text.
+
+## WCAG
+1.4.3 Contrast (Minimum) (Level AA)
+```
+
+**PR title**
+
+Give SweetAlert confirm button 4.5:1 contrast
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+`.swal2-confirm` (Files → Remove → I Agree, and other SweetAlert confirms) was white on `#418fde` (~3.38:1).
+
+This uses `var(--primary-600)` for the confirm background (default `#1e40af`, ~8:1 with white). UVA branding is unchanged.
+```
+
+**How to verify**
+
+1. Branch from `main` (generic branding, not `uvalib`).
+2. New submission → Files → add a file → Remove → inspect **I Agree** (white on `--primary-600` / `#1e40af`, ≥ 4.5:1).
+3. Spot-check another SweetAlert confirm if one exists (same class).
+
+**uvalib cleanup after this merges**
+
+- **Keep** the UVA `.swal2-confirm` block (`--uva-blue-alt-A` / `--uva-brand-blue`, white text). That is branding; core will use `--primary-600`, which UVA remaps to `--uva-blue-alt-A`, so the override may become redundant. Keep it until a visual check shows the token path is enough.
+- Merge `main` into `uvalib`, check Remove-file **I Agree**, push `uvalib`, delete the contribution branch.
+
 ---
 
 ## Optional / low priority (not needed for UVA)
@@ -471,3 +561,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F5-10 Remove UI edge on UVA | Already 2px `--uva-red-B` border on transparent/light fill; fold a generic `.sd-action--negative` 3:1 edge into backlog item 3. Keep the UVA Remove restyle. |
 | F5-6 error text on UVA | Already `.sd-error` / `.sv-string-viewer` use `--uva-grey-B`; `--sjs-special-red` in item 3 covers generic error text. Keep the UVA error restyle. |
 | F5-11 error box on UVA | Already 2px/10px `--uva-red-B` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
+| F6-4 I Agree on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-A`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
