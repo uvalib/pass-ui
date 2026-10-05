@@ -524,6 +524,107 @@ This uses `var(--primary-600)` for the confirm background (default `#1e40af`, ~8
 - **Keep** the UVA `.swal2-confirm` block (`--uva-blue-alt-A` / `--uva-brand-blue`, white text). That is branding; core will use `--primary-600`, which UVA remaps to `--uva-blue-alt-A`, so the override may become redundant. Keep it until a visual check shows the token path is enough.
 - Merge `main` into `uvalib`, check Remove-file **I Agree** and Review **Next** / **Confirm**, push `uvalib`, delete the contribution branch.
 
+### 5. Link keyboard focus does not match hover (GS-3 + F6-3)
+
+Independent of #1350, #1351, and backlog items 1–4.
+
+UVA already styles `a:focus` / `a:focus-visible` in `branding-overrides.css` (global, `.models-table-wrapper`, and Files name rows). No UVA production need until we want those duplicates slimmed down.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| GS-3 Focus State Indicator | 1.4.1 Use of Color | Grants, Grant Details, and Submissions table links get color + underline on **hover**, but not on **keyboard focus**. |
+| F6-3 Missing Focus State | 1.4.1 Use of Color | Same gap on Files uploaded-file name links (`<a href={{file.uri}}>`). |
+
+GS-3 also notes orange hover contrast; that is Optional **D-4** (`--primary-600` in the sample overlay), not this PR.
+
+**Where (generic `main`)**
+
+- `public/branding.css`:
+
+```css
+a:hover,
+.btn-link:hover {
+  color: var(--primary-600);
+  text-decoration: underline;
+}
+```
+
+There is no `a:focus` / `a:focus-visible` next to it. Rest-state `a, .btn-link { text-decoration: none; }` (later in the same file).
+
+**Suggested generic fix (no UVA colors)**
+
+Add focus next to hover, same color and underline:
+
+```css
+a:hover,
+.btn-link:hover,
+a:focus,
+.btn-link:focus,
+a:focus-visible,
+.btn-link:focus-visible {
+  color: var(--primary-600);
+  text-decoration: underline;
+}
+```
+
+Do not copy UVA always-on underlines, UVA blues, or the 2px `:focus-visible` outline (nice-to-have, not required to match hover).
+
+**Issue title (eclipse-pass/main)**
+
+Link keyboard focus does not match hover (underline and color)
+
+**Issue body**
+
+```markdown
+## Summary
+Links show a different color and an underline on mouse hover, but keyboard focus does not. WCAG 1.4.1 expects a consistent non-color-only indicator for hover and keyboard focus. Seen on Grants / Submissions tables and Files file-name links.
+
+## Steps to reproduce
+1. Open Grants or Submissions and Tab to a row link.
+2. Compare that to mouse hover on the same link.
+3. Repeat on Files with an uploaded file that has a URI.
+
+## Expected
+Keyboard focus uses the same underline (and hover color) as mouse hover.
+
+## Actual
+`public/branding.css` only defines `a:hover, .btn-link:hover`. There is no `a:focus` / `a:focus-visible`.
+
+## Suggested direction
+Add `a:focus` and `a:focus-visible` next to the existing hover rule, same `color` and `text-decoration`.
+
+## WCAG
+1.4.1 Use of Color (Level A)
+```
+
+**PR title**
+
+Match link keyboard focus to hover (underline and color)
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+Links underlined and recolored on hover but not on keyboard focus (Grants/Submissions tables, Files names).
+
+This adds `a:focus` and `a:focus-visible` next to `a:hover` in `branding.css`. UVA branding is unchanged.
+```
+
+**How to verify**
+
+1. Branch from `main` (generic branding, not `uvalib`).
+2. Grants and Submissions: Tab to a table link; underline/color match hover.
+3. Files: Tab to an uploaded file name link; same.
+4. Mouse hover still works.
+
+**uvalib cleanup after this merges**
+
+- **Keep** UVA `a:hover` / `a:focus` / `a:focus-visible` color (`--uva-blue-alt-A`) and rest-state underline.
+- **Keep** `.models-table-wrapper` and Files-row `:focus-visible` outlines if we still want the extra 2px ring.
+- Global `a:focus { text-decoration: underline }` in core may make some UVA duplicates redundant; keep until a visual check.
+- Merge `main` into `uvalib`, Tab Grants/Submissions/Files links, push `uvalib`, delete the contribution branch.
+
 ---
 
 ## Optional / low priority (not needed for UVA)
@@ -565,3 +666,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F5-6 error text on UVA | Already `.sd-error` / `.sv-string-viewer` use `--uva-grey-B`; `--sjs-special-red` in item 3 covers generic error text. Keep the UVA error restyle. |
 | F5-11 error box on UVA | Already 2px/10px `--uva-red-B` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
 | F6-4 / F7-5 SweetAlert confirm on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-A`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
+| GS-3 / F6-3 link focus on UVA | Already `a:focus` / `a:focus-visible` (global, tables, Files names); contribute the generic hover-matching focus via backlog item 5. Keep UVA blues and extra outlines. |
