@@ -1,0 +1,61 @@
+#
+# buildspec.yml
+#
+# Builds pass-ui the same way as .github/workflows/update-docker-image.yml:
+# install Node and pnpm, load the PASS .env, pnpm build, write the SBOM,
+# then docker build. Pushes to the UVA ECR registry instead of ghcr.io.
+#
+
+version: 0.2
+
+env:
+  git-credential-helper: yes
+  variables:
+    # Matches .tool-versions. package.json engines require Node >= 24.
+    NODE_VERSION: 24.3.0
+
+phases:
+  install:
+    commands:
+      - curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" | tar -xJ -C /usr/local --strip-components=1
+      - corepack enable
+      - corepack prepare pnpm@9 --activate
+      - node --version
+      - pnpm --version
+
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $CONTAINER_REGISTRY
+      - BUILD_VERSION=$(date --date="@$(echo $CODEBUILD_START_TIME | cut -c1-10)" +"%Y%m%d%H%M%S")
+      - COMMIT_TAG=gitcommit-$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - VERSION=$(node -p "require('./package.json').version")
+      # Ember bakes PASS_UI_* at pnpm build time. This is the staging env
+      # those values are maintained in.
+      - git clone --depth 1 https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/uvalib/terraform-infrastructure.git /tmp/terraform-infrastructure
+      - ENV_FILE=/tmp/terraform-infrastructure/epass.library.virginia.edu/staging/ansible/config/.env
+      - SOURCE_IMAGE=$CONTAINER_REGISTRY/$CONTAINER_IMAGE:$VERSION
+      - echo "SOURCE_IMAGE=$SOURCE_IMAGE BUILD_VERSION=$BUILD_VERSION COMMIT_TAG=$COMMIT_TAG VERSION=$VERSION"
+
+  build:
+    commands:
+      - |
+        export $(grep -v '^[#|SIGNING|PASS_CORE_POLICY]' $ENV_FILE | xargs -d '\n')
+        export HUSKY=0
+        pnpm install --frozen-lockfile
+        pnpm run build
+        rm -f *-cyclonedx-sbom.json
+        pnpm run create_sbom
+        docker build --no-cache -t $SOURCE_IMAGE .
+      - docker tag $SOURCE_IMAGE $CONTAINER_REGISTRY/$CONTAINER_IMAGE:latest
+      - docker tag $SOURCE_IMAGE $CONTAINER_REGISTRY/$CONTAINER_IMAGE:build-$BUILD_VERSION
+      - docker tag $SOURCE_IMAGE $CONTAINER_REGISTRY/$CONTAINER_IMAGE:$COMMIT_TAG
+      - docker images
+      #- docker push $SOURCE_IMAGE
+      #- docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:latest
+      #- docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:build-$BUILD_VERSION
+      #- docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:$COMMIT_TAG
+      #- aws --region=$AWS_REGION ssm put-parameter --name /containers/$CONTAINER_IMAGE/latest --value build-$BUILD_VERSION --type String --overwrite
+
+#
+# end of file
+#
