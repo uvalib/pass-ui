@@ -49,11 +49,11 @@ phases:
       - docker tag $SOURCE_IMAGE $CONTAINER_REGISTRY/$CONTAINER_IMAGE:build-$BUILD_VERSION
       - docker tag $SOURCE_IMAGE $CONTAINER_REGISTRY/$CONTAINER_IMAGE:$COMMIT_TAG
       - docker images
-      #- docker push $SOURCE_IMAGE
-      #- docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:latest
-      #- docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:build-$BUILD_VERSION
-      #- docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:$COMMIT_TAG
-      #- aws --region=$AWS_REGION ssm put-parameter --name /containers/$CONTAINER_IMAGE/latest --value build-$BUILD_VERSION --type String --overwrite
+      - docker push $SOURCE_IMAGE
+      - docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:latest
+      - docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:build-$BUILD_VERSION
+      - docker push $CONTAINER_REGISTRY/$CONTAINER_IMAGE:$COMMIT_TAG
+      - aws --region=$AWS_REGION ssm put-parameter --name /containers/$CONTAINER_IMAGE/latest --value build-$BUILD_VERSION --type String --overwrite
 
 #
 # end of file
