@@ -1,0 +1,54 @@
+#
+# deployspec.yml
+#
+# Launches PASS on the epass staging instance by running
+# epass.library.virginia.edu/staging/ansible/deploy_backend.yml.
+#
+
+version: 0.2
+
+env:
+  variables:
+    terraform_version: 1.15.8
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.x
+    commands:
+      # install ccrypt
+      - dnf install -y http://ccrypt.sourceforge.net/download/1.11/ccrypt-1.11-1.x86_64.rpm
+      # and ansible
+      - pip3 install ansible
+      # install terraform
+      - wget https://releases.hashicorp.com/terraform/${terraform_version}/terraform_${terraform_version}_linux_amd64.zip
+      - unzip terraform_${terraform_version}_linux_amd64.zip
+      - mv terraform /usr/local/bin
+
+  pre_build:
+    commands:
+      # clone terraform repo
+      - git clone https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/uvalib/terraform-infrastructure.git
+      # decrypt the instance private key
+      - PRIVATE_KEY_NAME=epass.library.virginia.edu/staging/keys/epass_staging.pem
+      - PRIVATE_KEY=$CODEBUILD_SRC_DIR/terraform-infrastructure/$PRIVATE_KEY_NAME
+      - $CODEBUILD_SRC_DIR/terraform-infrastructure/scripts/decrypt-key.ksh ${PRIVATE_KEY}.cpt $PRIVATE_KEY_NAME
+      - chmod 600 $PRIVATE_KEY
+
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR/terraform-infrastructure/epass.library.virginia.edu/staging
+      - terraform init -no-color
+      - ami=$(terraform output instance_ami | tr -d "\"")
+      - |
+        if [ -z "$ami" ]; then
+          echo "ERROR: cannot determine instance AMI" ;
+          exit 1 ;
+        fi
+      - terraform apply -auto-approve -no-color -var instance_ami="$ami" --target=local_file.inventory --target=local_file.tfvars
+      - cd ansible
+      - ansible-playbook deploy_backend.yml
+
+#
+# end of file
+#
