@@ -253,16 +253,17 @@ In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
   - `td.awardnum-column` / `td.projectname-date-column { min-width: 0 }` if still needed on UVA
 - Merge `main` into `uvalib`, check Grants at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
 
-### 3. SurveyJS Details helper text and Yes/No labels fail 1.4.3 (F5-3 + F5-4)
+### 3. SurveyJS Details helper text, Yes/No labels, and Remove fail 1.4.3 (F5-3 + F5-4 + F5-5)
 
 Do this as **one** generic PR. Same SurveyJS token family. Independent of #1350, #1351, and backlog items 1–2.
 
-UVA already paints `.sv-string-viewer` and restyles `.sd-boolean` in `branding-overrides.css`. No UVA production need until we want those overrides slimmed down.
+UVA already paints `.sv-string-viewer`, restyles `.sd-boolean`, and restyles `.sd-action--negative` in `branding-overrides.css`. No UVA production need until we want those overrides slimmed down.
 
 | Audit | WCAG | What fails |
 | --- | --- | --- |
 | F5-3 Failed Color Contrast - Text | 1.4.3 Contrast (Minimum) | Authors empty-state and Embargo help text on Details are SurveyJS description/placeholder copy at `rgba(0, 0, 0, 0.45)` on white (~3.36:1). Body text needs 4.5:1. |
 | F5-4 Failed Color Contrast - Toggle Button Text | 1.4.3 Contrast (Minimum) | Unselected Yes/No on the Details boolean toggle is `#909090` on the light track (~3:1). Enabled-but-unselected still needs 4.5:1. |
+| F5-5 Failed Color Contrast - Remove Button | 1.4.3 Contrast (Minimum) | SurveyJS “Remove” (ISSN / Authors) is `--sjs-special-red` `#e60a3e` on white (~3.94:1). Needs 4.5:1. |
 
 **Where (generic `main`)**
 
@@ -271,49 +272,53 @@ UVA already paints `.sv-string-viewer` and restyles `.sd-boolean` in `branding-o
   - `.sd-description` uses the same token
   - `.sd-boolean__thumb, .sd-boolean__label { color: var(--sjs-font-editorfont-placeholdercolor, var(--sjs-general-forecolor-light, var(--foreground-light, #909090))); }`
   - Toggle track default: `#f9f9f9`
-- Markup: SurveyJS on `app/components/workflow-metadata/` (Details step). Authors empty: “No entries yet…”. Embargo: “The material being submitted is published under an embargo.” Yes/No boolean questions on the same step.
+  - `.sd-action--negative { color: var(--sjs-special-red, var(--red, #e60a3e)); }`
+- Markup: SurveyJS on `app/components/workflow-metadata/` (Details step). Authors empty: “No entries yet…”. Embargo: “The material being submitted is published under an embargo.” Yes/No boolean questions. Remove appears after adding an Author or ISSN entry.
 - Inner helper text is usually `<span class="sv-string-viewer sv-string-viewer--multiline">`
 
 **Suggested generic fix (no UVA colors)**
 
-Set SurveyJS theme tokens in `public/branding.css` so descriptions, placeholders, and unselected toggle labels pick up a 4.5:1 grey (do not copy `--uva-grey-A`):
+Set SurveyJS theme tokens in `public/branding.css` (do not copy `--uva-grey-A` or `--uva-red-B`):
 
 ```css
 :root {
   --sjs-general-forecolor-light: #595959;
   --sjs-font-questiondescription-color: #595959;
   --sjs-font-editorfont-placeholdercolor: #595959;
+  --sjs-special-red: #b00000;
 }
 ```
 
-`#595959` on white / `#f9f9f9` is about **7:1**. Default Yes/No track is already light, so the darker token is enough; do **not** copy UVA’s `.sd-boolean` restyle (grey edge, transparent selected label, thumb colors). Do not restyle SurveyJS layout.
+`#595959` on white / `#f9f9f9` is about **7:1**. `#b00000` on white is about **7:1**. Default Yes/No track is already light, so the darker grey token is enough; do **not** copy UVA’s `.sd-boolean` restyle or `.sd-action--negative` border/hover block. Do not restyle SurveyJS layout.
 
 **Issue title (eclipse-pass/main)**
 
-SurveyJS helper text and Yes/No labels fail 4.5:1 contrast
+SurveyJS helper text, Yes/No labels, and Remove fail 4.5:1 contrast
 
 **Issue body**
 
 ```markdown
 ## Summary
-On New Submission → Details, SurveyJS helper text and unselected Yes/No labels fail WCAG 1.4.3 for 16px regular text (needs 4.5:1).
+On New Submission → Details, SurveyJS helper text, unselected Yes/No labels, and Remove actions fail WCAG 1.4.3 for 16px regular text (needs 4.5:1).
 
 - Authors empty state and Embargo description: `rgba(0, 0, 0, 0.45)` on white (~3.36:1).
 - Unselected Yes/No on the boolean toggle: `#909090` on the light track (~3:1). The control is still enabled, so both faces need 4.5:1.
+- Remove (after adding Author or ISSN): `#e60a3e` on white (~3.94:1).
 
 ## Steps to reproduce
 1. Open a new submission and go to Details.
 2. Inspect the Authors empty-state copy (“No entries yet…”), the Embargo description, and a Yes/No toggle in both states.
-3. Check contrast of that text against the panel / toggle track.
+3. Add an Author (or ISSN) entry and inspect the red Remove control.
+4. Check contrast of that text against the panel / toggle track / white background.
 
 ## Expected
-Description, placeholder, and unselected Yes/No text meet 4.5:1 against their backgrounds.
+Description, placeholder, unselected Yes/No, and Remove text meet 4.5:1 against their backgrounds.
 
 ## Actual
-`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`. `.sd-boolean__label` uses `--sjs-font-editorfont-placeholdercolor` → `--sjs-general-forecolor-light` → `#909090`.
+`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`. `.sd-boolean__label` uses `--sjs-font-editorfont-placeholdercolor` → `--sjs-general-forecolor-light` → `#909090`. `.sd-action--negative` uses `--sjs-special-red` → `#e60a3e`.
 
 ## Suggested direction
-Set those SurveyJS CSS variables in `public/branding.css` to a grey that meets 4.5:1 (for example `#595959`). The default toggle track is already light (`#f9f9f9`); no layout change required.
+Set those SurveyJS CSS variables in `public/branding.css` to colors that meet 4.5:1 (for example `#595959` for muted text and `#b00000` for destructive actions). The default toggle track is already light (`#f9f9f9`); no layout change required.
 
 ## WCAG
 1.4.3 Contrast (Minimum) (Level AA)
@@ -321,16 +326,16 @@ Set those SurveyJS CSS variables in `public/branding.css` to a grey that meets 4
 
 **PR title**
 
-Give SurveyJS helper text and Yes/No labels 4.5:1 contrast
+Give SurveyJS helper text, Yes/No labels, and Remove 4.5:1 contrast
 
 **PR body**
 
 ```markdown
 Fixes eclipse-pass/main#{N}
 
-SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1), and unselected Yes/No labels to `#909090` (~3:1). Details-step helper text and boolean toggles failed 1.4.3.
+SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1), unselected Yes/No labels to `#909090` (~3:1), and Remove to `#e60a3e` (~3.94:1). Details-step helper text, boolean toggles, and Remove failed 1.4.3.
 
-This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light`, and `--sjs-font-editorfont-placeholdercolor` in `branding.css` to a 4.5:1 grey. Layout and UVA branding are unchanged.
+This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light`, `--sjs-font-editorfont-placeholdercolor`, and `--sjs-special-red` in `branding.css` to 4.5:1 colors. Layout and UVA branding are unchanged.
 ```
 
 **How to verify**
@@ -339,14 +344,16 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 2. New submission → Details.
 3. Confirm Authors empty-state and Embargo description computed color is at least 4.5:1 on white.
 4. Toggle a Yes/No control both ways; unselected “Yes” and “No” each meet 4.5:1 on the track; selected face stays readable.
-5. Spot-check other SurveyJS helper text on that step (not error text).
+5. Add an Author or ISSN row; Remove text meets 4.5:1 on white (and on its hover background).
+6. Spot-check other SurveyJS helper text on that step (not error text).
 
 **uvalib cleanup after this merges**
 
 - **Keep** `.sv-string-viewer { color: var(--uva-grey-A); }` in `branding-overrides.css` (UVA grey, not the generic token).
-- **Keep** the UVA `.sd-boolean` block (light track, grey edge, thumb colors). That is branding; the generic PR only sets tokens.
-- Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A` in the UVA `:root`.
-- Merge `main` into `uvalib`, check Details Authors/Embargo and Yes/No contrast, push `uvalib`, delete the contribution branch.
+- **Keep** the UVA `.sd-boolean` block (light track, grey edge, thumb colors).
+- **Keep** the UVA `.sd-action--negative` block (`--uva-red-B`, hover `--uva-red-100`). That is branding; the generic PR only sets tokens.
+- Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A`, and `--sjs-special-red` to `--uva-red-B`, in the UVA `:root`.
+- Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No, and Remove contrast, push `uvalib`, delete the contribution branch.
 
 ---
 
@@ -381,3 +388,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F2-3 page scroll on UVA | Already in `/* Reflow (320px / 400% zoom) */`; contribute the generic page-scroll fix via backlog item 2. Remove-button vertical stretch stays UVA-only. |
 | F5-3 SurveyJS placeholder on UVA | Already `.sv-string-viewer { color: var(--uva-grey-A) }`; contribute the generic token fix via backlog item 3. |
 | F5-4 Yes/No toggle on UVA | Already the `.sd-boolean` block in `branding-overrides.css`; fold the generic token fix into backlog item 3. Keep the UVA toggle restyle. |
+| F5-5 SurveyJS Remove on UVA | Already `.sd-action--negative` uses `--uva-red-B`; fold `--sjs-special-red` into backlog item 3. Keep the UVA Remove restyle. |
