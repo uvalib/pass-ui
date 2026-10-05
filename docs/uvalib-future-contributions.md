@@ -253,6 +253,92 @@ In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
   - `td.awardnum-column` / `td.projectname-date-column { min-width: 0 }` if still needed on UVA
 - Merge `main` into `uvalib`, check Grants at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
 
+### 3. SurveyJS Details placeholders fail 1.4.3 (F5-3)
+
+Independent of #1350, #1351, and backlog items 1–2.
+
+UVA already paints `.sv-string-viewer { color: var(--uva-grey-A); }` in `branding-overrides.css`. No UVA production need until we want that override slimmed down.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| F5-3 Failed Color Contrast - Text | 1.4.3 Contrast (Minimum) | Authors empty-state and Embargo help text on Details are SurveyJS description/placeholder copy at `rgba(0, 0, 0, 0.45)` on white (~3.36:1). Body text needs 4.5:1. |
+
+**Where (generic `main`)**
+
+- Addon CSS: `node_modules/survey-core/survey-core.css`
+  - `.sd-question__placeholder { color: var(--sjs-font-questiondescription-color, var(--sjs-general-forecolor-light, rgba(0, 0, 0, 0.45))); }`
+  - `.sd-description` uses the same token
+- Markup: SurveyJS on `app/components/workflow-metadata/` (Details step). Authors empty: “No entries yet…”. Embargo: “The material being submitted is published under an embargo.”
+- Inner text is usually `<span class="sv-string-viewer sv-string-viewer--multiline">`
+
+**Suggested generic fix (no UVA colors)**
+
+Set SurveyJS theme tokens in `public/branding.css` so every description/placeholder picks up a 4.5:1 grey (do not copy `--uva-grey-A`):
+
+```css
+:root {
+  --sjs-general-forecolor-light: #595959;
+  --sjs-font-questiondescription-color: #595959;
+}
+```
+
+`#595959` on white is about **7:1**. That covers placeholder, `.sd-description`, and other SurveyJS uses of the same token. Do not restyle SurveyJS layout.
+
+**Issue title (eclipse-pass/main)**
+
+SurveyJS question descriptions and placeholders fail 4.5:1 contrast
+
+**Issue body**
+
+```markdown
+## Summary
+On New Submission → Details, helper text from SurveyJS (Authors empty state, Embargo description) is `rgba(0, 0, 0, 0.45)` on white (~3.36:1). That fails WCAG 1.4.3 for 16px regular text (needs 4.5:1).
+
+## Steps to reproduce
+1. Open a new submission and go to Details.
+2. Inspect the Authors empty-state copy (“No entries yet…”) and the Embargo description.
+3. Check contrast of that text against the white panel.
+
+## Expected
+Description and placeholder text meet 4.5:1 against the background.
+
+## Actual
+`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`.
+
+## Suggested direction
+Set those SurveyJS CSS variables in `public/branding.css` to a grey that meets 4.5:1 (for example `#595959`).
+
+## WCAG
+1.4.3 Contrast (Minimum) (Level AA)
+```
+
+**PR title**
+
+Give SurveyJS description and placeholder text 4.5:1 contrast
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1). Details-step helper text (Authors empty state, Embargo) failed 1.4.3.
+
+This sets `--sjs-font-questiondescription-color` and `--sjs-general-forecolor-light` in `branding.css` to a 4.5:1 grey. Layout and UVA branding are unchanged.
+```
+
+**How to verify**
+
+1. Branch from `main` (generic branding, not `uvalib`).
+2. New submission → Details.
+3. Confirm Authors empty-state and Embargo description computed color is at least 4.5:1 on white.
+4. Spot-check other SurveyJS helper text on that step (not error text).
+
+**uvalib cleanup after this merges**
+
+- **Keep** `.sv-string-viewer { color: var(--uva-grey-A); }` in `branding-overrides.css` (UVA grey, not the generic token).
+- Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` to `--uva-grey-A` in the UVA `:root` so parent-level SurveyJS color matches.
+- Merge `main` into `uvalib`, check Details Authors/Embargo contrast, push `uvalib`, delete the contribution branch.
+
 ---
 
 ## Optional / low priority (not needed for UVA)
@@ -284,3 +370,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F1-2 white `h1`/`h2` | `--secondary-500: #FFFFFF` is a UVA token used as button/banner color. Headings are forced to `--uva-brand-blue`. Generic `--secondary-500` is `#374151`. |
 | F1-3 / F1-4 on UVA | Already in `/* Submission wizard */` overrides; contribute the generic version via backlog item 1. |
 | F2-3 page scroll on UVA | Already in `/* Reflow (320px / 400% zoom) */`; contribute the generic page-scroll fix via backlog item 2. Remove-button vertical stretch stays UVA-only. |
+| F5-3 SurveyJS placeholder on UVA | Already `.sv-string-viewer { color: var(--uva-grey-A) }`; contribute the generic token fix via backlog item 3. |
