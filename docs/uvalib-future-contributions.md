@@ -253,9 +253,9 @@ In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
   - `td.awardnum-column` / `td.projectname-date-column { min-width: 0 }` if still needed on UVA
 - Merge `main` into `uvalib`, check Grants at 320px (page does not pan; table may), push `uvalib`, delete the contribution branch.
 
-### 3. SurveyJS Details contrast (F5-3 + F5-4 + F5-5 + F5-7)
+### 3. SurveyJS Details contrast (F5-3 + F5-4 + F5-5 + F5-7 + F5-8)
 
-Do this as **one** generic PR. Same SurveyJS token family, plus one `form-control` scoping fix. Independent of #1350, #1351, and backlog items 1–2.
+Do this as **one** generic PR. Same SurveyJS token family, plus `form-control` scoping and a 3:1 Yes/No track edge. Independent of #1350, #1351, and backlog items 1–2.
 
 UVA already covers these in `branding-overrides.css`. No UVA production need until we want those overrides slimmed down.
 
@@ -265,6 +265,7 @@ UVA already covers these in `branding-overrides.css`. No UVA production need unt
 | F5-4 Failed Color Contrast - Toggle Button Text | 1.4.3 Contrast (Minimum) | Unselected Yes/No on the Details boolean toggle is `#909090` on the light track (~3:1). Enabled-but-unselected still needs 4.5:1. |
 | F5-5 Failed Color Contrast - Remove Button | 1.4.3 Contrast (Minimum) | SurveyJS “Remove” (ISSN / Authors) is `--sjs-special-red` `#e60a3e` on white (~3.94:1). Needs 4.5:1. |
 | F5-7 Failed Color Contrast - Dropdown Bar | 1.4.3 Contrast (Minimum) | Empty enabled SurveyJS dropdown looks disabled. Text is `#909090` on a `:read-only` grey wash (`#e9ecef`), ~2.69:1. The control is enabled; 4.5:1 still applies. |
+| F5-8 Toggle Switch Button Background Color Contrast | 1.4.11 Non-text Contrast | Yes/No track is `#f9f9f9` on white with a faint inner shadow (~1.07:1 fill, ~1.30:1 shadow). Enabled UI needs 3:1. Do not darken the fill (that would break F5-4 label text). |
 
 **Where (generic `main`)**
 
@@ -272,7 +273,7 @@ UVA already covers these in `branding-overrides.css`. No UVA production need unt
   - `.sd-question__placeholder { color: var(--sjs-font-questiondescription-color, var(--sjs-general-forecolor-light, rgba(0, 0, 0, 0.45))); }`
   - `.sd-description` uses the same token
   - `.sd-boolean__thumb, .sd-boolean__label { color: var(--sjs-font-editorfont-placeholdercolor, var(--sjs-general-forecolor-light, var(--foreground-light, #909090))); }`
-  - Toggle track default: `#f9f9f9`
+  - Toggle track default: `#f9f9f9` on white, inner shadow `rgba(0, 0, 0, 0.15)` (fails 1.4.11)
   - `.sd-action--negative { color: var(--sjs-special-red, var(--red, #e60a3e)); }`
   - `.sd-dropdown--empty:not(.sd-input--disabled) { color: var(--sjs-general-forecolor-light, #909090); }`
 - Bootstrap: `.form-control:read-only { background-color: #e9ecef; }` matches SurveyJS’s `div.form-control` even when the dropdown is enabled
@@ -305,55 +306,66 @@ textarea.form-control:read-only {
 
 Do not apply `:read-only` / `[readonly]` background to `div.form-control`. Empty enabled dropdowns should stay on a white (or default editor) background so `#595959` meets 4.5:1.
 
-`#595959` on white / `#f9f9f9` is about **7:1**. `#b00000` on white is about **7:1**. Do **not** copy UVA’s `.sd-boolean` restyle, `.sd-action--negative` border/hover block, or UVA dropdown colors. Do not restyle SurveyJS layout.
+3. Give the Yes/No track a **3:1 edge**, keep the fill light (F5-4 labels still need 4.5:1):
+
+```css
+.sd-boolean {
+  border: 2px solid #767676;
+  box-shadow: none;
+}
+```
+
+`#767676` on white is about **4.5:1** (meets 3:1 for 1.4.11). Do **not** copy UVA greys, UVA’s transparent selected-label trick, `.sd-action--negative` border/hover, or UVA dropdown colors. Do not restyle SurveyJS layout.
 
 **Issue title (eclipse-pass/main)**
 
-SurveyJS Details controls fail 4.5:1 contrast
+SurveyJS Details controls fail contrast (text 4.5:1, Yes/No track 3:1)
 
 **Issue body**
 
 ```markdown
 ## Summary
-On New Submission → Details, several SurveyJS controls fail WCAG 1.4.3 for 16px regular text (needs 4.5:1).
+On New Submission → Details, several SurveyJS controls fail WCAG 1.4.3 (16px text, 4.5:1) and the Yes/No track fails 1.4.11 (UI component, 3:1).
 
 - Authors empty state and Embargo description: `rgba(0, 0, 0, 0.45)` on white (~3.36:1).
 - Unselected Yes/No on the boolean toggle: `#909090` on the light track (~3:1). The control is still enabled, so both faces need 4.5:1.
 - Remove (after adding Author or ISSN): `#e60a3e` on white (~3.94:1).
 - Empty enabled dropdown: `#909090` on a grey `:read-only` wash (~2.69:1). `div.form-control` matches `:read-only` even when the dropdown is enabled, so it looks disabled.
+- Yes/No track fill `#f9f9f9` on white (~1.07:1) with a faint inner shadow (~1.30:1). Enabled UI needs 3:1. Keep the fill light so label text still meets 4.5:1; add a 3:1 edge instead.
 
 ## Steps to reproduce
 1. Open a new submission and go to Details.
 2. Inspect the Authors empty-state copy (“No entries yet…”), the Embargo description, and a Yes/No toggle in both states.
 3. Add an Author (or ISSN) entry and inspect the red Remove control.
 4. Inspect an empty dropdown (placeholder text and background).
-5. Check contrast of that text against the panel / toggle track / dropdown background.
+5. Check text contrast against the panel / toggle track / dropdown background, and the Yes/No track edge against the page.
 
 ## Expected
-Description, placeholder, unselected Yes/No, Remove, and empty-dropdown text meet 4.5:1. Empty enabled dropdowns look enabled (not the disabled grey wash).
+Description, placeholder, unselected Yes/No, Remove, and empty-dropdown text meet 4.5:1. Empty enabled dropdowns look enabled. The Yes/No control has a 3:1 boundary against the page.
 
 ## Actual
-`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`. `.sd-boolean__label` uses `--sjs-font-editorfont-placeholdercolor` → `--sjs-general-forecolor-light` → `#909090`. `.sd-action--negative` uses `--sjs-special-red` → `#e60a3e`. Empty `.sd-dropdown` uses `#909090` on Bootstrap `.form-control:read-only` `#e9ecef`.
+`.sd-question__placeholder` and `.sd-description` use `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light`, which default to `rgba(0, 0, 0, 0.45)`. `.sd-boolean__label` uses `--sjs-font-editorfont-placeholdercolor` → `--sjs-general-forecolor-light` → `#909090`. `.sd-action--negative` uses `--sjs-special-red` → `#e60a3e`. Empty `.sd-dropdown` uses `#909090` on Bootstrap `.form-control:read-only` `#e9ecef`. `.sd-boolean` is `#f9f9f9` on white.
 
 ## Suggested direction
-Set those SurveyJS CSS variables in `public/branding.css` to colors that meet 4.5:1 (for example `#595959` for muted text and `#b00000` for destructive actions). Scope `:read-only` / `[readonly]` grey wash to `input` and `textarea`, not `div.form-control`.
+Set those SurveyJS CSS variables in `public/branding.css` to colors that meet 4.5:1 (for example `#595959` for muted text and `#b00000` for destructive actions). Scope `:read-only` / `[readonly]` grey wash to `input` and `textarea`, not `div.form-control`. Add a 3:1 border on `.sd-boolean` and drop the faint inner shadow; do not darken the track fill.
 
 ## WCAG
 1.4.3 Contrast (Minimum) (Level AA)
+1.4.11 Non-text Contrast (Level AA)
 ```
 
 **PR title**
 
-Give SurveyJS Details controls 4.5:1 contrast
+Give SurveyJS Details controls passing text and Yes/No track contrast
 
 **PR body**
 
 ```markdown
 Fixes eclipse-pass/main#{N}
 
-SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1), unselected Yes/No labels to `#909090` (~3:1), and Remove to `#e60a3e` (~3.94:1). Empty enabled dropdowns also look disabled: `div.form-control` matches `:read-only` and gets a grey wash, so placeholder text is ~2.69:1.
+SurveyJS defaults question descriptions and placeholders to `rgba(0, 0, 0, 0.45)` on white (~3.36:1), unselected Yes/No labels to `#909090` (~3:1), and Remove to `#e60a3e` (~3.94:1). Empty enabled dropdowns also look disabled: `div.form-control` matches `:read-only` and gets a grey wash, so placeholder text is ~2.69:1. The Yes/No track is `#f9f9f9` on white (~1.07:1), which fails 1.4.11.
 
-This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light`, `--sjs-font-editorfont-placeholdercolor`, and `--sjs-special-red` in `branding.css` to 4.5:1 colors, and scopes the disabled/readonly background to real input and textarea fields. Layout and UVA branding are unchanged.
+This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light`, `--sjs-font-editorfont-placeholdercolor`, and `--sjs-special-red` in `branding.css` to 4.5:1 colors, scopes the disabled/readonly background to real input and textarea fields, and gives `.sd-boolean` a 3:1 border while keeping the light fill. Layout and UVA branding are unchanged.
 ```
 
 **How to verify**
@@ -361,7 +373,7 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 1. Branch from `main` (generic branding, not `uvalib`).
 2. New submission → Details.
 3. Confirm Authors empty-state and Embargo description computed color is at least 4.5:1 on white.
-4. Toggle a Yes/No control both ways; unselected “Yes” and “No” each meet 4.5:1 on the track; selected face stays readable.
+4. Toggle a Yes/No control both ways; unselected “Yes” and “No” each meet 4.5:1 on the track; selected face stays readable; track edge vs page is at least 3:1.
 5. Add an Author or ISSN row; Remove text meets 4.5:1 on white (and on its hover background).
 6. Empty dropdown: white (or default editor) background, placeholder ≥ 4.5:1, does not look disabled. A truly disabled/readonly `input.form-control` still gets the grey wash.
 7. Spot-check other SurveyJS helper text on that step (not error text).
@@ -369,12 +381,12 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 **uvalib cleanup after this merges**
 
 - **Keep** `.sv-string-viewer { color: var(--uva-grey-A); }` in `branding-overrides.css` (UVA grey, not the generic token).
-- **Keep** the UVA `.sd-boolean` block (light track, grey edge, thumb colors).
+- **Keep** the UVA `.sd-boolean` block (UVA greys, thumb colors). Core will add a generic 3:1 edge; UVA’s more specific border/fill still wins.
 - **Keep** the UVA `.sd-action--negative` block (`--uva-red-B`, hover `--uva-red-100`).
 - **Keep** UVA empty-dropdown `color: var(--uva-grey-A)` if we still want UVA grey rather than the generic token.
 - **Remove** the `input.form-control:disabled` / `:read-only` scoping block if core now owns it (duplicate of the generic fix).
 - Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A`, and `--sjs-special-red` to `--uva-red-B`, in the UVA `:root`.
-- Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No, Remove, and empty dropdowns, push `uvalib`, delete the contribution branch.
+- Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No (text + track edge), Remove, and empty dropdowns, push `uvalib`, delete the contribution branch.
 
 ---
 
@@ -411,3 +423,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F5-4 Yes/No toggle on UVA | Already the `.sd-boolean` block in `branding-overrides.css`; fold the generic token fix into backlog item 3. Keep the UVA toggle restyle. |
 | F5-5 SurveyJS Remove on UVA | Already `.sd-action--negative` uses `--uva-red-B`; fold `--sjs-special-red` into backlog item 3. Keep the UVA Remove restyle. |
 | F5-7 empty dropdown on UVA | Already white background + `--uva-grey-A` and `:read-only` scoped to input/textarea; fold into backlog item 3. Keep UVA dropdown color if desired. |
+| F5-8 Yes/No track on UVA | Already 2px `--uva-grey-A` edge on a light fill; fold a generic 3:1 `.sd-boolean` border into backlog item 3. Keep the UVA toggle restyle. |
