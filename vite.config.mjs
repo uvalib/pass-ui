@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { defineConfig } from 'vite';
 import { extensions, classicEmberSupport, ember } from '@embroider/vite';
 import { babel } from '@rollup/plugin-babel';
@@ -83,20 +83,12 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use('/app/config.json', (_req, res) => {
           res.setHeader('Content-Type', 'application/json');
-          res.end(
-            JSON.stringify({
-              branding: {
-                homepage: 'https://www.eclipse.org/org/foundation/',
-                logo: '/app/ef/eclipse_foundation_logo_wo/EF_WHT-OR_png.png',
-                logoAlt: 'Eclipse Foundation',
-                favicon: 'favicon.ico',
-                stylesheet: '/app/branding.css',
-                overrides: '/app/branding-overrides.css',
-                pages: { showPagesNavBar: false },
-                error: { icon: '/app/error-icon.png' },
-              },
-            }),
-          );
+          try {
+            res.end(readFileSync(resolve('./public/app/config.json'), 'utf8'));
+          } catch (error) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: 'Failed to read public/app/config.json' }));
+          }
         });
       },
     },
