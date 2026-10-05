@@ -9,7 +9,6 @@
 version: 0.2
 
 env:
-  git-credential-helper: yes
   variables:
     # Matches .tool-versions. package.json engines require Node >= 24.
     NODE_VERSION: 24.3.0
