@@ -58,6 +58,97 @@ Local test of a contribution branch: check it out, refresh `http://localhost:808
 
 ## Backlog (contribute later)
 
+Work **Do first** before the numbered CSS items. It is still broken on `uvalib` (markup, not branding-overrides). Merge the contribution branch into `uvalib` as soon as it exists; do not wait for Eclipse to merge.
+
+### Do first: Empty table headers (F2-2)
+
+**Priority: highest.** Still fails on `uvalib`. Independent of #1350, #1351, and numbered items 1–6 (different files: table `<th>` text only).
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| F2-2 Missing Table Header Text | 1.3.1 Info and Relationships | “Grants added to submission” third column (Remove) is `<th></th>`. Assistive tech needs header text. |
+
+Also empty: Submission Details files table first column (`<th scope="col"></th>` for the file-type icon). Files wizard already has `<th>Action</th>`. Review files table already has `<th>File Type</th>`.
+
+**Where (generic `main` / `uvalib`)**
+
+- `app/components/submission-funding-table/index.gts`:
+
+```html
+<th>Award Number</th>
+<th>Project name (funding period)</th>
+<th></th>
+```
+
+- `app/templates/submissions/detail.gts` files table: first `<th scope="col"></th>` (icon column)
+
+**Suggested generic fix**
+
+Put a real header on the Remove column (visible is best; `.visually-hidden` only if product wants no extra chrome):
+
+```html
+<th>Remove</th>
+```
+
+For the Details icon column, match Review: `File Type`, or `<th><span class="visually-hidden">File type</span></th>`.
+
+No UVA tokens. No `branding-overrides.css`.
+
+**Issue title (eclipse-pass/main)**
+
+Remove column in grants-added table has an empty header
+
+**Issue body**
+
+```markdown
+## Summary
+On New Submission → Grants, the “Grants added to submission” table’s third column (Remove) has `<th></th>`. WCAG 1.3.1 requires table header text for that structural column. The same empty first header appears on Submission Details files (icon column).
+
+## Steps to reproduce
+1. Start a new submission, add at least one grant, stay on Grants.
+2. Inspect the header row of “Grants added to submission”.
+3. Open Submission Details for a submission with files and inspect the files table headers.
+
+## Expected
+Every column has header text (visible or visually hidden). Remove column is announced as Remove (or Actions).
+
+## Actual
+`app/components/submission-funding-table/index.gts` has `<th></th>` over the Remove buttons. `app/templates/submissions/detail.gts` has `<th scope="col"></th>` over the file-type icons.
+
+## Suggested direction
+Use `<th>Remove</th>` on the grants-added table. Label the Details icon column `File Type` (as Review already does) or a visually hidden equivalent.
+
+## WCAG
+1.3.1 Info and Relationships (Level A)
+```
+
+**PR title**
+
+Add header text to grants-added Remove column and Details file-type column
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+The grants-added table had an empty `<th>` over Remove. Submission Details files had an empty `<th>` over the icon column. Screen readers need that header text (1.3.1).
+
+This sets the grants-added header to “Remove” and the Details icon header to “File Type”.
+```
+
+**How to verify**
+
+1. Branch from `main` (or land on `uvalib` immediately after).
+2. Grants step with at least one grant: third header reads Remove; column still aligns with Remove buttons.
+3. Submission Details with files: first header is File Type (or visually hidden equivalent); icons still in that column.
+4. Files wizard and Review file tables unchanged (already labeled).
+
+**uvalib cleanup after this merges**
+
+- Merge `main` into `uvalib` if the branch was not already merged there. Expect a clean merge (no branding-overrides).
+- No CSS to remove.
+- Delete the contribution branch locally and on `origin`.
+
 ### 1. Wizard step bar clips labels at 200% zoom (F1-3 + F1-4)
 
 Do this as **one** generic PR. Same `.steps` bar. Independent of #1350 and #1351 (no shared hunks; #1350 touches `app.css` in other places only).
