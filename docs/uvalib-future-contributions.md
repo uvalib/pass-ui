@@ -149,22 +149,25 @@ This sets the grants-added header to “Remove” and the Details icon header to
 - No CSS to remove.
 - Delete the contribution branch locally and on `origin`.
 
-### Do first: Search Users dialog missing accessible name (F1-10)
+### Do first: Search Users dialog name and search status (F1-10 + F1-11)
 
-**Priority: high** (after empty table headers). Still fails 4.1.2 **Name** on `uvalib`. Independent of #1350, #1351, F2-2, and numbered items 1–6.
+**Priority: high** (after empty table headers). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, and numbered items 1–6. Same modal as one PR.
 
-The old ember-modal-dialog addon fail (no dialog role) is already fixed in generic pass-ui with native `<dialog>` + `showModal()`. Role, modal, and focus trap are in place. The dialog still has no accessible name.
+The old ember-modal-dialog addon fail (no dialog role) is already fixed in generic pass-ui with native `<dialog>` + `showModal()`. Role, modal, and focus trap are in place. The dialog still has no accessible name, and search results are not announced.
 
 | Audit | WCAG | What fails |
 | --- | --- | --- |
 | F1-10 Pop-Up Missing ARIA | 4.1.2 Name, Role, Value | Proxy “Search Users” modal. Role is now native `<dialog>`. Missing `aria-labelledby` / `aria-label`, so the dialog itself has no programmatic name. |
+| F1-11 Search Status Not Announced | 4.1.3 Status Messages | After Search, “Results” / “No results found.” update visually only. No `aria-live` status, so screen readers hear nothing unless the user tabs into the list. |
 
 **Where (generic `main` / `uvalib`)**
 
 - `app/components/workflow-basics/index.gts` — `<dialog class="… user-search-modal">` (no `aria-labelledby`)
-- `app/components/workflow-basics-user-search/index.gts` — `<h2>Search Users</h2>` (no `id`)
+- `app/components/workflow-basics-user-search/index.gts` — `<h2>Search Users</h2>` (no `id`); `<h3>Results</h3>` plus list or `<p>No results found.</p>` (no live region)
 
 **Suggested generic fix**
+
+Name the dialog:
 
 ```gts
 <dialog
@@ -179,56 +182,61 @@ The old ember-modal-dialog addon fail (no dialog role) is already fixed in gener
 <h2 id='user-search-title'>Search Users</h2>
 ```
 
-Optional: `aria-describedby` on the dialog pointing at the help paragraph. No UVA tokens. No `branding-overrides.css`.
+Announce results without moving focus (`aria-live="polite"`). Same pattern as file-upload status in #1351: clear the message, then set it on `next()` so a second search with the same count still announces.
+
+Examples: “N users found.” / “No results found.” Keep focus on the Search field/button. Optional: `aria-describedby` on the dialog pointing at the help paragraph. No UVA tokens. No `branding-overrides.css`.
 
 **Issue title (eclipse-pass/main)**
 
-Search Users dialog has no accessible name
+Search Users dialog has no accessible name and does not announce results
 
 **Issue body**
 
 ```markdown
 ## Summary
-On New Submission → Basics, the proxy Search Users pop-up is a native `<dialog>` with `showModal()` (role and modal are present) but has no accessible name. WCAG 4.1.2 requires a name on the dialog.
+On New Submission → Basics, the proxy Search Users pop-up is a native `<dialog>` with `showModal()` (role and modal are present) but has no accessible name (4.1.2). After Search, result count / “No results found” is not announced unless the user tabs into the dialog (4.1.3).
 
 ## Steps to reproduce
 1. Start a new submission as a preparer (or enable proxy submitter search).
-2. Open Search Users.
-3. Inspect the `<dialog>` for `aria-labelledby` or `aria-label`.
+2. Open Search Users. Inspect the `<dialog>` for `aria-labelledby` or `aria-label`.
+3. Run a search that returns results, then one that returns none, with a screen reader. Do not Tab into the results.
 
 ## Expected
-The dialog is named, e.g. “Search Users”, matching the visible heading.
+The dialog is named “Search Users”. A polite status announces “N users found” or “No results found” without moving focus.
 
 ## Actual
-`app/components/workflow-basics/index.gts` renders `<dialog class="… user-search-modal">` with no name. The heading is an unlabeled `<h2>Search Users</h2>` in `workflow-basics-user-search`.
+`workflow-basics` renders `<dialog class="… user-search-modal">` with no name. `workflow-basics-user-search` has `<h2>Search Users</h2>` with no `id`, and Results / “No results found.” with no live region.
 
 ## Suggested direction
-Give the `h2` an `id` and set `aria-labelledby` on the `<dialog>`.
+Give the `h2` an `id` and set `aria-labelledby` on the `<dialog>`. Add an `aria-live="polite"` status (clear, then set on `next()` so repeats announce). Leave focus on the search control.
 
 ## WCAG
 4.1.2 Name, Role, Value (Level A)
+4.1.3 Status Messages (Level AA)
 ```
 
 **PR title**
 
-Give the Search Users dialog an accessible name
+Name the Search Users dialog and announce search results
 
 **PR body**
 
 ```markdown
 Fixes eclipse-pass/main#{N}
 
-The proxy Search Users `<dialog>` had no accessible name (4.1.2). Role/modal already come from native `showModal()`.
+The proxy Search Users `<dialog>` had no accessible name (4.1.2). Role/modal already come from native `showModal()`. Search results also were not announced (4.1.3).
 
-This sets `aria-labelledby` on the dialog to the “Search Users” heading `id`.
+This sets `aria-labelledby` on the dialog to the “Search Users” heading, and a polite live region for “N users found” / “No results found” without moving focus.
 ```
 
 **How to verify**
 
 1. Branch from `main` (or land on `uvalib` immediately after).
-2. Open Search Users from Basics.
-3. Confirm the dialog’s computed name is “Search Users” (accessibility tree / `aria-labelledby`).
-4. Heading, search, and results still work; Esc/close still dismisses.
+2. Open Search Users from Basics. Dialog computed name is “Search Users”.
+3. Search with hits: live region announces a count; focus stays on Search.
+4. Search with no hits: announces “No results found.”
+5. Repeat the same search: it announces again.
+6. Esc/close still dismisses.
 
 **uvalib cleanup after this merges**
 
