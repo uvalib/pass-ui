@@ -922,9 +922,28 @@ This sets hover/focus to a 3:1 pair (white on `#495057`) and removes the link un
 
 ---
 
-## Optional / low priority (not needed for UVA)
+## Optional / low priority
 
-These fail on the **stock sample** `public/branding-overrides.css` that ships on `main`, or are product choices. UVA already handles them locally. Contribute only if we want the default Eclipse demo to pass.
+Sample-overlay issues, product choices, or auditor “on the fence” items. Do these after Do-first markup and numbered CSS items.
+
+### Skip to main content (D-6) — auditor on the fence
+
+**Priority: low.** Not on the Do-first list. 2.4.1 can already pass via `<main>` + header/nav landmarks. The auditor failed a missing skip **button** but noted it could be a recommendation.
+
+There is no skip link on `main` or `uvalib`. CSS cannot add one.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| D-6 No Skip to Main Content Button | 2.4.1 Bypass Blocks | No skip link. `application.gts` already has `<main class="container-fluid site-content">`. |
+
+**Suggested generic fix (when we bother)**
+
+First-focus link in `app/templates/application.gts`, visually hidden until `:focus`, `href="#main-content"`, `id="main-content"` on `<main>`. Style the focused skip control in `branding.css` (not UVA-only). Independent of #1350 / #1351.
+
+**Issue title:** Add a skip-to-main-content link  
+**PR:** skip link + `id` on `<main>`; visually hidden until keyboard focus.
+
+**uvalib cleanup:** merge `main`; no branding-overrides to remove.
 
 ### Sample overlay link hover fails 1.4.3 (D-4)
 
