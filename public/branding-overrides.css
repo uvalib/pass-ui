@@ -1,15 +1,39 @@
-/* UVA ePASS branding and accessibility overrides.
-   Loaded after branding.css. */
+/* =============================================================================
+   a11ybrandingoverrides.css  ·  UVA ePASS accessibility CSS overrides
+   Tested live via Chrome DevTools Local Overrides. This file is the source of truth
+   for the code; the "Round 2 Remediation" Confluence table lists the same fixes by issue.
+
+   ROUND 2 (WCAG 1.4.10 Reflow) changes live in the sections below — Ctrl-F the phrase:
+     "#F2-3, #F6-5, #F7-6: Reflow"        reflow foundation + data-table horizontal scroll
+     "Inner Files table"                  Files table = own scroll box  (+ cell padding)
+     "Both review tables: STACK"          Step 7 / Submission Details tables stack to 1 column
+     "Abstract (the only"                 abstract wraps in the stacked cell
+     "Submission Details title header"    title / "Submitted date" stack vertically
+     "Repository "status" cards"          repository cards reflow to stacked rows
+     "Step-2 "grants added" funding"      funding table scroll box (TEMPORARY; JHU wrapper-div = durable fix)
+     "download this manuscript"           Step 6 long-URL wraps
+     "table.table.d-flex"                 un-flip the mis-flexed Submission Details table
+     "#GS-6: Stack table controls"        list-page toolbar controls (selector correction)
+
+   Everything ABOVE the "#F2-3, #F6-5, #F7-6: Reflow" marker is unchanged Round-1 work.
+   Items marked "template issue"/JHU are markup fixes outside this stylesheet's scope.
+   ============================================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
+  /* ==========================================================================
+     Official UVA Library Color Definitions
+     ========================================================================== */
+
+  /* UVA Brand Blue */
   --uva-brand-blue-300: #87B9D9;
   --uva-brand-blue-200: #3395D4;
   --uva-brand-blue-100: #0370B7;
   --uva-brand-blue: #232D4B;
   --uva-brand-blue-base: #232D4B;
 
+  /* UVA Brand Orange */
   --uva-brand-orange-300: #FFEAD6;
   --uva-brand-orange-200: #FFC999;
   --uva-brand-orange-100: #FFB370;
@@ -18,6 +42,7 @@
   --uva-brand-orange-A: #B35900;
   --uva-brand-orange-B: #854200;
 
+  /* UVA Blue Alt */
   --uva-blue-alt-400: #e6f2f7;
   --uva-blue-alt-300: #BFE7F7;
   --uva-blue-alt-200: #91D8F2;
@@ -27,6 +52,7 @@
   --uva-blue-alt-A: #005679;
   --uva-blue-alt-B: #141E3C;
 
+  /* UVA Teal */
   --uva-teal-200: #C8F2F4;
   --uva-teal-100: #5BD7DE;
   --uva-teal: #25CAD3;
@@ -34,23 +60,27 @@
   --uva-teal-A: #1DA1A8;
   --uva-teal-B: #16777C;
 
+  /* UVA Green */
   --uva-green-200: #DDEFDC;
   --uva-green-100: #89CC74;
   --uva-green: #62BB46;
   --uva-green-base: #62BB46;
   --uva-green-A: #4E9737;
 
+  /* UVA Red */
   --uva-red-100: #FBCFDA;
   --uva-red: #EF3F6B;
   --uva-red-base: #EF3F6B;
   --uva-red-A: #DF1E43;
   --uva-red-B: #B30000;
 
+  /* UVA Yellow */
   --uva-yellow-100: #FEF6C8;
   --uva-yellow: #ECC602;
   --uva-yellow-base: #ECC602;
   --uva-yellow-A: #B99C02;
 
+  /* UVA Grey */
   --uva-grey-200: #F1F1F1;
   --uva-grey-100: #DADADA;
   --uva-grey-50: #ADADAD;
@@ -59,6 +89,7 @@
   --uva-grey-A: #4F4F4F;
   --uva-grey-B: #2B2B2B;
 
+  /* Text & Semantic Aliases */
   --uva-text-color-base: var(--uva-grey-A);
   --uva-text-color-dark: var(--uva-grey-B);
   --primary-500: var(--uva-brand-blue);
@@ -72,13 +103,108 @@
   --uva-font-size: 17px;
 }
 
+.info-banner {
+  background-color: var(--secondary-500);
+  color: var(--uva-text-color-dark);
+}
+
 body {
   font-size: var(--uva-font-size);
 }
 
-.info-banner {
-  background-color: var(--secondary-500);
-  color: var(--uva-text-color-dark);
+/*  Header */
+.navbar>.container {
+  flex-flow: row-reverse !important;
+}
+
+#brand-logo {
+  height: 50px;
+  width: 100%;
+  min-width: 150px;
+  margin: 0;
+}
+
+h2.card-title {
+  color: var(--uva-brand-blue);
+}
+
+h4.card-title {
+  color: var(--uva-brand-blue);
+}
+
+#brand-header {
+  border-bottom: 5px solid var(--uva-brand-blue) !important;
+}
+
+/*  Buttons */
+.btn-primary {
+  font-size: 1rem;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-block;
+  margin: .8rem .4rem;
+  padding: .6rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  border-color: var(--uva-blue-alt);
+  background-color: var(--uva-blue-alt);
+  color: var(--secondary-500);
+  border-radius: 5px !important;
+  font-weight: normal !important;
+}
+
+.btn-primary:visited {
+  color: var(--secondary-500);
+}
+
+.btn-primary:hover {
+  background-color: var(--uva-blue-alt-A) !important;
+}
+
+.uvalib-button:active {
+  background-color: var(--uva-brand-blue) !important;
+}
+
+/* Secondary Buttons */
+
+.uvalib-button--subtle {
+  background-color: var(--uva-blue-alt-300);
+  color: var(--uva-grey-A);
+  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
+}
+
+.uvalib-button--subtle:hover {
+  background-color: var(--uva-blue-alt-200);
+  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
+}
+
+.uvalib-button--subtle:active {
+  background-color: var(--uva-blue-alt-100);
+  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
+}
+
+
+/* ==========================================================================
+   Accessibility Audit Remediations (Internal UVA)
+   ========================================================================== */
+
+/* #D-4, #F3-2, #F3-3, #F6-3, #GS-3, #GS-4: Accessible link colors, underlines, and focus states */
+a,
+.btn-link {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+a:hover,
+.btn-link:hover,
+a:focus,
+.btn-link:focus,
+a:focus-visible,
+.btn-link:focus-visible {
+  color: var(--uva-blue-alt-A);
+  text-decoration: none;
 }
 
 .info-banner a {
@@ -89,45 +215,571 @@ body {
   text-decoration: none !important;
 }
 
-
-/* Header */
-
-.navbar > .container {
-  flex-flow: row-reverse !important;
+a.instructions-url {
+  text-decoration: underline !important;
 }
 
-#brand-header {
-  border-bottom: 5px solid var(--uva-brand-blue) !important;
+
+/* #F1-2, #GS-5: Text Heading Color - Ensure h1 and h2 meet 4.5:1 contrast over white inline styles */
+h1,
+h2 {
+  color: var(--uva-brand-blue) !important;
 }
 
-#brand-logo {
-  height: 50px;
-  width: 100%;
-  min-width: 150px;
+
+/* #F5-3: Failed Color Contrast - Survey String Viewer text */
+.sv-string-viewer {
+  color: var(--uva-grey-A);
+}
+
+
+/* #F5-7: Form Controls & Dropdown Bar Color Contrast */
+.form-control:disabled,
+.form-control:read-only {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+.form-control {
+  color: #212529;
+  background-color: var(--secondary-500);
+  border: 1px solid #ced4da;
+  appearance: none;
+}
+
+
+/* #F5-5, #F5-10: Accessible Remove Button (.sd-action--negative) styling */
+.sd-action--negative {
+  background-color: var(--uva-grey-100);
+  color: var(--uva-grey-A);
+  box-shadow: inset 0 0 0 2px var(--uva-grey);
+}
+
+.sd-action:not(.sd-action--pressed):hover .sd-action--negative,
+.sd-action:not(.sd-action--pressed):focus .sd-action--negative {
+  background-color: var(--uva-grey-200);
+  box-shadow: inset 0 0 0 2px var(--uva-grey);
+}
+
+.sd-action:not(.sd-action--pressed):active .sd-action--negative {
+  background-color: var(--uva-grey-A);
+  color: var(--secondary-500);
+  box-shadow: inset 0 0 0 2px var(--uva-grey-B);
+}
+
+
+/* #F5-6, #F5-11: Accessible alert style for error messages (.sd-error) */
+.sd-error {
   margin: 0;
+  color: var(--uva-grey-B) !important;
+  padding-block-end: 0.25rem;
+  background-color: var(--uva-red-100);
+  border-left: 10px solid var(--uva-red-B);
 }
 
-/* Two same-destination brand links exist in markup (full name vs P.A.S.S.).
-   Keep the full name at all widths and let it wrap. */
-#brand-header .navbar-brand.d-sm-none {
+
+/* #F6-4, #F7-5: SweetAlert2 pop-up confirm button accessible styling */
+.swal2-confirm {
+  font-size: 1rem;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0.8rem 0.4rem;
+  padding: 0.6rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  width: 100%;
+  background-color: var(--uva-blue-alt) !important;
+  color: var(--secondary-500) !important;
+  border-radius: 5px;
+  font-weight: normal;
+}
+
+.swal2-confirm:hover,
+.swal2-confirm:focus {
+  background-color: var(--uva-blue-alt-A) !important;
+}
+
+.swal2-confirm:active {
+  background-color: var(--uva-brand-blue) !important;
+}
+
+
+/* #F1-5, #F5-9: Darken dropdown status arrow, trigger border, and clean icon for 3:1 contrast */
+.ember-power-select-status-icon {
+  border-color: var(--uva-grey) transparent transparent;
+}
+
+.ember-power-select-trigger {
+  border-color: var(--uva-grey);
+}
+
+.sd-dropdown_clean-button-svg {
+  color: var(--uva-grey);
+}
+
+
+/* #F7-7, #GS-8: Back button contrast & opacity adjustment on details pages */
+#grant-details-title .back-arrow,
+#submission-details-title .back-arrow,
+#submission-details-title a.back-arrow,
+#grant-details-title a.back-arrow {
+  color: var(--uva-blue-alt-A) !important;
+  opacity: 1 !important;
+}
+
+
+/* #F5-4, #F5-8: Accessible contrast for toggle button container and inactive label */
+.sd-boolean {
+  background-color: var(--uva-grey-A);
+}
+
+.sd-boolean .sd-boolean__label {
+  color: var(--uva-grey-100);
+}
+
+
+/* #GS-7: Accessible hover/focus state for close buttons (.btn-close) */
+.btn-close:hover,
+.btn-close:focus {
+  color: var(--secondary-500);
+  background-color: #6c757d;
+}
+
+
+/* #F2-3, #F6-5, #F7-6: Reflow at 320px / 400% zoom — REVISED.
+   The prior attempt (zeroing two column min-widths + stacking .row below 400px) did
+   not stop whole-page horizontal scroll. Verified cause: data tables have fixed rem
+   column min-widths (passui.css) and no working horizontal-scroll container, so the
+   table pushes the whole page wide. This revision scopes horizontal scroll to each table's
+   wrapper and lets the table keep its natural content width, so it stays roomy and only the
+   table scrolls (horizontal scroll IS allowed for data tables under WCAG 1.4.10).
+   Your prior rules are all retained unchanged (.row > * shrink/wrap, the cell min-width:0,
+   and the 400px row-stacking); the table-scroll rules below are added on top. */
+
+/* Shared: let non-table grid children shrink and wrap */
+.row>* {
+  min-width: 0;
+  /* override default min-width:auto so content can shrink (MDN) */
+  overflow-wrap: break-word;
+  /* break long strings instead of overflowing (WCAG C33) */
+}
+
+/* Kept from prior fix: let the remove-button cell shrink (harmless with table scroll) */
+.pr-0.mr-0,
+td.awardnum-column,
+td.projectname-date-column {
+  min-width: 0;
+}
+
+/* Retained from your prior fix, unchanged: stack non-table rows below 400px */
+@media (max-width: 400px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .row>* {
+    flex-shrink: 1;
+  }
+}
+
+@media (max-width: 575.98px) {
+  /* Bootstrap 'sm' and below; 320px falls in range */
+
+  /* Put the horizontal scroll on the element that DIRECTLY wraps each data table, so the
+     table keeps its natural (content) width instead of being squeezed to the viewport
+     (which is what caused the squashed/too-narrow tables). :has() targets whatever element
+     directly contains a .table (a col, .models-table-wrapper, a .list-group-item, etc.). */
+  :has(> table.table) {
+    overflow-x: auto;
+    min-width: 0;
+    /* let the wrapper shrink (e.g. a flex item) so it scrolls instead of growing */
+    max-width: 100%;
+    /* keep the wrapper from expanding to the table's full width */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Let each data table size to its content (roomy); the wrapper above scrolls. */
+  table.table {
+    width: max-content;
+    max-width: none;
+  }
+
+  /* Nested tables (your requested behavior): an INNER table (a table inside another table)
+     renders at its natural full size, and the OUTER table grows to fit it — overriding the
+     w-100 class these tables carry — so the wrapper above scrolls. Net effect: inner tables
+     stay full size and static; the outer table is capped to the viewport and scrolls sideways. */
+  table table {
+    width: max-content !important;
+    max-width: none !important;
+  }
+
+  table:has(table) {
+    width: max-content !important;
+    max-width: none !important;
+  }
+
+  /* Inner-table headers: keep each on one line so a column with no data value doesn't
+     squash its header to an unreadable width. The column then claims at least the header's
+     width and the outer table scrolls to reveal it. This works regardless of the w-100 vs
+     max-content specificity issue, because white-space is a separate property. */
+  table table th {
+    white-space: nowrap;
+  }
+
+  /* Inner Files table: make it a self-contained horizontal scroll box so its one-line (nowrap)
+     headers don't stretch the shared value column and force the whole review table wider than
+     the viewport (which was pushing long text cells like the Abstract off-screen). As a block
+     with overflow it can shrink within its cell and scroll internally, so the review table fits
+     the viewport and its text cells wrap. */
+  .files-table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100% !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Both review tables: STACK to a single column at narrow widths instead of scrolling. These are
+     label/value "review" tables that are NOT coded as true data tables (labels are <td><strong>,
+     not <th scope="row">), so reflowing to one column is WCAG 1.4.10's preferred behavior and
+     avoids leaning on the data-table scroll exception. Each row's label sits above its value,
+     both full width. SCOPED BY ID so genuine data tables — Steps 2 & 6, the Grants/Submissions
+     list tables, and the Grant Details data table — are untouched. The `>` combinators keep this
+     on the OUTER table only; the nested Files table keeps its own table layout and scrolls (it IS
+     a properly-coded data table with <th scope="col">). */
+  #review-step-table,
+  #review-step-table>tbody,
+  #review-step-table>tbody>tr,
+  #review-step-table>tbody>tr>td,
+  #submission-details-body table.table.d-flex,
+  #submission-details-body table.table.d-flex>tbody,
+  #submission-details-body table.table.d-flex>tbody>tr,
+  #submission-details-body table.table.d-flex>tbody>tr>td {
+    display: block !important;
+    /* !important beats the d-flex un-flip (display:table) and the default table display */
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Separate each stacked row, and give the label a little gap above its value. */
+  #review-step-table>tbody>tr,
+  #submission-details-body table.table.d-flex>tbody>tr {
+    margin-bottom: 1rem;
+  }
+
+  #review-step-table>tbody>tr>td:first-child,
+  #submission-details-body table.table.d-flex>tbody>tr>td:first-child {
+    padding-bottom: 0.25rem;
+    word-break: normal !important;
+    /* labels break at spaces, not mid-word (overrides passui `table td { word-break: break-word !important }`) */
+    overflow-wrap: normal;
+  }
+
+  /* Abstract (the only <section> in these tables): wraps within the now full-width stacked cell.
+     Keep it to the cell width and break long tokens. */
+  #review-step-table section,
+  #submission-details-body table.table.d-flex section {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  /* Submission Details title header (.submission-details-title): STACK the title and the
+     "Submitted <date>" vertically (title on top, date below) instead of side by side. Setting the
+     inner row to flex-direction:column both stacks them and removes the flex overflow that was
+     pushing the date off-screen — a long title now simply wraps to the full width. The date is
+     left-aligned so it reads naturally under the title (its .text-end class had right-aligned it). */
+  .submission-details-title>.d-flex {
+    flex-direction: column;
+  }
+
+  .submission-details-title h5,
+  .submission-details-title small {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .submission-details-title small {
+    text-align: left !important;
+    /* override Bootstrap .text-end (right) for the stacked layout */
+  }
+
+  /* Repository "status" cards (Submission Details): REFLOW to a single column at narrow widths
+     rather than scroll. WCAG 1.4.10 lets only two-dimensional content (data tables, maps, etc.)
+     scroll; a label/value status card is reflowable content, so it should stack, not scroll.
+     The card fills its cell, and inside it each row's label and value break onto their own
+     full-width lines — so the internal col-5/col percentages can't collapse into slivers. Drop
+     the float so multiple cards stack vertically. */
+  .card.float-start {
+    float: none !important;
+    width: 100% !important;
+    /* override the card's own col-5 (41.67%) so it fills the cell */
+    max-width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  .card.float-start .card-body .d-flex {
+    flex-wrap: wrap !important;
+    /* allow the label and value to break onto separate lines */
+  }
+
+  .card.float-start .card-body .d-flex>* {
+    flex: 1 1 100% !important;
+    /* each takes a full-width row instead of a narrow % column */
+    max-width: 100% !important;
+  }
+
+  /* Step-2 "grants added" funding table (data-test-submission-funding-table): it has no
+     wrapper of its own, so a parent-scroll can't be scoped to it — that's why the whole form
+     scrolled. Make the TABLE ITSELF the horizontal scroll box, capped to the viewport, and
+     keep cells on one line (nowrap) so the columns keep their content-fit widths and the
+     overflow goes into the table's own scrollbar. A wrapping <div> in the markup is still the
+     cleaner long-term fix (documented). */
+  table.table[data-test-submission-funding-table] {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table[data-test-submission-funding-table] td,
+  table[data-test-submission-funding-table] th {
+    white-space: nowrap;
+  }
+
+  /* Search box: passui.css caps .globalSearch at max-width:50%. That was fine while the
+     page over-scrolled (50% of a very wide page), but now that the page is properly
+     contained at 320px, 50% (~160px) is too narrow and the Search label/field/clear-button
+     reflow awkwardly. Give it full width at narrow widths. */
+  .globalSearch.input-group {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* Submission Details review table (F7-6): this is a DATA table — it lists the already-
+   entered submission fields as label | value — that is wrongly set to display:flex (d-flex),
+   which collapses the rows and squeezes the text into a vertical strip. Restore normal table
+   layout at all widths. It contains a nested Files table, so the nested-table rules above make
+   it (the outer table) grow and scroll within the viewport while the inner Files table shows
+   at full size. */
+table.table.d-flex {
+  display: table !important;
+}
+
+/* Inner Files table (.files-table — Step 7 Review and Submission Details): its cells have no
+   horizontal padding, so with the headers on one line the columns run together and are hard to
+   read. Add horizontal padding to both header and body cells to separate the columns (keeps
+   header/body alignment). Applies at all widths. */
+.files-table th,
+.files-table td {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Form page 6 "download this manuscript" link box: it holds a long file URL with no space/break
+   opportunities, so it overflows its nested flex wrappers and runs off-screen (the wrappers can't
+   shrink below the URL's width because flex items default to min-width:auto). Let the URL break
+   anywhere — overflow-wrap:anywhere also shrinks its min-content so the flex items can shrink —
+   and let the flex wrappers shrink. Scoped to the link via its data-test hook; applies at all
+   widths since a long URL can overflow at any size (harmless when it already fits). */
+[data-test-add-file-link],
+[data-test-add-file-link] span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.d-flex:has([data-test-add-file-link]) {
+  min-width: 0;
+}
+
+/* #GS-6: Stack table controls at narrow viewports — REVISED (2 fixes).
+   (1) The prior rule used descendant selectors ('.table-summary .col-5', with a space) that
+       matched nothing — the classes are compound on one element ('.table-summary.col-5', no
+       space), verified in the DOM and passui.css; only '.col-2' matched, so the two col-5
+       blocks never stacked and kept overlapping.
+   (2) Size the controls with width:100% instead of flex-basis:100%. The 400px rule above
+       sets the row to flex-direction:column, where flex-basis:100% means 100% *height* and
+       piles the controls on top of each other. width:100% is full-width in either direction. */
+@media (max-width: 575.98px) {
+
+  .table-summary.col-5,
+  .col-2,
+  .table-nav.col-5 {
+    flex: 0 0 auto;
+    /* size by width below, not flex-basis */
+    width: 100%;
+    /* full-row width regardless of the row's flex-direction (WCAG C32) */
+    max-width: 100%;
+  }
+
+  .table-nav.col-5 {
+    flex-wrap: wrap;
+    /* let the pager buttons + Page selector wrap instead of being cut off */
+    justify-content: flex-start;
+  }
+
+  .pull-left,
+  .pull-right {
+    float: none;
+    /* floats don't reflow — return to normal flow */
+  }
+}
+
+/* Submission Details header: the "Edit submission" / "Delete" buttons live in a fixed
+   50%-wide column (.col-6) in the page header — only ~160px at 320px — so they crowd and
+   wrap. This header is NOT part of the layout-table problem below, so it fixes cleanly:
+   let the header wrap and give the button group its own full-width row. */
+@media (max-width: 575.98px) {
+  #submission-details-title {
+    flex-wrap: wrap;
+  }
+
+  #submission-details-title .col-6 {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+/* #D-5: Workaround for main navbar collapse/resize bug on small screens (<= 767.98px) */
+@media (max-width: 767.98px) {
+  #navbar-supported-content {
+    display: flex !important;
+    height: auto !important;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+  }
+
+  #navbar-supported-content .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  #navbar-supported-content .dropdown.w-25 {
+    width: 100% !important;
+  }
+
+  #header-navbar .navbar-toggler {
+    display: none;
+  }
+
+  #header-navbar>.container {
+    flex-flow: row wrap !important;
+  }
+}
+
+
+/* #F1-3, #F1-4: Prevent tab label clipping and allow step bar reflow when zoomed */
+.steps {
+  height: auto;
+  min-height: 2.1875rem;
+  align-items: center;
+  overflow: visible;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.steps .step {
+  width: auto;
+  flex: 1 1 8rem;
+  min-width: 0;
+  line-height: 1.3;
+  white-space: normal;
+  padding: 0.5rem 0.25rem;
+}
+
+.steps .btn-primary {
+  margin: 0.25rem 0.4rem;
+}
+
+
+/* ==========================================================================
+   UX Heuristics Report Remediations
+   ========================================================================== */
+
+/* UX Heuristic Issue 1: Proximity of radio buttons for proxy representation */
+.lead label,
+p.lead label {
+  margin-left: 1.25rem;
+  margin-right: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+/* UX Heuristic Issue 2: Current step of submission form blocked out on navigation bar */
+.steps .step.btn-primary,
+.steps .btn-primary {
+  margin: 0 !important;
+  padding: 0.25rem 0.6rem !important;
+  height: 100% !important;
+  line-height: normal !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--uva-brand-blue) !important;
+  color: var(--secondary-500) !important;
+  border-radius: 0 !important;
+  font-weight: bold !important;
+  box-shadow: none !important;
+}
+
+/* UX Heuristic Issue 3: Remove redundant navigation buttons after adding grants */
+[data-test-submission-funding-table]+button.btn-outline-primary,
+[data-test-submission-funding-table]+button.btn-outline-primary+button.btn-primary.next {
   display: none !important;
 }
 
-#brand-header .navbar-brand.d-none.d-sm-block {
-  display: block !important;
-  min-width: 0;
-  max-width: 100%;
-  white-space: normal;
+/* UX Heuristic Issue 4: Styling 'Add new' author button as a clear secondary button affordance */
+.sd-paneldynamic__add-btn,
+.sd-action.sd-paneldynamic__btn,
+.sd-question--paneldynamic .sd-action,
+.sd-btn.sd-action {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--uva-blue-alt) !important;
+  background-color: var(--uva-blue-alt-300) !important;
+  border: 2px solid var(--uva-blue-alt) !important;
+  border-radius: 5px !important;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: all 0.15s ease-in-out;
 }
 
-#brand-header .brand-header-title {
-  white-space: normal;
-  overflow-wrap: break-word;
-  max-width: 100%;
+.sd-paneldynamic__add-btn:hover,
+.sd-action.sd-paneldynamic__btn:hover,
+.sd-question--paneldynamic .sd-action:hover,
+.sd-paneldynamic__add-btn:focus,
+.sd-action.sd-paneldynamic__btn:focus {
+  background-color: var(--uva-blue-alt-200) !important;
+  color: var(--uva-blue-alt-A) !important;
+  border-color: var(--uva-blue-alt-A) !important;
 }
 
+
+/* ==========================================================================
+   External fixes
+   ========================================================================== */
+
+/* #D-4: Color Contrast Not Met; 1.4.3 Contrast (Minimum) - Link active/hover state */
+a:hover,
+.btn-link:hover {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
+
+/* #D-5: Resized Content Missing; 1.4.4 Resize Text & 1.4.10 Reflow - Navbar and Header Resizing */
 @media (max-width: 767.98px) {
-  #brand-header > .container {
+  #brand-header>.container {
     flex-flow: row wrap !important;
     justify-content: space-between !important;
     align-items: center !important;
@@ -160,266 +812,18 @@ body {
     width: 100% !important;
   }
 
-  #header-navbar > .container {
+  #header-navbar>.container {
     flex-flow: row wrap !important;
   }
 }
 
-
-/* Typography */
-
+/* #F1-2, #GS-5: Text Heading Color - Ensure h1 and h2 meet 4.5:1 contrast over white inline styles */
 h1,
-h2,
-h2.card-title,
-h4.card-title {
+h2 {
   color: var(--uva-brand-blue) !important;
 }
 
-a,
-.btn-link {
-  color: var(--uva-blue-alt-A);
-  text-decoration: underline;
-}
-
-a:hover,
-.btn-link:hover,
-a:focus,
-.btn-link:focus,
-a:focus-visible,
-.btn-link:focus-visible {
-  color: var(--uva-blue-alt-A);
-  text-decoration: underline;
-}
-
-a.instructions-url {
-  text-decoration: underline !important;
-}
-
-
-/* Buttons */
-
-.btn-primary {
-  font-size: 1rem;
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  display: inline-block;
-  margin: 0.8rem 0.4rem;
-  padding: 0.6rem 1.25rem;
-  text-align: center;
-  text-decoration: none;
-  width: 100%;
-  border-color: var(--uva-blue-alt);
-  background-color: var(--uva-blue-alt);
-  color: var(--secondary-500);
-  border-radius: 5px !important;
-  font-weight: normal !important;
-}
-
-.btn-primary:visited {
-  color: var(--secondary-500);
-}
-
-.btn-primary:hover {
-  background-color: var(--uva-blue-alt-A) !important;
-}
-
-.uvalib-button:active {
-  background-color: var(--uva-brand-blue) !important;
-}
-
-.uvalib-button--subtle {
-  background-color: var(--uva-blue-alt-300);
-  color: var(--uva-grey-A);
-  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
-}
-
-.uvalib-button--subtle:hover {
-  background-color: var(--uva-blue-alt-200);
-  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
-}
-
-.uvalib-button--subtle:active {
-  background-color: var(--uva-blue-alt-100);
-  box-shadow: inset 0 0 0 2px var(--uva-blue-alt);
-}
-
-.btn-close:hover,
-.btn-close:focus {
-  color: var(--secondary-500);
-  background-color: #6c757d;
-}
-
-.swal2-confirm {
-  font-size: 1rem;
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  display: inline-block;
-  margin: 0.8rem 0.4rem;
-  padding: 0.6rem 1.25rem;
-  text-align: center;
-  text-decoration: none;
-  width: 100%;
-  border-radius: 5px;
-  font-weight: normal;
-  background-color: var(--uva-blue-alt-A) !important;
-  border-color: var(--uva-blue-alt-A) !important;
-  color: var(--secondary-500) !important;
-}
-
-.swal2-confirm:hover,
-.swal2-confirm:focus,
-.swal2-confirm:focus-visible {
-  background-color: var(--uva-brand-blue) !important;
-  border-color: var(--uva-brand-blue) !important;
-  color: var(--secondary-500) !important;
-}
-
-.swal2-confirm:active {
-  background-color: var(--uva-brand-blue) !important;
-}
-
-
-/* Details back control — branding.css uses white at 0.7 opacity */
-
-#grant-details-title .back-arrow,
-#submission-details-title .back-arrow,
-#grant-details-title a.back-arrow,
-#submission-details-title a.back-arrow,
-#grant-details-title .back-arrow svg,
-#submission-details-title .back-arrow svg {
-  color: var(--uva-blue-alt-A) !important;
-  opacity: 1 !important;
-}
-
-#grant-details-title .back-arrow:hover,
-#submission-details-title .back-arrow:hover,
-#grant-details-title .back-arrow:focus,
-#submission-details-title .back-arrow:focus,
-#grant-details-title .back-arrow:focus-visible,
-#submission-details-title .back-arrow:focus-visible {
-  color: var(--uva-brand-blue) !important;
-  opacity: 1 !important;
-}
-
-
-/* Forms */
-
-.form-control {
-  color: #212529;
-  background-color: var(--secondary-500);
-  border: 1px solid #ced4da;
-  appearance: none;
-}
-
-/* div.form-control matches :read-only even when enabled; limit the wash
-   to real disabled/readonly fields. */
-input.form-control:disabled,
-input.form-control:read-only,
-textarea.form-control:disabled,
-textarea.form-control:read-only {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-
-.sv-dropdown_select-wrapper .form-control,
-.form-control.sd-dropdown--empty:not(.sd-input--disabled) {
-  background-color: var(--secondary-500);
-  color: var(--uva-grey-A);
-}
-
-.sd-dropdown--empty:not(.sd-input--disabled),
-.sd-dropdown--empty:not(.sd-input--disabled) .sd-dropdown__value {
-  color: var(--uva-grey-A);
-}
-
-.ember-power-select-status-icon {
-  border-color: var(--uva-grey) transparent transparent;
-}
-
-.ember-power-select-trigger {
-  border-color: var(--uva-grey);
-}
-
-.sd-dropdown_chevron-button-svg,
-.sd-dropdown_clean-button-svg {
-  color: var(--uva-grey-A);
-}
-
-.sd-dropdown_chevron-button-svg use,
-.sd-dropdown_clean-button-svg use {
-  fill: var(--uva-grey-A);
-}
-
-.sv-string-viewer {
-  color: var(--uva-grey-A);
-}
-
-/* Yes/No track stays light so both labels meet 4.5:1. Identify the
-   control with a 3:1 grey edge instead of a dark fill. */
-.sd-boolean {
-  background-color: var(--uva-grey-200);
-  border: 2px solid var(--uva-grey-A);
-  box-shadow: none;
-}
-
-.sd-boolean .sd-boolean__label {
-  color: var(--uva-grey-A);
-}
-
-.sd-boolean.sd-boolean--checked .sd-boolean__label--true,
-.sd-boolean:not(.sd-boolean--checked) .sd-boolean__label--false {
-  color: transparent;
-}
-
-.sd-boolean .sd-boolean__thumb {
-  color: var(--uva-grey-B);
-  background-color: var(--secondary-500);
-  border: 2px solid var(--uva-grey-A);
-  box-sizing: border-box;
-}
-
-.sd-boolean.sd-boolean--allowhover:focus-within {
-  box-shadow: 0 0 0 2px var(--uva-grey-B);
-}
-
-.sd-error {
-  margin: 0;
-  padding-block-end: 0.25rem;
-  color: var(--uva-grey-B) !important;
-  background-color: var(--uva-red-100);
-  border: 2px solid var(--uva-red-B);
-  border-left-width: 10px;
-}
-
-.sd-error .sv-string-viewer {
-  color: var(--uva-grey-B) !important;
-}
-
-.sd-action.sd-paneldynamic__btn.sd-action--negative,
-.sd-paneldynamic__remove-btn.sd-action--negative,
-.sd-action--negative {
-  color: var(--uva-red-B) !important;
-  background-color: transparent !important;
-  border: 2px solid var(--uva-red-B) !important;
-  box-shadow: none !important;
-}
-
-.sd-action:not(.sd-action--pressed):hover.sd-action--negative,
-.sd-action:not(.sd-action--pressed):focus.sd-action--negative,
-.sd-action.sd-paneldynamic__btn.sd-action--negative:hover,
-.sd-action.sd-paneldynamic__btn.sd-action--negative:focus,
-.sd-paneldynamic__remove-btn.sd-action--negative:hover,
-.sd-paneldynamic__remove-btn.sd-action--negative:focus {
-  color: var(--uva-red-B) !important;
-  background-color: var(--uva-red-100) !important;
-  border-color: var(--uva-red-B) !important;
-}
-
-
-/* Submission wizard */
-
+/* #F1-3, #F1-4: Prevent active tab label clipping and allow step bar reflow when resized/zoomed */
 .steps {
   height: auto;
   min-height: 2.1875rem;
@@ -454,99 +858,199 @@ textarea.form-control:read-only {
   box-shadow: none !important;
 }
 
-.lead label,
-p.lead label {
-  margin-left: 1.25rem;
-  margin-right: 1.5rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
+/* #F1-5, #F5-9: Dropdown Arrow & Trigger Border Color Contrast (1.4.11 Non-text Contrast) */
+.ember-power-select-status-icon {
+  border-color: var(--uva-grey) transparent transparent;
 }
 
-[data-test-submission-funding-table] + button.btn-outline-primary,
-[data-test-submission-funding-table] + button.btn-outline-primary + button.btn-primary.next {
-  display: none !important;
+.ember-power-select-trigger {
+  border-color: var(--uva-grey);
 }
 
-.sd-paneldynamic__add-btn,
-.sd-action.sd-paneldynamic__btn,
-.sd-question--paneldynamic .sd-action,
-.sd-btn.sd-action {
-  display: inline-block;
-  font-size: 0.95rem;
-  font-weight: 500;
-  padding: 0.4rem 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  color: var(--uva-blue-alt) !important;
-  background-color: var(--uva-blue-alt-300) !important;
-  border: 2px solid var(--uva-blue-alt) !important;
-  border-radius: 5px !important;
-  cursor: pointer;
-  text-decoration: none !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: all 0.15s ease-in-out;
+.sd-dropdown_clean-button-svg {
+  color: var(--uva-grey);
 }
 
-.sd-paneldynamic__add-btn:hover,
-.sd-action.sd-paneldynamic__btn:hover,
-.sd-question--paneldynamic .sd-action:hover,
-.sd-paneldynamic__add-btn:focus,
-.sd-action.sd-paneldynamic__btn:focus {
-  background-color: var(--uva-blue-alt-200) !important;
-  color: var(--uva-blue-alt-A) !important;
-  border-color: var(--uva-blue-alt-A) !important;
-}
-
-
-/* List tables */
-
-.models-table-wrapper a,
-.models-table-wrapper .btn-link {
+/* #F3-2, #F3-3, #F6-3, #GS-3, #GS-4: Link Contrast to Surrounding Text & Underlines (1.4.1 Use of Color & 1.4.3 Contrast) */
+a,
+.btn-link {
   color: var(--uva-blue-alt-A);
   text-decoration: underline;
 }
 
-.models-table-wrapper a:hover,
-.models-table-wrapper .btn-link:hover,
-.models-table-wrapper a:focus,
-.models-table-wrapper .btn-link:focus,
-.models-table-wrapper a:focus-visible,
-.models-table-wrapper .btn-link:focus-visible {
+a:hover,
+.btn-link:hover,
+a:focus,
+.btn-link:focus,
+a:focus-visible,
+.btn-link:focus-visible {
   color: var(--uva-blue-alt-A);
   text-decoration: underline;
 }
 
-.models-table-wrapper a:focus-visible,
-.models-table-wrapper .btn-link:focus-visible {
-  outline: 2px solid var(--uva-blue-alt-A);
-  outline-offset: 2px;
+/* #F5-3: Failed Color Contrast - SurveyJS String Viewer & Placeholder text */
+.sv-string-viewer {
+  color: var(--uva-grey-A);
 }
 
-.models-table-wrapper .clearFilterIcon:hover:not(:disabled),
-.models-table-wrapper .clearFilters:hover:not(:disabled),
-.models-table-wrapper .clearFilterIcon:focus:not(:disabled),
-.models-table-wrapper .clearFilters:focus:not(:disabled),
-.models-table-wrapper .clearFilterIcon:focus-visible:not(:disabled),
-.models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
-  color: var(--secondary-500) !important;
-  background-color: var(--uva-grey-A) !important;
-  border-color: var(--uva-grey-A) !important;
-  text-decoration: none !important;
+/* #F5-4: Failed Color Contrast - Toggle Button; 1.4.3 Contrast (Minimum)
+   SurveyJS default unselected Yes/No is #909090 on #f9f9f9 (3.03:1).
+   Keep the light track so both labels stay visible; darken inactive text.
+   Selected thumb stays dark on white. Selected-side label remains transparent
+   so it does not stack under the thumb. */
+.sd-boolean {
+  background-color: var(--uva-grey-200);
 }
 
-.models-table-wrapper .clearFilterIcon:focus-visible:not(:disabled),
-.models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
-  outline: 2px solid var(--uva-grey-A);
-  outline-offset: 2px;
+.sd-boolean .sd-boolean__label {
+  color: var(--uva-grey-A);
 }
 
-.models-table-wrapper .globalSearch .form-control,
-.models-table-wrapper .globalSearch .input-group-text {
-  border-color: var(--uva-grey-A);
+.sd-boolean.sd-boolean--checked .sd-boolean__label--true,
+.sd-boolean:not(.sd-boolean--checked) .sd-boolean__label--false {
+  color: transparent;
 }
 
+.sd-boolean .sd-boolean__thumb {
+  color: var(--uva-grey-B);
+  background-color: var(--secondary-500);
+}
+
+/* #F5-5: Failed Color Contrast - Remove Button; 1.4.3 Contrast (Minimum)
+   SurveyJS default #e60a3e is 4.69:1 on white but 3.94:1 on the hover pink
+   wash. The panel-dynamic "Add new" styles also restyle Remove to
+   --uva-blue-alt on --uva-blue-alt-300 (3.61:1). Use UVA red-B so both
+   default and hover/focus pass 4.5:1. */
+.sd-action.sd-paneldynamic__btn.sd-action--negative,
+.sd-paneldynamic__remove-btn.sd-action--negative,
+.sd-action--negative {
+  color: var(--uva-red-B) !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.sd-action:not(.sd-action--pressed):hover.sd-action--negative,
+.sd-action:not(.sd-action--pressed):focus.sd-action--negative,
+.sd-action.sd-paneldynamic__btn.sd-action--negative:hover,
+.sd-action.sd-paneldynamic__btn.sd-action--negative:focus,
+.sd-paneldynamic__remove-btn.sd-action--negative:hover,
+.sd-paneldynamic__remove-btn.sd-action--negative:focus {
+  color: var(--uva-red-B) !important;
+  background-color: var(--uva-red-100) !important;
+  border-color: transparent !important;
+}
+
+/* #F5-6: Failed Color Contrast - Error Message; 1.4.3 Contrast (Minimum)
+   SurveyJS default #e60a3e on rgba(230, 10, 62, 0.1) is 3.94:1.
+   Use UVA grey-B on red-100 (10.14:1) so required-field errors stay
+   identifiable and meet AA for 12px body text. */
+.sd-error {
+  color: var(--uva-grey-B) !important;
+  background-color: var(--uva-red-100);
+}
+
+.sd-error .sv-string-viewer {
+  color: var(--uva-grey-B) !important;
+}
+
+/* #F5-11: Failed Color Contrast - Error Message; 1.4.11 Non-text Contrast
+   The pink fill (#FBCFDA / SurveyJS red-light) is 1.16–1.40:1 vs the page.
+   Keep that fill so #F5-6 text stays 10.14:1. Identify the alert with a
+   red-B outline (7.20:1 vs white), thicker on the left as the accent. */
+.sd-error {
+  border: 2px solid var(--uva-red-B);
+  border-left-width: 10px;
+}
+
+/* #F5-7: Failed Color Contrast - Dropdown Bar; 1.4.3 Contrast (Minimum)
+   Empty SurveyJS dropdown uses #909090 on #e9ecef (2.69:1). Div.form-control
+   matches :read-only even when enabled, so the disabled gray wash is applied
+   to a live control. Keep that wash on real input/textarea disabled/readonly
+   fields only; enabled dropdowns stay white with dark empty-state text. */
+.sv-dropdown_select-wrapper .form-control,
+.form-control.sd-dropdown--empty:not(.sd-input--disabled) {
+  background-color: var(--secondary-500);
+  color: var(--uva-grey-A);
+}
+
+.sd-dropdown--empty:not(.sd-input--disabled),
+.sd-dropdown--empty:not(.sd-input--disabled) .sd-dropdown__value {
+  color: var(--uva-grey-A);
+}
+
+input.form-control:disabled,
+input.form-control:read-only,
+textarea.form-control:disabled,
+textarea.form-control:read-only {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+/* #F5-8: Toggle Switch Button Background Color Contrast; 1.4.11 Non-text Contrast
+   A dark fill meets 3:1 vs the page but washes out the unselected Yes/No
+   label (#F5-4). Keep the light track so both labels stay #4F4F4F on
+   #F1F1F1 (7.25:1). Identify the enabled control and the selected knob
+   with a 2px grey-A edge instead (8.19:1 vs white, 7.25:1 vs the track). */
+.sd-boolean {
+  background-color: var(--uva-grey-200);
+  border: 2px solid var(--uva-grey-A);
+  box-shadow: none;
+}
+
+.sd-boolean .sd-boolean__label {
+  color: var(--uva-grey-A);
+}
+
+.sd-boolean .sd-boolean__thumb {
+  border: 2px solid var(--uva-grey-A);
+  box-sizing: border-box;
+}
+
+.sd-boolean.sd-boolean--allowhover:focus-within {
+  box-shadow: 0 0 0 2px var(--uva-grey-B);
+}
+
+/* #F5-10: Failed Color UI Component Contrast - Remove Button; 1.4.11
+   SurveyJS hover fill rgba(230,10,62,0.1) is 1.16:1 vs the page. Our
+   #F5-5 hover fill (#FBCFDA) is still 1.40:1. Identify the enabled
+   button with a 2px red-B edge (7.20:1 vs white). Text stays red-B
+   so #F5-5 still meets 4.5:1. */
+.sd-action.sd-paneldynamic__btn.sd-action--negative,
+.sd-paneldynamic__remove-btn.sd-action--negative,
+.sd-action--negative {
+  border: 2px solid var(--uva-red-B) !important;
+}
+
+.sd-action:not(.sd-action--pressed):hover.sd-action--negative,
+.sd-action:not(.sd-action--pressed):focus.sd-action--negative,
+.sd-action.sd-paneldynamic__btn.sd-action--negative:hover,
+.sd-action.sd-paneldynamic__btn.sd-action--negative:focus,
+.sd-paneldynamic__remove-btn.sd-action--negative:hover,
+.sd-paneldynamic__remove-btn.sd-action--negative:focus {
+  border-color: var(--uva-red-B) !important;
+}
+
+/* #F5-9: Failed Color Contrast - Icon Buttons; 1.4.11 Non-text Contrast
+   Clear and chevron <use> fills are #909090. That is 2.69:1 on the old
+   gray dropdown wash and only 3.19:1 on white. Setting color on the SVG
+   does not change the sprite fill. Paint both icons with UVA grey-A
+   (8.19:1 on white). */
+.sd-dropdown_chevron-button-svg,
+.sd-dropdown_clean-button-svg {
+  color: var(--uva-grey-A);
+}
+
+.sd-dropdown_chevron-button-svg use,
+.sd-dropdown_clean-button-svg use {
+  fill: var(--uva-grey-A);
+}
+
+/* #F6-3: Missing Focus State; 1.4.1 Use of Color
+   branding.css only styles a:hover. Keyboard focus on uploaded file
+   names must use the same color + underline as hover. :focus-visible
+   adds a 2px ring so Tab is visible even when default already looks
+   like a link. */
 [data-test-added-manuscript-row] a,
 [data-test-added-supplemental-row] a {
   color: var(--uva-blue-alt-A);
@@ -569,84 +1073,32 @@ p.lead label {
   outline-offset: 2px;
 }
 
-
-/* Reflow (320px / 400% zoom). Data tables may scroll horizontally;
-   everything else stacks. */
-
-.row > * {
-  min-width: 0;
-  overflow-wrap: break-word;
+/* #F6-4, #F7-5: Pop Up Button Contrast; 1.4.3 Contrast (Minimum)
+   branding.css uses #fff on #418fde (3.38:1) for SweetAlert confirm
+   (file-remove I Agree, Review Next, and Confirm submission). White on
+   UVA blue-alt-A is 8.05:1. Hover/focus uses brand-blue (13.56:1). */
+.swal2-confirm {
+  background-color: var(--uva-blue-alt-A) !important;
+  border-color: var(--uva-blue-alt-A) !important;
+  color: var(--secondary-500) !important;
 }
 
-.pr-0.mr-0,
-td.awardnum-column,
-td.projectname-date-column {
-  min-width: 0;
+.swal2-confirm:hover,
+.swal2-confirm:focus,
+.swal2-confirm:focus-visible {
+  background-color: var(--uva-brand-blue) !important;
+  border-color: var(--uva-brand-blue) !important;
+  color: var(--secondary-500) !important;
 }
 
-table.table.d-flex {
-  display: table !important;
-}
-
-.files-table th,
-.files-table td {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-[data-test-add-file-link],
-[data-test-add-file-link] span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.d-flex:has([data-test-add-file-link]) {
-  min-width: 0;
-}
-
-@media (max-width: 400px) {
-  .row {
-    flex-direction: column;
-  }
-
-  .row > * {
-    flex-shrink: 1;
-  }
-}
-
+/* #F6-5: Incorrect Reflow & Horizontal Scrolling; 1.4.10
+   The Files data table is allowed to scroll sideways; the page is not.
+   Scope overflow to the table wrapper and keep Remove as a horizontal
+   control instead of a vertically-scaled sliver. */
 @media (max-width: 575.98px) {
   main {
     overflow-x: clip;
     max-width: 100%;
-  }
-
-  :has(> table.table) {
-    overflow-x: auto;
-    min-width: 0;
-    max-width: 100%;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  table.table {
-    width: max-content;
-    max-width: none;
-  }
-
-  table table,
-  table:has(table) {
-    width: max-content !important;
-    max-width: none !important;
-  }
-
-  table table th {
-    white-space: nowrap;
-  }
-
-  .files-table {
-    display: block;
-    overflow-x: auto;
-    max-width: 100% !important;
-    -webkit-overflow-scrolling: touch;
   }
 
   :has(> table.table.table-responsive-sm) {
@@ -667,47 +1119,15 @@ table.table.d-flex {
     min-width: fit-content;
     writing-mode: horizontal-tb;
   }
+}
 
-  /* Review / details are label-value tables; stack instead of scrolling. */
-  #review-step-table,
-  #review-step-table > tbody,
-  #review-step-table > tbody > tr,
-  #review-step-table > tbody > tr > td,
-  #submission-details-body table.table.d-flex,
-  #submission-details-body table.table.d-flex > tbody,
-  #submission-details-body table.table.d-flex > tbody > tr,
-  #submission-details-body table.table.d-flex > tbody > tr > td {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  #review-step-table > tbody > tr,
-  #submission-details-body table.table.d-flex > tbody > tr {
-    margin-bottom: 1rem;
-  }
-
-  #review-step-table > tbody > tr > td:first-child,
-  #submission-details-body table.table.d-flex > tbody > tr > td:first-child {
-    padding-bottom: 0.25rem;
-    word-break: normal !important;
-    overflow-wrap: normal;
-  }
-
-  #review-step-table section,
-  #submission-details-body table.table.d-flex section {
-    display: block;
-    max-width: 100%;
-    overflow-wrap: break-word;
-  }
-
-  #review-step-table .max-width,
-  .max-width {
-    max-width: 100% !important;
-    white-space: normal;
-  }
-
-  .review-step-title > .d-flex.flex-row {
+/* #F7-6: Incorrect Reflow & Horizontal Scrolling; 1.4.10
+   Review / Submission Details are label-value tables, not 2D data tables.
+   Stack them so the page does not scroll sideways. The nested Files table
+   may scroll internally. Undo .max-width nowrap and the title-row flex
+   that squeezed text at 320px. */
+@media (max-width: 575.98px) {
+  .review-step-title>.d-flex.flex-row {
     flex-direction: column !important;
     align-items: flex-start;
   }
@@ -719,79 +1139,116 @@ table.table.d-flex {
     overflow-wrap: break-word;
   }
 
-  .submission-details-title > .d-flex {
-    flex-direction: column;
-  }
-
-  .submission-details-title h5,
-  .submission-details-title small {
-    min-width: 0;
-    overflow-wrap: break-word;
-  }
-
-  .submission-details-title small {
-    text-align: left !important;
-  }
-
-  #submission-details-title {
-    flex-wrap: wrap;
-  }
-
-  #submission-details-title .col-6 {
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: 100%;
-    margin-top: 0.5rem;
-  }
-
-  .card.float-start {
-    float: none !important;
-    width: 100% !important;
+  #review-step-table .max-width,
+  .max-width {
     max-width: 100% !important;
-    margin-right: 0 !important;
+    white-space: normal;
   }
 
-  .card.float-start .card-body .d-flex {
-    flex-wrap: wrap !important;
-  }
-
-  .card.float-start .card-body .d-flex > * {
-    flex: 1 1 100% !important;
-    max-width: 100% !important;
-  }
-
-  table.table[data-test-submission-funding-table] {
+  .files-table {
     display: block;
-    max-width: 100%;
     overflow-x: auto;
+    max-width: 100%;
     -webkit-overflow-scrolling: touch;
   }
+}
 
-  table[data-test-submission-funding-table] td,
-  table[data-test-submission-funding-table] th {
-    white-space: nowrap;
-  }
+/* #F7-7: Submission Detail Page: Back Button - No Contrast; 1.4.11
+   branding.css sets the arrow to --secondary-500 (#fff) at 0.7 opacity
+   (invisible on white). Hover drops to 0.5. Keep UVA blue-alt-A at full
+   opacity (8.05:1 vs white). */
+#grant-details-title .back-arrow,
+#submission-details-title .back-arrow,
+#grant-details-title .back-arrow svg,
+#submission-details-title .back-arrow svg {
+  color: var(--uva-blue-alt-A) !important;
+  opacity: 1 !important;
+}
 
-  .globalSearch.input-group {
-    max-width: 100%;
-    width: 100%;
-  }
+#grant-details-title .back-arrow:hover,
+#submission-details-title .back-arrow:hover,
+#grant-details-title .back-arrow:focus,
+#submission-details-title .back-arrow:focus,
+#grant-details-title .back-arrow:focus-visible,
+#submission-details-title .back-arrow:focus-visible {
+  color: var(--uva-brand-blue) !important;
+  opacity: 1 !important;
+}
 
-  .table-summary.col-5,
-  .col-2,
-  .table-nav.col-5 {
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: 100%;
-  }
+/* #GS-3: Focus State Indicator; 1.4.1 Use of Color
+   branding.css only styles a:hover. Grants / Grant Details / Submissions
+   list links must use the same color + underline on keyboard focus as
+   on hover. :focus-visible adds a 2px ring so Tab is visible. */
+.models-table-wrapper a,
+.models-table-wrapper .btn-link {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
 
-  .table-nav.col-5 {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
+.models-table-wrapper a:hover,
+.models-table-wrapper .btn-link:hover,
+.models-table-wrapper a:focus,
+.models-table-wrapper .btn-link:focus,
+.models-table-wrapper a:focus-visible,
+.models-table-wrapper .btn-link:focus-visible {
+  color: var(--uva-blue-alt-A);
+  text-decoration: underline;
+}
 
-  .pull-left,
-  .pull-right {
-    float: none;
-  }
+.models-table-wrapper a:focus-visible,
+.models-table-wrapper .btn-link:focus-visible {
+  outline: 2px solid var(--uva-blue-alt-A);
+  outline-offset: 2px;
+}
+
+/* #GS-7: Active/Hover States Button Contrast; 1.4.11 Non-text Contrast
+   Search/filter X buttons are .btn-outline-secondary.btn-link. Bootstrap
+   hover fills #6c757d; later .btn-link:hover paints the icon
+   --uva-blue-alt-A (1.72:1 on that gray). White on --uva-grey-A meets 3:1. */
+.models-table-wrapper .clearFilterIcon:hover:not(:disabled),
+.models-table-wrapper .clearFilters:hover:not(:disabled),
+.models-table-wrapper .clearFilterIcon:focus:not(:disabled),
+.models-table-wrapper .clearFilters:focus:not(:disabled),
+.models-table-wrapper .clearFilterIcon:focus-visible:not(:disabled),
+.models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
+  color: var(--secondary-500) !important;
+  background-color: var(--uva-grey-A) !important;
+  border-color: var(--uva-grey-A) !important;
+  text-decoration: none !important;
+}
+
+.models-table-wrapper .clearFilterIcon:focus-visible:not(:disabled),
+.models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
+  outline: 2px solid var(--uva-grey-A);
+  outline-offset: 2px;
+}
+
+/* Search Box Border Color; 1.4.11 Non-text Contrast (best practice)
+   .form-control uses #ced4da on white (1.49:1). Auditor passed under a
+   strict reading (visible label + focus) but recommended a 3:1 edge.
+   --uva-grey-A on white is 8.19:1. Scoped to list-table search. */
+.models-table-wrapper .globalSearch .form-control,
+.models-table-wrapper .globalSearch .input-group-text {
+  border-color: var(--uva-grey-A);
+}
+
+/* Redundant Link (best practice); 1.3.1 Info and Relationships
+   Header has two same-destination brand links: full name (sm+) and
+   P.A.S.S. (<sm). Hide the short link and keep the full name at all
+   widths so it wraps instead of swapping strings. Markup left for JHU. */
+#brand-header .navbar-brand.d-sm-none {
+  display: none !important;
+}
+
+#brand-header .navbar-brand.d-none.d-sm-block {
+  display: block !important;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+
+#brand-header .brand-header-title {
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }

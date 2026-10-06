@@ -77,7 +77,7 @@ export default defineConfig({
           .replace(/src="(\/app\/index\.html\?html-proxy[^"]*)"/g, `src="${viteOrigin}$1"`);
       },
     },
-    // Serve /app/config.json for dev mode (production serves this from the backend)
+    // Serve /app/config.json for dev mode (production serves public/config.json from the image)
     {
       name: 'dev-config-json',
       configureServer(server) {
