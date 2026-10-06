@@ -58,7 +58,7 @@ Local test of a contribution branch: check it out, refresh `http://localhost:808
 
 ## Backlog (contribute later)
 
-Work **Do first** before the numbered CSS items. It is still broken on `uvalib` (markup, not branding-overrides). Merge the contribution branch into `uvalib` as soon as it exists; do not wait for Eclipse to merge.
+Work **Do first** items before the numbered CSS items. They are still broken on `uvalib` (markup, not branding-overrides). Merge each contribution branch into `uvalib` as soon as it exists; do not wait for Eclipse to merge.
 
 ### Do first: Empty table headers (F2-2)
 
@@ -146,6 +146,93 @@ This sets the grants-added header to “Remove” and the Details icon header to
 **uvalib cleanup after this merges**
 
 - Merge `main` into `uvalib` if the branch was not already merged there. Expect a clean merge (no branding-overrides).
+- No CSS to remove.
+- Delete the contribution branch locally and on `origin`.
+
+### Do first: Search Users dialog missing accessible name (F1-10)
+
+**Priority: high** (after empty table headers). Still fails 4.1.2 **Name** on `uvalib`. Independent of #1350, #1351, F2-2, and numbered items 1–6.
+
+The old ember-modal-dialog addon fail (no dialog role) is already fixed in generic pass-ui with native `<dialog>` + `showModal()`. Role, modal, and focus trap are in place. The dialog still has no accessible name.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| F1-10 Pop-Up Missing ARIA | 4.1.2 Name, Role, Value | Proxy “Search Users” modal. Role is now native `<dialog>`. Missing `aria-labelledby` / `aria-label`, so the dialog itself has no programmatic name. |
+
+**Where (generic `main` / `uvalib`)**
+
+- `app/components/workflow-basics/index.gts` — `<dialog class="… user-search-modal">` (no `aria-labelledby`)
+- `app/components/workflow-basics-user-search/index.gts` — `<h2>Search Users</h2>` (no `id`)
+
+**Suggested generic fix**
+
+```gts
+<dialog
+  class='ember-modal-dialog pass-modal-translucent user-search-modal'
+  aria-labelledby='user-search-title'
+  {{this.showModal}}
+  {{on 'close' this.toggleUserSearchModal}}
+>
+```
+
+```gts
+<h2 id='user-search-title'>Search Users</h2>
+```
+
+Optional: `aria-describedby` on the dialog pointing at the help paragraph. No UVA tokens. No `branding-overrides.css`.
+
+**Issue title (eclipse-pass/main)**
+
+Search Users dialog has no accessible name
+
+**Issue body**
+
+```markdown
+## Summary
+On New Submission → Basics, the proxy Search Users pop-up is a native `<dialog>` with `showModal()` (role and modal are present) but has no accessible name. WCAG 4.1.2 requires a name on the dialog.
+
+## Steps to reproduce
+1. Start a new submission as a preparer (or enable proxy submitter search).
+2. Open Search Users.
+3. Inspect the `<dialog>` for `aria-labelledby` or `aria-label`.
+
+## Expected
+The dialog is named, e.g. “Search Users”, matching the visible heading.
+
+## Actual
+`app/components/workflow-basics/index.gts` renders `<dialog class="… user-search-modal">` with no name. The heading is an unlabeled `<h2>Search Users</h2>` in `workflow-basics-user-search`.
+
+## Suggested direction
+Give the `h2` an `id` and set `aria-labelledby` on the `<dialog>`.
+
+## WCAG
+4.1.2 Name, Role, Value (Level A)
+```
+
+**PR title**
+
+Give the Search Users dialog an accessible name
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+The proxy Search Users `<dialog>` had no accessible name (4.1.2). Role/modal already come from native `showModal()`.
+
+This sets `aria-labelledby` on the dialog to the “Search Users” heading `id`.
+```
+
+**How to verify**
+
+1. Branch from `main` (or land on `uvalib` immediately after).
+2. Open Search Users from Basics.
+3. Confirm the dialog’s computed name is “Search Users” (accessibility tree / `aria-labelledby`).
+4. Heading, search, and results still work; Esc/close still dismisses.
+
+**uvalib cleanup after this merges**
+
+- Merge `main` into `uvalib` if the branch was not already merged there. Expect a clean merge.
 - No CSS to remove.
 - Delete the contribution branch locally and on `origin`.
 
