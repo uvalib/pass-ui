@@ -589,7 +589,7 @@ a:focus-visible,
 }
 ```
 
-Do not copy UVA blues or the 2px `:focus-visible` outline (nice-to-have).
+Do not copy UVA blues or the 2px `:focus-visible` outline (nice-to-have). Do not apply this hover color to PassTable `.clearFilters` / `.clearFilterIcon` (see item 6).
 
 **Issue title (eclipse-pass/main)**
 
@@ -648,6 +648,92 @@ This keeps rest-state underline and adds `a:focus` / `a:focus-visible` next to `
 - Rest-state underline in core may make some UVA `text-decoration: underline` duplicates redundant; keep until a visual check.
 - Merge `main` into `uvalib`, check rest + Tab on Grants/Submissions/Policies/Files links, push `uvalib`, delete the contribution branch.
 
+### 6. PassTable clear (X) hover fails 3:1 (GS-7)
+
+Independent of #1350, #1351, and backlog items 1–4. Related to item 5: `a:hover` / `.btn-link:hover` must **not** paint this control with `--primary-600`.
+
+UVA already restyles `.clearFilters` / `.clearFilterIcon` hover and focus in `branding-overrides.css`. No UVA production need until we want that override slimmed down.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| GS-7 Active/Hover States Button Contrast | 1.4.11 Non-text Contrast | PassTable “X” (clear filters / clear column filter) hover is `--primary-600` `#e37108` on `#6c757d` (~1.48:1). Enabled UI needs 3:1. Default `--primary-600` `#1e40af` on that grey is still under 3:1. |
+
+**Where (generic `main`)**
+
+- Markup: `app/components/pass-table/index.gts` — `.clearFilters.btn.btn-outline-secondary.btn-link` (and `.clearFilterIcon`)
+- Hover color from `public/branding.css` `a:hover, .btn-link:hover { color: var(--primary-600); }`
+- Chip background: Bootstrap `#6c757d` (`.btn-secondary` / outline-secondary)
+
+**Suggested generic fix (no UVA colors)**
+
+Give hover/focus a 3:1 pair and turn off link underline on the X. Example (white on a darker grey):
+
+```css
+.models-table-wrapper .clearFilterIcon:hover:not(:disabled),
+.models-table-wrapper .clearFilters:hover:not(:disabled),
+.models-table-wrapper .clearFilterIcon:focus:not(:disabled),
+.models-table-wrapper .clearFilters:focus:not(:disabled) {
+  color: #fff;
+  background-color: #495057;
+  text-decoration: none;
+}
+```
+
+`#ffffff` on `#495057` is about **8:1**. Do not copy `--uva-grey-A`. Do not use `--primary-600` here.
+
+**Issue title (eclipse-pass/main)**
+
+PassTable clear-filter (X) hover fails 3:1 contrast
+
+**Issue body**
+
+```markdown
+## Summary
+On Grants and Submissions, the PassTable clear-filter “X” is a `.btn-link` on a `#6c757d` chip. Hover uses `--primary-600` (sample overlay `#e37108`, ~1.48:1 on that grey). WCAG 1.4.11 needs 3:1 for an enabled UI control. Default `--primary-600` `#1e40af` on `#6c757d` also fails 3:1.
+
+## Steps to reproduce
+1. Open Grants or Submissions with a filter applied so the X is enabled.
+2. Hover (and Tab-focus) the X.
+3. Check icon/text contrast against the button background.
+
+## Expected
+Hover and keyboard focus meet 3:1 against the chip. The control does not look like a text link.
+
+## Actual
+`.btn-link:hover { color: var(--primary-600); }` paints the X orange or dark blue on `#6c757d`.
+
+## Suggested direction
+Style `.clearFilters` / `.clearFilterIcon` hover and focus with a 3:1 pair (for example white on `#495057`) and `text-decoration: none`. Do not use `--primary-600`.
+
+## WCAG
+1.4.11 Non-text Contrast (Level AA)
+```
+
+**PR title**
+
+Give PassTable clear-filter (X) hover 3:1 contrast
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+PassTable `.clearFilters` is a `.btn-link` on a grey chip, so `a:hover` `--primary-600` fails 1.4.11 (~1.48:1 with sample orange; dark blue on `#6c757d` also fails).
+
+This sets hover/focus to a 3:1 pair (white on `#495057`) and removes the link underline. UVA branding is unchanged.
+```
+
+**How to verify**
+
+1. Branch from `main` (generic branding, not `uvalib`).
+2. Grants and Submissions: enable a filter, hover and Tab the X; contrast ≥ 3:1; no orange/blue link treatment.
+3. Disabled X still looks disabled.
+
+**uvalib cleanup after this merges**
+
+- **Keep** UVA `.clearFilters` / `.clearFilterIcon` hover (`white` on `--uva-grey-A`) and `:focus-visible` outline. Core will add a generic 3:1 pair; UVA’s more specific rule still wins.
+- Merge `main` into `uvalib`, hover/Tab the PassTable X, push `uvalib`, delete the contribution branch.
+
 ---
 
 ## Optional / low priority (not needed for UVA)
@@ -690,3 +776,4 @@ These fail on the **stock sample** `public/branding-overrides.css` that ships on
 | F5-11 error box on UVA | Already 2px/10px `--uva-red-B` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
 | F6-4 / F7-5 SweetAlert confirm on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-A`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
 | GS-3 / GS-4 / F3-2 / F6-3 links on UVA | Already rest-state underline and `a:focus` / `a:focus-visible` (global, tables, Files, Policies); contribute the generic rest + focus underline via backlog item 5. Keep UVA blues and extra outlines. |
+| GS-7 PassTable X on UVA | Already white on `--uva-grey-A` for `.clearFilters` hover/focus; contribute the generic 3:1 chip hover via backlog item 6. Keep the UVA X restyle. |
