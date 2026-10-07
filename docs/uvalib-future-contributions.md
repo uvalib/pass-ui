@@ -33,6 +33,7 @@ Local test of a contribution branch: check it out, refresh `http://localhost:808
 ### Heading hierarchy — eclipse-pass/main#1261 / pass-ui#1350
 
 - Branch: `1261-fix-heading-hierarchy`
+- Audit: D-2, F1-1 (no `h1`; Dashboard / New Submission), F2-1 (Available grants `h4`), F3-1 (policy `h6`), F7-2 (Review title `h4`). Verified on `uvalib`: every audited page now starts at `h1` with no skipped levels.
 - Companion TestCafe PR: [eclipse-pass/pass-acceptance-testing#39](https://github.com/eclipse-pass/pass-acceptance-testing/pull/39)
 - Already merged into `uvalib`
 
@@ -46,6 +47,7 @@ Local test of a contribution branch: check it out, refresh `http://localhost:808
 ### File upload/removal focus — eclipse-pass/main#1263 / pass-ui#1351
 
 - Branch: `1263-keep-file-upload-focus`
+- Audit: F6-7 (focus jumps to window after upload/remove), F6-9 (no upload/remove status message; polite live region in `workflow-files`).
 - Already merged into `uvalib`
 
 **uvalib cleanup after #1351 merges**
@@ -53,6 +55,19 @@ Local test of a contribution branch: check it out, refresh `http://localhost:808
 - Merge `main` into `uvalib`.
 - No branding-overrides to remove (this was component JS/tests only).
 - Delete `1263-keep-file-upload-focus` locally and on `origin`.
+
+---
+
+## Already fixed on `main` (nothing to contribute)
+
+Audit items closed by Eclipse PRs that are already in `main` and `uvalib`. Listed so the audit cross-check is complete.
+
+| Audit | Fixed by | Verified on `uvalib` |
+| --- | --- | --- |
+| D-1 Logo Alt Text | pass-ui#1349 (`branding.logoAlt`) | `#brand-logo` alt is “University of Virginia Library” from `public/config.json`. |
+| GS-2 Incorrect Semantic HTML (orphaned `<label>`) | pass-ui#1348 | PassTable “Show X – Y of Z” is a `<span class="input-group-text">`; Search/Rows/Page labels have `for`. |
+| F1-7 Unexpected Focus Order (Search Users) | pass-ui#1317 (Ember LTS upgrade) | Native `<dialog>` + `showModal()`: focus moves to the dialog’s close button and Tab stays inside. Name/status gaps are Do-first F1-10 + F1-11. |
+| GS-1 / GS-9 / GS-13 sort-by column headers | pass-ui#1317 | PassTable headers are plain `<th>`; the `span[role=button]` sort toggles no longer exist. |
 
 ---
 
@@ -2338,6 +2353,85 @@ This sets hover/focus to a 3:1 pair (white on `#495057`) and removes the link un
 - **Keep** UVA `.clearFilters` / `.clearFilterIcon` hover (`white` on `--uva-grey-A`) and `:focus-visible` outline. Core will add a generic 3:1 pair; UVA’s more specific rule still wins.
 - Merge `main` into `uvalib`, hover/Tab the PassTable X, push `uvalib`, delete the contribution branch.
 
+### 7. Journal dropdown arrow and border fail 3:1 (F1-5)
+
+Independent of #1350, #1351, and backlog items 1–6. Not SurveyJS (item 3 covers the Details dropdown icons, F5-9). This is the ember-power-select journal picker on Basics.
+
+UVA already darkens the arrow and trigger border to `--uva-grey` (`#808080`, 3.95:1) in `branding-overrides.css`. No UVA production need.
+
+| Audit | WCAG | What fails |
+| --- | --- | --- |
+| F1-5 Dropdown Arrow Color Contrast | 1.4.11 Non-text Contrast | Basics Journal picker. `.ember-power-select-status-icon` arrow and `.ember-power-select-trigger` border are the addon default `#aaaaaa` on white (~2.32:1). Enabled UI needs 3:1. |
+
+**Where (generic `main`)**
+
+- Markup: `app/components/find-journal/index.gts` (`PowerSelect`)
+- Addon CSS: `app/app.ts` imports `ember-power-select/vendor/ember-power-select.css` — `.ember-power-select-trigger { border: 1px solid #aaaaaa }`, `.ember-power-select-status-icon { border-color: #aaa transparent transparent }`
+- `public/branding.css` only styles `.ember-power-select-placeholder`
+
+**Suggested generic fix (no UVA colors)**
+
+```css
+.ember-power-select-trigger {
+  border-color: #767676;
+}
+
+.ember-power-select-status-icon {
+  border-color: #767676 transparent transparent;
+}
+```
+
+`#767676` on white is about **4.5:1**. Put it in `public/branding.css` next to `.ember-power-select-placeholder`. Do not copy `--uva-grey`.
+
+**Issue title (eclipse-pass/main)**
+
+Journal dropdown arrow and border fail 3:1 non-text contrast
+
+**Issue body**
+
+```markdown
+## Summary
+On New Submission → Basics, the Journal picker (ember-power-select) uses the addon default `#aaaaaa` for its trigger border and dropdown arrow. On white that is ~2.32:1. WCAG 1.4.11 needs 3:1 for an enabled UI control.
+
+## Steps to reproduce
+1. Start a new submission.
+2. On Basics, inspect the Journal picker border and the down arrow.
+
+## Expected
+Arrow and border are at least 3:1 against the page.
+
+## Actual
+`ember-power-select.css` sets `#aaaaaa` on `.ember-power-select-trigger` and `.ember-power-select-status-icon`; PASS does not override it.
+
+## Suggested direction
+Override both in `branding.css` with a 3:1+ grey (for example `#767676`).
+
+## WCAG
+1.4.11 Non-text Contrast (Level AA)
+```
+
+**PR title**
+
+Give the journal dropdown arrow and border 3:1 contrast
+
+**PR body**
+
+```markdown
+Fixes eclipse-pass/main#{N}
+
+The Basics Journal picker kept ember-power-select's default `#aaaaaa` border and arrow (~2.32:1 on white, 1.4.11). This sets both to `#767676` (~4.5:1) in `branding.css`. Layout is unchanged.
+```
+
+**How to verify**
+
+1. Branch from `main` (generic branding, not `uvalib`).
+2. Basics: Journal picker border and arrow ≥ 3:1 on white; open/close and search still work.
+
+**uvalib cleanup after this merges**
+
+- Optional: drop the UVA `.ember-power-select-status-icon` / `.ember-power-select-trigger` rules (both copies) if the generic grey is acceptable. Keep the `.sd-dropdown_clean-button-svg` line (SurveyJS, item 3).
+- Merge `main` into `uvalib`, push, delete the contribution branch.
+
 ---
 
 ## Optional / low priority
@@ -2363,9 +2457,9 @@ First-focus link in `app/templates/application.gts`, visually hidden until `:foc
 
 **uvalib cleanup:** merge `main`; no branding-overrides to remove.
 
-### Sample overlay link hover fails 1.4.3 (D-4)
+### Sample overlay link hover fails 1.4.3 (D-4 + F3-3)
 
-- Stock `main` `branding-overrides.css` sets `--primary-600: #e37108`. `a:hover` uses that token. Orange on white is ~3.1:1.
+- Stock `main` `branding-overrides.css` sets `--primary-600: #e37108`. `a:hover` uses that token. Orange on white is ~3.1:1. F3-3 is the same hover on the Policies “more information” links.
 - Generic `branding.css` default `--primary-600: #1e40af` already passes.
 - UVA remaps `--primary-600` to `--uva-blue-alt-A` (`#005679`) and restyles `a:hover`.
 - Possible PR: change the **sample** overlay tokens to passing colors. Do not change `branding.css`.
@@ -2424,21 +2518,46 @@ Add the leave-blank sentence to the lead paragraph (or a visible helper under th
 
 **uvalib cleanup:** merge `main`; no branding-overrides to remove.
 
+### Form-control border 3:1 (1.4.11) — auditor pass / best practice
+
+**Priority: low.** Auditor passed (visible label + focus ring) but strongly recommended a 3:1 edge. Bootstrap `.form-control` / `.input-group-text` border `#ced4da` on white is ~1.49:1 (PassTable Search, Basics fields).
+
+- UVA already sets `.form-control` and `.input-group-text` borders to `--uva-grey-A` (8.19:1) in `branding-overrides.css`.
+- Possible PR: `border-color: #767676` on `.form-control` and `.input-group-text` in `public/branding.css`. Fold into item 7 if we send that one.
+- **uvalib cleanup:** none (keep the UVA border).
+
+### Redundant P.A.S.S. header link (1.3.1) — auditor pass / best practice
+
+**Priority: low.** Auditor passed. `application.gts` renders two same-destination brand links: “Public Access Submission System” (`d-none d-sm-block`) and “P.A.S.S.” (`d-xs-block d-sm-none`). With styles off, both are read. (#1350 already changed the `h3` to a `span`.)
+
+- UVA hides the short link and lets the full name wrap at every width (end of `branding-overrides.css`).
+- Possible PR: delete the P.A.S.S. link and let the full title wrap. Small markup change; pairs with D-3 (header DOM order).
+- **uvalib cleanup:** after it merges, drop the UVA `#brand-header .navbar-brand.d-sm-none` / `.d-none.d-sm-block` rules.
+
+### Details step heading levels skip `h2`–`h4` (1.3.1) — not in the audit
+
+Found while re-checking #1350 on `uvalib`. Every other step is `h1` → `h2`/`h3`. On Details, SurveyJS renders question titles as `h5` directly under the page `h1` (“New Submission”). The audit did not list this; it predates #1350 (the page heading was `h2`).
+
+- Where: SurveyJS global `settings.titleTags` defaults (`question: 'h5'`, `panel`/`page: 'h4'`). Set them to `h2`/`h3` from `survey-core` `settings`, or handle `survey.onGetTitleTagName`, in `app/components/workflow-metadata/`. Nested panel questions (Authors → Author) need one level deeper.
+- Not CSS; cannot be fixed in `branding-overrides.css`. Could ride along with Do-first F5-1/F5-2/F5-12 (same SurveyJS component).
+
 ---
 
 ## Local-only (do not contribute)
 
 | Audit | Why it stays on `uvalib` |
 | --- | --- |
-| D-4 hover orange (UVA build) | `--primary-600` / `a:hover` already overridden. |
+| D-4 / F3-3 hover orange (UVA build) | `--primary-600` / `a:hover` already overridden. |
 | D-5 header/nav reflow | Already in `branding-overrides.css`. |
-| F1-2 white `h1`/`h2` | `--secondary-500: #FFFFFF` is a UVA token used as button/banner color. Headings are forced to `--uva-brand-blue`. Generic `--secondary-500` is `#374151`. |
+| F1-2 / GS-5 white `h1`/`h2` | `--secondary-500: #FFFFFF` is a UVA token used as button/banner color. Headings are forced to `--uva-brand-blue`. Generic `--secondary-500` is `#374151`. |
+| F7-7 / GS-8 back arrow | Same UVA white `--secondary-500` (at `opacity: 0.7`). UVA sets the arrow to `--uva-blue-alt-A` at full opacity (8.05:1). Generic `#374151` at 0.7 is ~4.3:1 and already passes 3:1. |
+| F1-5 journal arrow/border on UVA | Already `--uva-grey` on `.ember-power-select-status-icon` / `-trigger` (3.95:1); contribute the generic grey via backlog item 7. |
 | F1-3 / F1-4 on UVA | Already in `/* Submission wizard */` overrides; contribute the generic version via backlog item 1. |
 | F2-3 / F6-5 / F7-6 / GS-6 reflow on UVA | Already in `/* Reflow (320px / 400% zoom) */` (page scroll, PassTable footer stack, Review/details); contribute the generic page-scroll + PassTable footer stack via backlog item 2. Remove-button stretch and Review/details stacking stay UVA-only. |
 | F5-3 SurveyJS placeholder on UVA | Already `.sv-string-viewer { color: var(--uva-grey-A) }`; contribute the generic token fix via backlog item 3. |
 | F5-4 Yes/No toggle on UVA | Already the `.sd-boolean` block in `branding-overrides.css`; fold the generic token fix into backlog item 3. Keep the UVA toggle restyle. |
 | F5-5 SurveyJS Remove on UVA | Already `.sd-action--negative` uses `--uva-red-B`; fold `--sjs-special-red` into backlog item 3. Keep the UVA Remove restyle. |
-| F5-7 empty dropdown on UVA | Already white background + `--uva-grey-A` and `:read-only` scoped to input/textarea; fold into backlog item 3. Keep UVA dropdown color if desired. |
+| F5-7 empty dropdown on UVA | Already white background + `--uva-grey-A` and `:read-only` scoped to input/textarea. The “Select...” text is the filter input’s `::placeholder` (SurveyJS `#909090`, 3.18:1 on white); UVA also sets `.sd-input::placeholder` and the empty-dropdown `::placeholder` to `--uva-grey-A`. Generic `--sjs-font-editorfont-placeholdercolor` in item 3 covers it. |
 | F5-8 Yes/No track on UVA | Already 2px `--uva-grey-A` edge on a light fill; fold a generic 3:1 `.sd-boolean` border into backlog item 3. Keep the UVA toggle restyle. |
 | F5-9 dropdown icons on UVA | Already `.sd-dropdown_*_svg use { fill: var(--uva-grey-A) }`; fold generic icon `fill` into backlog item 3. Keep UVA fill if desired. |
 | F5-10 Remove UI edge on UVA | Already 2px `--uva-red-B` border on transparent/light fill; fold a generic `.sd-action--negative` 3:1 edge into backlog item 3. Keep the UVA Remove restyle. |
