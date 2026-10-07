@@ -240,11 +240,19 @@ h2 {
   opacity: 1;
 }
 
+/* Search Box Border Color; 1.4.11 Non-text Contrast (best practice)
+   Bootstrap .form-control / .input-group-text use #ced4da on white (1.49:1).
+   Auditor passed under a strict reading (visible label + focus) but
+   recommended a 3:1 edge. --uva-grey-A on white is 8.19:1. */
 .form-control {
   color: #212529;
   background-color: var(--secondary-500);
-  border: 1px solid #ced4da;
+  border: 1px solid var(--uva-grey-A);
   appearance: none;
+}
+
+.input-group-text {
+  border-color: var(--uva-grey-A);
 }
 
 
@@ -1221,15 +1229,6 @@ textarea.form-control:read-only {
 .models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
   outline: 2px solid var(--uva-grey-A);
   outline-offset: 2px;
-}
-
-/* Search Box Border Color; 1.4.11 Non-text Contrast (best practice)
-   .form-control uses #ced4da on white (1.49:1). Auditor passed under a
-   strict reading (visible label + focus) but recommended a 3:1 edge.
-   --uva-grey-A on white is 8.19:1. Scoped to list-table search. */
-.models-table-wrapper .globalSearch .form-control,
-.models-table-wrapper .globalSearch .input-group-text {
-  border-color: var(--uva-grey-A);
 }
 
 /* Redundant Link (best practice); 1.3.1 Info and Relationships
