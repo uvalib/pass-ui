@@ -987,6 +987,13 @@ a:focus-visible,
   color: var(--uva-grey-A);
 }
 
+/* The empty-state "Select..." is the filter input's ::placeholder, which
+   SurveyJS paints #909090 (3.18:1 on white). */
+.sd-input::placeholder,
+.sd-dropdown--empty:not(.sd-input--disabled) .sd-dropdown__filter-string-input::placeholder {
+  color: var(--uva-grey-A);
+}
+
 input.form-control:disabled,
 input.form-control:read-only,
 textarea.form-control:disabled,
