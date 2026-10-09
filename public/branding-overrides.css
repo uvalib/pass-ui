@@ -753,7 +753,8 @@ p.lead label {
   padding: 0.4rem 1rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  color: var(--uva-blue-alt) !important;
+  /* --uva-blue-alt text on --uva-blue-alt-300 is 3.61:1; blue-alt-A is 6.13:1 */
+  color: var(--uva-blue-alt-A) !important;
   background-color: var(--uva-blue-alt-300) !important;
   border: 2px solid var(--uva-blue-alt) !important;
   border-radius: 5px !important;
