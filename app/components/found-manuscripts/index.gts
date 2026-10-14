@@ -85,10 +85,8 @@ export default class FoundManuscriptsComponent extends Component<FoundManuscript
                 .
               {{/if}}
             </p>
-            <p class='text-muted mb-0'>
-              Click the
-              <i class='fa fa-cloud-download-alt' aria-hidden='true'></i>
-              icon or a file name to view and download a file first.
+            <p class='text-muted mb-0' data-test-foundmss-instructions>
+              Click a link below to view and download a file first.
             </p>
             <p class='text-muted'>
               After downloading you may use the file upload tool to add a file to your submission.

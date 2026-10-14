@@ -62,6 +62,9 @@ module('Integration | Component | found-manuscripts', (hooks) => {
     await render(hbs`<FoundManuscripts @doi='test' />`);
 
     assert.ok(this.element.textContent!.includes('https://moo.example.com'));
+    // The instructions should not point at an unnamed icon
+    assert.dom('[data-test-foundmss-instructions]').hasText('Click a link below to view and download a file first.');
+    assert.dom('[data-test-foundmss-instructions] i, [data-test-foundmss-instructions] svg').doesNotExist();
   });
 
   test('Nothing renders when disabled', async function (assert) {
