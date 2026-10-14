@@ -53,6 +53,10 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
     return this.args.data ?? ([] as T[]);
   }
 
+  get hasNoRecords(): boolean {
+    return this.records.length === 0;
+  }
+
   get totalItemsDisplay(): number {
     return this.args.totalItems ?? 0;
   }
@@ -212,7 +216,8 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
         <div class='row'>
           <div class='table-summary col-5'>
             <div class='input-group'>
-              <span class='input-group-text'>Show {{this.showingStart}} - {{this.showingEnd}} of {{this.totalItemsDisplay}}</span>
+              {{! Live region so screen readers hear the new count after filtering or paging (WCAG 4.1.3) }}
+              <span class='input-group-text' role='status' aria-live='polite' aria-atomic='true'>Show {{this.showingStart}} - {{this.showingEnd}} of {{this.totalItemsDisplay}}{{#if this.hasNoRecords}}<span class='emt-sr-only'>. No data found</span>{{/if}}</span>
               <button
                 type='button'
                 class='clearFilters btn btn-outline-secondary btn-link'
