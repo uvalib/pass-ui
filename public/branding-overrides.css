@@ -214,13 +214,6 @@ a.instructions-url {
   text-decoration: underline !important;
 }
 
-/* #F5-7: Form Controls & Dropdown Bar Color Contrast */
-.form-control:disabled,
-.form-control:read-only {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-
 /* Search Box Border Color; 1.4.11 Non-text Contrast (best practice)
    Bootstrap .form-control / .input-group-text use #ced4da on white (1.49:1).
    Auditor passed under a strict reading (visible label + focus) but
