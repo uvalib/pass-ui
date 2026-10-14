@@ -346,9 +346,9 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 {{/if}}
 
                 <tr>
-                  <td class='max-width'>
+                  <th scope='row' class='max-width'>
                     Repositories
-                  </td>
+                  </th>
                   <td>
                     <p>
                       Submission into these repositories is required according to the respective policies.
@@ -364,43 +364,37 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 </tr>
 
                 <tr>
-                  <td>
+                  <th scope='row'>
                     Grants
-                  </td>
+                  </th>
                   <td>
-                    <ul class='list-unstyled' data-test-workflow-review-grant-list>
+                    <dl class='key-value-list' data-test-workflow-review-grant-list>
                       {{#each @submission.grants as |grant|}}
-                        <li class='grant-item'>
-                          <b>
-                            {{grant.awardNumber}}
-                          </b>
-                          :
-                          {{grant.projectName}}
-                        </li>
-                        <li class='grant-item'>
-                          <b>
-                            Funder
-                          </b>
-                          :
-                          {{grant.primaryFunder.name}}
-                        </li>
+                        <div class='grant-item'>
+                          <dt>{{grant.awardNumber}}<span aria-hidden='true'> :</span></dt>
+                          <dd>{{grant.projectName}}</dd>
+                        </div>
+                        <div class='grant-item'>
+                          <dt>Funder<span aria-hidden='true'> :</span></dt>
+                          <dd>{{grant.primaryFunder.name}}</dd>
+                        </div>
                       {{/each}}
-                    </ul>
+                    </dl>
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <th scope='row'>
                     Details
-                  </td>
+                  </th>
                   <td>
                     <DisplayMetadataKeys @submission={{@submission}} />
                   </td>
                 </tr>
 
                 <tr>
-                  <td>
+                  <th scope='row'>
                     Files
-                  </td>
+                  </th>
                   <td>
                     <table class='files-table w-100 border-bottom border-top'>
                       <thead>
@@ -440,9 +434,9 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 </tr>
                 {{#if @submission.isProxySubmission}}
                   <tr>
-                    <td>
+                    <th scope='row'>
                       Comments
-                    </td>
+                    </th>
                     <td>
                       <p data-test-workflow-review-submitter>
                         This submission is prepared on behalf of
