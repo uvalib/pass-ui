@@ -1,4 +1,5 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
+import TooltipHost from 'pass-ui/components/tooltip-host';
 
 const eq = (a: unknown, b: unknown) => a === b;
 
@@ -12,70 +13,70 @@ interface SubmissionStatusSignature {
 <template>
   <span class='status {{@submissionStatus}} pr-1' data-test-submission-detail-status>
     {{#if (eq @submissionStatus 'manuscript-required')}}
-      <span
-        tooltip-position='left'
-        tooltip='Your funder is aware of this publication and is expecting the deposit of your manuscript.'
+      <TooltipHost
+        @position='left'
+        @text='Your funder is aware of this publication and is expecting the deposit of your manuscript.'
       >
-        <i class='fas fa-info-circle'></i>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         manuscript required
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'approval-requested')}}
-      <span
-        tooltip-position='left'
-        tooltip='This submission has been prepared on behalf of the designated submitter and is awaiting approval before being submitted.'
+      <TooltipHost
+        @position='left'
+        @text='This submission has been prepared on behalf of the designated submitter and is awaiting approval before being submitted.'
       >
-        <i class='fas fa-info-circle'></i>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         approval requested
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'changes-requested')}}
-      <span tooltip-position='left' tooltip='The designated submitter has requested changes to this submission'>
-        <i class='fas fa-info-circle'></i>
+      <TooltipHost @position='left' @text='The designated submitter has requested changes to this submission'>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         changes requested
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'cancelled')}}
-      <span tooltip-position='left' tooltip='This submission has been cancelled by the designated submitter'>
-        <i class='fas fa-info-circle'></i>
+      <TooltipHost @position='left' @text='This submission has been cancelled by the designated submitter'>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         cancelled
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'submitted')}}
-      <span
-        tooltip-position='left'
-        tooltip='The submission was successfully created. PASS will deposit this work into the target repositories and provide a link and feedback where available'
+      <TooltipHost
+        @position='left'
+        @text='The submission was successfully created. PASS will deposit this work into the target repositories and provide a link and feedback where available'
       >
-        <i class='fas fa-info-circle'></i>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         submitted
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'needs-attention')}}
-      <span
-        tooltip-position='left'
-        tooltip='PASS has delivered the submission, but one or more repositories have indicated that there may be a need for further action before the submission is complete. View the submission for more details'
+      <TooltipHost
+        @position='left'
+        @text='PASS has delivered the submission, but one or more repositories have indicated that there may be a need for further action before the submission is complete. View the submission for more details'
       >
-        <i class='fas fa-info-circle'></i>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         needs attention
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'complete')}}
-      <span
-        tooltip-position='left'
-        tooltip='The submission was accepted by all target repositories and is either pending publication or already published'
+      <TooltipHost
+        @position='left'
+        @text='The submission was accepted by all target repositories and is either pending publication or already published'
       >
-        <i class='fas fa-info-circle'></i>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         complete
-      </span>
+      </TooltipHost>
     {{/if}}
     {{#if (eq @submissionStatus 'draft')}}
-      <span
-        tooltip-position='left'
-        tooltip='This submission is a draft. No action will be taken on this submission until it is completed.'
+      <TooltipHost
+        @position='left'
+        @text='This submission is a draft. No action will be taken on this submission until it is completed.'
       >
-        <i class='fas fa-info-circle'></i>
+        <i class='fas fa-info-circle' aria-hidden='true'></i>
         draft
-      </span>
+      </TooltipHost>
     {{/if}}
   </span>
 </template> satisfies TemplateOnlyComponent<SubmissionStatusSignature>

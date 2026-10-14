@@ -189,7 +189,8 @@ export default class WorkflowGrants extends Component<WorkflowGrantsSignature> {
   }
 
   @action
-  toggleGrantFromButton(grant: GrantModel, event: Event) {
+  toggleGrantFromCheckbox(grant: GrantModel, event: Event) {
+    // Keep the row's click handler from toggling the grant a second time
     event.stopPropagation();
     this.toggleGrant(grant);
   }
@@ -220,7 +221,9 @@ export default class WorkflowGrants extends Component<WorkflowGrantsSignature> {
       <h2 class='block-title'>
         Grants added to submission
       </h2>
-      <SubmissionFundingTable @grants={{this._selectedGrants}} @remove={{this.removeGrant}} @setup={{this.setup}} />
+      <div class='table-responsive'>
+        <SubmissionFundingTable @grants={{this._selectedGrants}} @remove={{this.removeGrant}} @setup={{this.setup}} />
+      </div>
       <button class='btn btn-outline-primary' type='button' {{on 'click' @back}}>
         Back
       </button>
@@ -255,7 +258,7 @@ export default class WorkflowGrants extends Component<WorkflowGrantsSignature> {
         </p>
       {{/if}}
       {{#if this.setup.isIdle}}
-        <div id='grants-selection-table' data-test-grants-selection-table>
+        <div id='grants-selection-table' class='table-responsive' data-test-grants-selection-table>
           <table class='table table-striped table-sm'>
             <thead>
               <tr>
@@ -281,13 +284,14 @@ export default class WorkflowGrants extends Component<WorkflowGrantsSignature> {
                   <td>{{grant.awardStatus}}</td>
                   <td class='funder-column'>{{grant.primaryFunder.name}}</td>
                   <td>
-                    <button type='button' class='grant-select-btn' {{on 'click' (fn this.toggleGrantFromButton grant)}}>
-                      {{#if (includes this._selectedGrants grant)}}
-                        <FaIcon @icon='square-check' @prefix='far' />
-                      {{else}}
-                        <FaIcon @icon='square' @prefix='far' />
-                      {{/if}}
-                    </button>
+                    <input
+                      type='checkbox'
+                      class='form-check-input grant-select-checkbox'
+                      aria-label='Select {{grant.awardNumber}}'
+                      checked={{includes this._selectedGrants grant}}
+                      data-test-grant-select-checkbox
+                      {{on 'click' (fn this.toggleGrantFromCheckbox grant)}}
+                    />
                   </td>
                 </tr>
               {{/each}}

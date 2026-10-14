@@ -8,7 +8,9 @@ import SubmissionStatus from 'pass-ui/components/submission-status';
 import SubmissionRepoDetails from 'pass-ui/components/submission-repo-details';
 import DisplayMetadataKeys from 'pass-ui/components/display-metadata-keys';
 import CommentingBlock from 'pass-ui/components/commenting-block';
+import FileTypeIcon from 'pass-ui/components/file-type-icon';
 import type SubmissionsDetail from 'pass-ui/controllers/submissions/detail';
+import { pageTitle } from 'ember-page-title';
 
 const eq = (a: unknown, b: unknown) => a === b;
 const or = (...args: unknown[]) => args.some(Boolean);
@@ -22,6 +24,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Submission Detail'}}
   {{! template-lint-disable link-rel-noopener require-button-type require-input-label }}
   <div class='block-user-input text-center'>
     <div class='lds-dual-ring mx-auto'></div>
@@ -91,14 +94,13 @@ interface Signature {
               {{/if}}
             </p>
           </div>
+          <div class='table-responsive'>
           <table class='table table-responsive-sm table-bordered w-100 d-flex'>
             <tbody>
               <tr>
-                <td>
-                  <strong>
-                    Submission status
-                  </strong>
-                </td>
+                <th scope='row'>
+                  Submission status
+                </th>
                 <td>
                   <SubmissionStatus @submissionStatus={{@controller.model.sub.submissionStatus}} />
                 </td>
@@ -117,39 +119,29 @@ interface Signature {
                 </tr>
               {{/if}}
               <tr>
+                <th scope='row'>
+                  Grants
+                </th>
                 <td>
-                  <strong>
-                    Grants
-                  </strong>
-                </td>
-                <td>
-                  <ul class='list-unstyled'>
+                  <dl class='key-value-list'>
                     {{#each @controller.model.sub.grants as |grant|}}
-                      <li class='grant-item' data-test-submission-detail-grant>
-                        <b>
-                          {{grant.awardNumber}}
-                        </b>
-                        :
-                        {{grant.projectName}}
-                      </li>
-                      <li class='grant-item' data-test-submission-detail-funder>
-                        <b>
-                          Funder
-                        </b>
-                        :
-                        {{grant.primaryFunder.name}}
-                      </li>
+                      <div class='grant-item' data-test-submission-detail-grant>
+                        <dt>{{grant.awardNumber}}<span aria-hidden='true'> :</span></dt>
+                        <dd>{{grant.projectName}}</dd>
+                      </div>
+                      <div class='grant-item' data-test-submission-detail-funder>
+                        <dt>Funder<span aria-hidden='true'> :</span></dt>
+                        <dd>{{grant.primaryFunder.name}}</dd>
+                      </div>
                     {{/each}}
-                  </ul>
+                  </dl>
                 </td>
               </tr>
               {{#if @controller.repoMap}}
                 <tr>
-                  <td class='text-nowrap'>
-                    <strong>
-                      Repositories
-                    </strong>
-                  </td>
+                  <th scope='row' class='text-nowrap'>
+                    Repositories
+                  </th>
                   <td>
                     <ul class='list-unstyled'>
                       {{#each @controller.repoMap as |repoInfo|}}
@@ -166,11 +158,9 @@ interface Signature {
               {{/if}}
               {{#if @controller.externalSubmission}}
                 <tr>
-                  <td>
-                    <strong>
-                      External Submission Repositories
-                    </strong>
-                  </td>
+                  <th scope='row'>
+                    External Submission Repositories
+                  </th>
                   <td>
                     <ul class='list-unstyled'>
                       {{#each @controller.externalSubmission as |sub|}}
@@ -183,11 +173,9 @@ interface Signature {
                 </tr>
               {{/if}}
               <tr>
-                <td class='text-nowrap'>
-                  <strong>
-                    Submitter
-                  </strong>
-                </td>
+                <th scope='row' class='text-nowrap'>
+                  Submitter
+                </th>
                 <td data-test-submission-detail-submitter>
                   {{#if (eq @controller.model.sub.source 'other')}}
                     <i>
@@ -207,11 +195,9 @@ interface Signature {
               </tr>
               {{#if @controller.model.sub.preparers}}
                 <tr>
-                  <td class='text-nowrap'>
-                    <strong>
-                      Preparer(s)
-                    </strong>
-                  </td>
+                  <th scope='row' class='text-nowrap'>
+                    Preparer(s)
+                  </th>
                   <td data-test-submission-detail-preparer>
                     {{#each @controller.model.sub.preparers as |preparer index|}}
                       {{#if index}}
@@ -231,15 +217,13 @@ interface Signature {
               {{/if}}
               {{#if @controller.mustVisitWeblink}}
                 <tr>
-                  <td id='externalSubmission'>
-                    <strong>
-                      External Submission Required
-                    </strong>
+                  <th scope='row' id='externalSubmission'>
+                    External Submission Required
                     <br />
                     {{#if @controller.disableSubmit}}
                       <i class='fa fa-exclamation-triangle fa-2x mt-3 ml-3 notice-triangle'></i>
                     {{/if}}
-                  </td>
+                  </th>
                   <td>
                     <label class=''>
                       Please visit the following web portal to submit your manuscript directly. Metadata displayed
@@ -262,21 +246,17 @@ interface Signature {
                 </tr>
               {{/if}}
               <tr>
-                <td>
-                  <strong>
-                    Details
-                  </strong>
-                </td>
+                <th scope='row'>
+                  Details
+                </th>
                 <td>
                   <DisplayMetadataKeys @submission={{@controller.model.sub}} />
                 </td>
               </tr>
               <tr>
-                <td>
-                  <strong>
-                    Files
-                  </strong>
-                </td>
+                <th scope='row'>
+                  Files
+                </th>
                 <td>
                   {{#if (eq @controller.model.sub.source 'other')}}
                     <p class='mb-0'>
@@ -288,7 +268,7 @@ interface Signature {
                     <table class='files-table w-100'>
                       <thead class='border-bottom border-top'>
                         <tr>
-                          <th scope='col'></th>
+                          <th scope='col'>File Type</th>
                           <th scope='col' class='font-weight-light'>
                             Name
                           </th>
@@ -304,19 +284,7 @@ interface Signature {
                         {{#each @controller.submissionFiles as |file|}}
                           <tr>
                             <td data-label='icon'>
-                              {{#if (eq file.mimeType 'png')}}
-                                <i class='fas fa-file-image line-height-35 text-gray fa-30'></i>
-                              {{else if
-                                (eq file.mimeType 'vnd.openxmlformats-officedocument.presentationml.presentation')
-                              }}
-                                <i class='fas fa-file-powerpoint line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'msword')}}
-                                <i class='fas fa-file-word line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'pdf')}}
-                                <i class='fas fa-file-pdf line-height-35 text-gray fa-30'></i>
-                              {{else}}
-                                <i class='far fa-file line-height-35 text-gray fa-30'></i>
-                              {{/if}}
+                              <FileTypeIcon @mimeType={{file.mimeType}} />
                             </td>
                             <td id='submissions-detail-file-cell' data-label='name'>
                               <a href={{file.uri}}>
@@ -338,11 +306,9 @@ interface Signature {
               </tr>
               {{#if (or @controller.isPreparer @controller.isSubmitter)}}
                 <tr>
-                  <td class='text-nowrap'>
-                    <strong>
-                      Comments
-                    </strong>
-                  </td>
+                  <th scope='row' class='text-nowrap'>
+                    Comments
+                  </th>
                   <td>
                     <CommentingBlock @submissionEvents={{@controller.model.submissionEvents}} />
                     {{#if
@@ -363,6 +329,7 @@ interface Signature {
               {{/if}}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

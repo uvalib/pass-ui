@@ -54,16 +54,27 @@ export default class SubmissionsRepoidCell extends Component<SubmissionsRepoidCe
   setupTooltip = modifier(() => {
     if (!document.querySelector('#manuscriptIdTooltip')) {
       const th = document.querySelector('.table-header:nth-child(6)');
-      const span = document.createElement('span');
+      const button = document.createElement('button');
       const icon = document.createElement('i');
+      const description = document.createElement('span');
+      const text = 'IDs are assigned to manuscripts by target repositories.';
 
-      span.id = 'manuscriptIdTooltip';
-      span.setAttribute('tooltip-position', 'bottom');
-      span.setAttribute('tooltip', 'IDs are assigned to manuscripts by target repositories.');
+      // Same markup as the TooltipHost component, so the tooltip is keyboard accessible
+      button.id = 'manuscriptIdTooltip';
+      button.type = 'button';
+      button.className = 'tooltip-host';
+      button.setAttribute('aria-label', 'About Manuscript IDs');
+      button.setAttribute('aria-describedby', 'manuscriptIdTooltipText');
+      button.setAttribute('tooltip-position', 'bottom');
+      button.setAttribute('tooltip', text);
       icon.classList.add('fas', 'fa-info-circle', 'd-inline');
+      icon.setAttribute('aria-hidden', 'true');
+      description.id = 'manuscriptIdTooltipText';
+      description.hidden = true;
+      description.textContent = text;
 
-      span.appendChild(icon);
-      th?.appendChild(span);
+      button.appendChild(icon);
+      th?.append(button, description);
     }
   });
 

@@ -169,6 +169,13 @@ module('Integration | Component | workflow review', (hooks) => {
     // Click on submit
     await click('.submit');
 
+    // The agreement can be reached and scrolled from the keyboard
+    await waitFor('.swal2-popup [data-test-deposit-agreement]');
+    assert.dom('.swal2-popup[role="dialog"] [data-test-deposit-agreement]').hasAttribute('role', 'region');
+    assert.dom('[data-test-deposit-agreement]').hasAttribute('tabindex', '0');
+    assert.dom('[data-test-deposit-agreement]').hasAttribute('aria-label', 'Deposit agreement for repo1');
+    assert.dom('[data-test-deposit-agreement]').hasText('Cows are the best');
+
     await click('.swal2-confirm');
 
     await waitFor('.swal2-validation-message');
@@ -390,5 +397,83 @@ module('Integration | Component | workflow review', (hooks) => {
     await click('.swal2-confirm');
 
     assert.false(submitted);
+  });
+
+  test('file type icons have accessible names', async function (assert) {
+    const workflow = this.owner.lookup('service:workflow') as {
+      setFiles: (files: unknown[]) => void;
+    };
+    workflow.setFiles([
+      { id: 'f1', name: 'article.pdf', mimeType: 'application/pdf', fileRole: 'manuscript', submission: { id: 's1' } },
+      { id: 'f2', name: 'data.csv', mimeType: 'text/csv', fileRole: 'supplemental', submission: { id: 's1' } },
+    ]);
+
+    this.submission = { id: 's1', metadata: '{}', repositories: [] };
+    this.publication = {};
+    this.submit = () => {};
+    this.loadPrevious = () => {};
+    this.files = [];
+    this.comment = '';
+    this.uploading = '';
+    this.waitingMessage = '';
+
+    await render(hbs`<WorkflowReview
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @previouslyUploadedFiles={{this.files}}
+  @comment={{this.comment}}
+  @back={{this.loadPrevious}}
+  @submitSubmission={{this.submit}}
+  @uploading={{this.uploading}}
+  @waitingMessage={{this.waitingMessage}}
+/>`);
+
+    assert.dom('.files-table thead th').hasText('File Type');
+    const labels = [...this.element.querySelectorAll('.files-table td[data-label="icon"]')].map((td) =>
+      td.textContent!.trim(),
+    );
+    assert.deepEqual(labels, ['PDF', 'File']);
+  });
+
+  test('key-value rows use row headers and grant details use a description list', async function (assert) {
+    this.submission = {
+      metadata: '{}',
+      repositories: [{ id: 'r1', name: 'PubMed Central', integrationType: 'full' }],
+      grants: [{ awardNumber: 'R01EY012124', projectName: 'Synaptic Plasticity', primaryFunder: { name: 'NIH' } }],
+    };
+    this.publication = {};
+    this.submit = () => {};
+    this.loadPrevious = () => {};
+    this.files = [];
+    this.comment = '';
+    this.uploading = '';
+    this.waitingMessage = '';
+
+    await render(hbs`<WorkflowReview
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @previouslyUploadedFiles={{this.files}}
+  @comment={{this.comment}}
+  @back={{this.loadPrevious}}
+  @submitSubmission={{this.submit}}
+  @uploading={{this.uploading}}
+  @waitingMessage={{this.waitingMessage}}
+/>`);
+
+    const rowHeaders = [...this.element.querySelectorAll('#review-step-table > tbody > tr > th[scope="row"]')].map(
+      (th) => th.textContent!.trim(),
+    );
+    assert.deepEqual(rowHeaders, ['Repositories', 'Grants', 'Details', 'Files']);
+    assert.dom('#review-step-table > tbody > tr > td:first-child').doesNotExist('no row starts with a data cell');
+
+    assert.dom('[data-test-workflow-review-grant-list]').hasTagName('dl');
+    const terms = [...this.element.querySelectorAll('[data-test-workflow-review-grant-list] dt')].map((dt) =>
+      dt.textContent!.replace(':', '').trim(),
+    );
+    const values = [...this.element.querySelectorAll('[data-test-workflow-review-grant-list] dd')].map((dd) =>
+      dd.textContent!.trim(),
+    );
+    assert.deepEqual(terms, ['R01EY012124', 'Funder']);
+    assert.deepEqual(values, ['Synaptic Plasticity', 'NIH']);
   });
 });

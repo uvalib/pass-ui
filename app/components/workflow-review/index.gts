@@ -9,15 +9,15 @@ import { on } from '@ember/modifier';
 import { Textarea } from '@ember/component';
 import { modifier } from 'ember-modifier';
 import ENV from 'pass-ui/config/environment';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import swal from 'sweetalert2/dist/sweetalert2.js';
+import swal from 'pass-ui/util/swal';
+import { depositAgreementHtml } from 'pass-ui/util/deposit-agreement';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import FlashMessage from 'ember-cli-flash/components/flash-message';
 import ExternalRepoReview from 'pass-ui/components/external-repo-review';
 import CommentingBlock from 'pass-ui/components/commenting-block';
 import DisplayMetadataKeys from 'pass-ui/components/display-metadata-keys';
+import FileTypeIcon from 'pass-ui/components/file-type-icon';
 import type Workflow from 'pass-ui/services/workflow';
 import type CurrentUserService from 'pass-ui/services/current-user';
 import type SubmissionHandlerService from 'pass-ui/services/submission-handler';
@@ -34,8 +34,6 @@ interface ReviewFile extends WorkflowFile {
   fileRole: string;
   description: string;
 }
-
-const eq = (a: unknown, b: unknown) => a === b;
 
 const perform =
   (task: Task<unknown, unknown[]>) =>
@@ -161,7 +159,7 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
       .map((repo: RepositoryModel) => ({
         id: repo.name,
         title: `Deposit requirements for ${repo.name}`,
-        html: `<div class="form-control deposit-agreement-content py-4 mt-4">${repo.agreementText}</div>`,
+        html: depositAgreementHtml(repo.name, repo.agreementText),
       }));
 
     const reposWithoutAgreementText: RepoAgreementStep[] = repos
@@ -337,6 +335,8 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 Please review the information below
               </div>
             </div>
+            {{! prettier-ignore }}
+            <div class='table-responsive'>
             <table id='review-step-table' class='table table-responsive-sm w-100'>
               <tbody>
                 {{#if this.mustVisitWeblink}}
@@ -347,9 +347,9 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 {{/if}}
 
                 <tr>
-                  <td class='max-width'>
+                  <th scope='row' class='max-width'>
                     Repositories
-                  </td>
+                  </th>
                   <td>
                     <p>
                       Submission into these repositories is required according to the respective policies.
@@ -365,43 +365,37 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 </tr>
 
                 <tr>
-                  <td>
+                  <th scope='row'>
                     Grants
-                  </td>
+                  </th>
                   <td>
-                    <ul class='list-unstyled' data-test-workflow-review-grant-list>
+                    <dl class='key-value-list' data-test-workflow-review-grant-list>
                       {{#each @submission.grants as |grant|}}
-                        <li class='grant-item'>
-                          <b>
-                            {{grant.awardNumber}}
-                          </b>
-                          :
-                          {{grant.projectName}}
-                        </li>
-                        <li class='grant-item'>
-                          <b>
-                            Funder
-                          </b>
-                          :
-                          {{grant.primaryFunder.name}}
-                        </li>
+                        <div class='grant-item'>
+                          <dt>{{grant.awardNumber}}<span aria-hidden='true'> :</span></dt>
+                          <dd>{{grant.projectName}}</dd>
+                        </div>
+                        <div class='grant-item'>
+                          <dt>Funder<span aria-hidden='true'> :</span></dt>
+                          <dd>{{grant.primaryFunder.name}}</dd>
+                        </div>
                       {{/each}}
-                    </ul>
+                    </dl>
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <th scope='row'>
                     Details
-                  </td>
+                  </th>
                   <td>
                     <DisplayMetadataKeys @submission={{@submission}} />
                   </td>
                 </tr>
 
                 <tr>
-                  <td>
+                  <th scope='row'>
                     Files
-                  </td>
+                  </th>
                   <td>
                     <table class='files-table w-100 border-bottom border-top'>
                       <thead>
@@ -422,19 +416,7 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                         {{#each this.parsedFiles as |file|}}
                           <tr>
                             <td data-label='icon'>
-                              {{#if (eq file.mimeType 'png')}}
-                                <i class='fas fa-file-image line-height-35 text-gray fa-30'></i>
-                              {{else if
-                                (eq file.mimeType 'vnd.openxmlformats-officedocument.presentationml.presentation')
-                              }}
-                                <i class='fas fa-file-powerpoint line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'msword')}}
-                                <i class='fas fa-file-word line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'pdf')}}
-                                <i class='fas fa-file-pdf line-height-35 text-gray fa-30'></i>
-                              {{else}}
-                                <i class='far fa-file line-height-35 text-gray fa-30'></i>
-                              {{/if}}
+                              <FileTypeIcon @mimeType={{file.mimeType}} />
                             </td>
                             <td class='workflow-review-file-name' data-label='name' data-test-workflow-review-file-name>
                               {{file.name}}
@@ -453,9 +435,9 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 </tr>
                 {{#if @submission.isProxySubmission}}
                   <tr>
-                    <td>
+                    <th scope='row'>
                       Comments
-                    </td>
+                    </th>
                     <td>
                       <p data-test-workflow-review-submitter>
                         This submission is prepared on behalf of
@@ -511,6 +493,7 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 {{/if}}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>

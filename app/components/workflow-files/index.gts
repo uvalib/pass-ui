@@ -6,13 +6,12 @@ import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { cancel, debounce, next, schedule } from '@ember/runloop';
 import ENV from 'pass-ui/config/environment';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import swal from 'sweetalert2/dist/sweetalert2.js';
+import swal from 'pass-ui/util/swal';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import fileQueue from 'ember-file-upload/helpers/file-queue';
 import FoundManuscripts from 'pass-ui/components/found-manuscripts';
+import TooltipHost from 'pass-ui/components/tooltip-host';
 import { deleteFileWithBytes } from 'pass-ui/builders/pass-api';
 import { FileState, type UploadFile } from 'ember-file-upload';
 import type Workflow from 'pass-ui/services/workflow';
@@ -281,7 +280,7 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
     {{/each}}
     {{#if this.hasFiles}}
       <div class='row'>
-        <div class='col-lg-12'>
+        <div class='col-lg-12 table-responsive-sm'>
           <table class='table table-responsive-sm table-sm'>
             <thead>
               <tr class='text-center'>
@@ -292,13 +291,10 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
                   File Role
                 </th>
                 <th>
-                  <span
-                    tooltip-position='top'
-                    tooltip='Brief descriptive label, may be displayed in some repositories.'
-                  >
-                    <i class='fas fa-info-circle d-inline'></i>
+                  <TooltipHost @position='top' @text='Brief descriptive label, may be displayed in some repositories.'>
+                    <i class='fas fa-info-circle d-inline' aria-hidden='true'></i>
                     Description
-                  </span>
+                  </TooltipHost>
                 </th>
                 <th>
                   Action

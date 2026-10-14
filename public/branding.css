@@ -42,10 +42,14 @@ a {
   text-decoration: underline;
 }
 
+/*
+ * Links: underline at rest so they are not identified by color alone (WCAG 1.4.1),
+ * and give keyboard focus the same color and underline as mouse hover.
+ */
 a,
 .btn-link {
   color: var(--primary-500);
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .btn-link-underlined {
@@ -54,10 +58,52 @@ a,
 }
 
 a:hover,
-.btn-link:hover {
+.btn-link:hover,
+a:focus,
+.btn-link:focus,
+a:focus-visible,
+.btn-link:focus-visible {
   color: var(--primary-600);
   text-decoration: underline;
 }
+
+/*
+ * Links styled as Bootstrap components (buttons, navbar and header links, dropdown items)
+ * keep their own look and do not pick up the link underline on hover or focus.
+ */
+a.btn:not(.btn-link),
+a.btn:not(.btn-link):hover,
+a.btn:not(.btn-link):focus,
+a.nav-link:hover,
+a.nav-link:focus,
+a.navbar-brand:hover,
+a.navbar-brand:focus,
+a.dropdown-item:hover,
+a.dropdown-item:focus {
+  text-decoration: none;
+}
+
+/*
+ * PassTable clear-filter "X" buttons are .btn-link on a .btn-outline-secondary chip.
+ * Without this, .btn-link:hover paints the icon --primary-600 on the #6c757d hover
+ * background (fails 3:1, WCAG 1.4.11). White on #495057 is 8.18:1.
+ */
+/* stylelint-disable selector-class-pattern */
+.models-table-wrapper .clearFilterIcon,
+.models-table-wrapper .clearFilters {
+  text-decoration: none;
+}
+
+.models-table-wrapper .clearFilterIcon:hover:not(:disabled),
+.models-table-wrapper .clearFilters:hover:not(:disabled),
+.models-table-wrapper .clearFilterIcon:focus:not(:disabled),
+.models-table-wrapper .clearFilters:focus:not(:disabled) {
+  color: #fff;
+  background-color: #495057;
+  border-color: #495057;
+  text-decoration: none;
+}
+/* stylelint-enable selector-class-pattern */
 
 a.text-danger:hover {
   color: white !important;
@@ -70,6 +116,21 @@ a.text-danger:hover {
 .ember-power-select-placeholder {
   color: #536c79;
 }
+
+/* The addon's #aaaaaa borders and arrow are below the 3:1 non-text contrast minimum */
+/* stylelint-disable selector-class-pattern */
+.ember-power-select-trigger,
+.ember-power-select-trigger:focus,
+.ember-power-select-trigger--active,
+.ember-power-select-search-input,
+.ember-power-select-search-input:focus {
+  border-color: #767676;
+}
+
+.ember-power-select-status-icon {
+  border-top-color: #767676;
+}
+/* stylelint-enable selector-class-pattern */
 
 /* Buttons */
 .btn-primary {
@@ -143,7 +204,7 @@ a.text-danger:hover {
 }
 
 .brand-header-title {
-  color: #232D4B;
+  color: #232d4b;
 }
 
 #header-navbar {

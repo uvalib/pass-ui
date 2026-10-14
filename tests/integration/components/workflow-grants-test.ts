@@ -109,7 +109,7 @@ module('Integration | Component | workflow grants', (hooks) => {
 
     const row3 = rows[2];
     await click(row3!);
-    assert.ok(row3!.querySelector('.svg-inline--fa.fa-square-check'), 'Clicked row should show check icon');
+    assert.dom('[data-test-grant-select-checkbox]', row3).isChecked('Clicked row should show a checked checkbox');
 
     assert.strictEqual(workflow.getAddedGrants().length, 2, 'Two grants should have been added');
   });
@@ -210,6 +210,87 @@ module('Integration | Component | workflow grants', (hooks) => {
 
     assert.strictEqual(this.submission.grants.length, 0, 'Grant should have been removed from submission');
 
-    assert.ok(grantRows[1]!.querySelector('.svg-inline--fa.fa-square'), '"Unselected" icon should be seen now');
+    assert.dom('[data-test-grant-select-checkbox]', grantRows[1]).isNotChecked('Checkbox should be unchecked now');
+  });
+
+  test('Grant select checkboxes are named for their grant and expose checked state', async function (assert) {
+    this.set('preLoadedGrant', knownGrant);
+
+    await render(hbs`<WorkflowGrants
+  @submission={{this.submission}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @next={{this.loadNext}}
+  @back={{this.loadPrevious}}
+/>`);
+    await settled();
+
+    const checkboxes = findAll('#grants-selection-table [data-test-grant-select-checkbox]');
+    assert.strictEqual(checkboxes.length, 4, 'Each grant row has a checkbox');
+    checkboxes.forEach((checkbox, i) => {
+      assert.dom(checkbox).hasTagName('input').hasAttribute('type', 'checkbox');
+      assert.dom(checkbox).hasAria('label', `Select ${i + 1}`);
+    });
+    assert.dom(checkboxes[0]).isNotChecked();
+    assert.dom(checkboxes[1]).isChecked('Pre-loaded grant is checked');
+  });
+
+  test('Clicking a grant checkbox toggles the grant exactly once', async function (assert) {
+    this.set('preLoadedGrant', undefined);
+
+    await render(hbs`<WorkflowGrants
+  @submission={{this.submission}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @next={{this.loadNext}}
+  @back={{this.loadPrevious}}
+/>`);
+    await settled();
+
+    const checkbox = '#grants-selection-table tbody tr:nth-child(3) [data-test-grant-select-checkbox]';
+
+    await click(checkbox);
+    assert.dom(checkbox).isChecked('Checkbox is checked after one click');
+    assert.strictEqual(this.submission.grants.length, 1, 'Grant is attached once, not toggled back off by the row');
+    assert.strictEqual(this.submission.grants[0].projectName, 'Moo 3');
+
+    await click(checkbox);
+    assert.dom(checkbox).isNotChecked('Checkbox is unchecked after a second click');
+    assert.strictEqual(this.submission.grants.length, 0, 'Grant is removed from the submission');
+  });
+
+  test('Grants tables scroll inside their own wrapper at 320px instead of widening the page', async function (assert) {
+    this.set('preLoadedGrant', knownGrant);
+
+    await render(hbs`<div data-test-narrow-container style='width: 320px'>
+  <WorkflowGrants
+    @submission={{this.submission}}
+    @preLoadedGrant={{this.preLoadedGrant}}
+    @next={{this.loadNext}}
+    @back={{this.loadPrevious}}
+  />
+</div>`);
+    await settled();
+
+    const container = this.element.querySelector('[data-test-narrow-container]') as HTMLElement;
+    const right = container.getBoundingClientRect().right;
+
+    const wrappers = findAll('.table-responsive');
+    assert.strictEqual(wrappers.length, 2, 'both grants tables have a scroll wrapper');
+    wrappers.forEach((wrapper) => {
+      assert.strictEqual(wrapper.firstElementChild?.tagName, 'TABLE', 'wrapper sits directly around its table');
+      assert.ok(wrapper.getBoundingClientRect().right <= right + 1, 'wrapper fits the container');
+    });
+
+    const available = this.element.querySelector('#grants-selection-table') as HTMLElement;
+    assert.ok(available.scrollWidth > available.clientWidth, 'wide grants table scrolls inside its wrapper');
+
+    // Anything outside a table scroller must stay within the container
+    const overflowing = Array.from(container.querySelectorAll('*')).filter(
+      (el) => !el.closest('.table-responsive') && el.getBoundingClientRect().right > right + 1,
+    );
+    assert.deepEqual(
+      overflowing.map((el) => el.outerHTML.slice(0, 80)),
+      [],
+      'no element outside a table scroller extends past the container',
+    );
   });
 });

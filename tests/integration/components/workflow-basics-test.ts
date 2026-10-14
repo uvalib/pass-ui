@@ -4,11 +4,12 @@ import Service from '@ember/service';
 import { setupRenderingTest } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import { module, test } from 'qunit';
-import { doubleClick, fillIn, render, settled, triggerKeyEvent } from '@ember/test-helpers';
+import { click, doubleClick, fillIn, render, settled, triggerEvent, triggerKeyEvent } from '@ember/test-helpers';
 import { run } from '@ember/runloop';
 import { task } from 'ember-concurrency';
 // @ts-expect-error no declaration file for sinon
 import sinon from 'sinon';
+import type Workflow from 'pass-ui/services/workflow';
 
 module('Integration | Component | workflow basics', (hooks) => {
   setupRenderingTest(hooks);
@@ -419,5 +420,131 @@ module('Integration | Component | workflow basics', (hooks) => {
     await doubleClick('[data-test-workflow-basics-next]');
 
     assert.ok(this.validateAndLoadTab.calledOnce, 'validateAndLoadTab called once');
+  });
+
+  test('proxy submitter fields have visible labels and the user search dialog is named', async function (assert) {
+    (this.submission as { isProxySubmission?: boolean }).isProxySubmission = true;
+    this.set('preLoadedGrant', null);
+
+    await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @updatePublication={{this.updatePublication}}
+/>`);
+
+    const labelFor = (selector: string) => {
+      const input = this.element.querySelector(selector) as HTMLInputElement;
+      return this.element.querySelector(`label[for="${input.id}"]`)?.textContent?.trim();
+    };
+
+    assert.strictEqual(labelFor('[data-test-proxy-search-input]'), 'Search for an existing PASS user');
+    assert.strictEqual(labelFor('[data-test-proxy-submitter-email-input]'), 'Email address');
+    assert.strictEqual(labelFor('[data-test-proxy-submitter-name-input]'), 'Name');
+    assert.dom('[data-test-proxy-search-input]').doesNotHaveAttribute('aria-label');
+    assert.dom('[data-test-proxy-submitter-email-input]').doesNotHaveAttribute('placeholder');
+    assert.dom('[data-test-proxy-submitter-name-input]').doesNotHaveAttribute('placeholder');
+
+    // The DOI leave-blank instruction is persistent text, not a placeholder
+    assert.dom('#doi').doesNotHaveAttribute('placeholder');
+    assert.dom('#doi').hasAttribute('aria-describedby', 'doi-blank-hint');
+    assert.dom('#doi-blank-hint').hasText('Leave blank if your manuscript or article has not yet been assigned a DOI.');
+
+    await click('[data-test-proxy-user-search-button]');
+
+    assert.dom('dialog.user-search-modal').hasAttribute('aria-labelledby', 'user-search-title');
+    assert.dom('#user-search-title').hasText('Search Users');
+  });
+
+  module('without a DOI', function (hooks) {
+    hooks.beforeEach(function () {
+      class MockNoDoiService extends Service {
+        resolveDOI = task(async () => Promise.resolve({}));
+
+        isValidDOI() {
+          return false;
+        }
+
+        formatDOI(doi: string) {
+          return doi;
+        }
+
+        doiToMetadata(_doiInfo: unknown, journal: { issns?: string[] } | null) {
+          return journal ? { issns: journal.issns } : {};
+        }
+      }
+
+      this.owner.unregister('service:doi');
+      this.owner.register('service:doi', MockNoDoiService);
+    });
+
+    test('the Journal label names the journal picker', async function (assert) {
+      this.publication = { doi: '', title: 'Moo title', journal: null };
+
+      await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @doiInfo={{this.doiInfo}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @updatePublication={{this.updatePublication}}
+  @updateDoiInfo={{this.updateDoiInfo}}
+/>`);
+
+      assert.dom('#journal-label').hasText('Journal').doesNotHaveAttribute('for');
+      assert
+        .dom('#journal')
+        .hasAttribute('role', 'combobox')
+        .hasAttribute('aria-labelledby', 'journal-label')
+        .hasClass('ember-power-select-trigger');
+
+      await click('#journal-label');
+      assert.dom('#journal').isFocused('clicking the label focuses the picker');
+    });
+
+    test('clearing the journal restores the empty optional state', async function (assert) {
+      const journal = { id: '1', journalName: 'Moo Journal', issns: ['Print:0003-2654'] };
+      this.publication = { doi: '', title: 'Moo title', journal };
+      this.submission.metadata = JSON.stringify({ title: 'Moo title', authors: [{ author: 'Moo Jones' }] });
+      this.validateJournal = sinon.stub();
+
+      await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @journal={{this.publication.journal}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @doiInfo={{this.doiInfo}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @updatePublication={{this.updatePublication}}
+  @updateDoiInfo={{this.updateDoiInfo}}
+/>`);
+
+      // The existing journal is selected on render, which adds its fields to the metadata
+      let metadata = JSON.parse(this.submission.metadata);
+      assert.strictEqual(metadata['journal-title'], 'Moo Journal');
+      assert.deepEqual(metadata.issns, ['Print:0003-2654']);
+      const validateCalls = this.validateJournal.callCount;
+
+      await triggerEvent('.ember-power-select-clear-btn', 'mousedown');
+
+      assert.strictEqual(this.publication.journal, null, 'journal removed from the publication');
+      metadata = JSON.parse(this.submission.metadata);
+      assert.notOk('journal-title' in metadata, 'journal-title removed from metadata');
+      assert.notOk('issns' in metadata, 'issns removed from metadata');
+      assert.strictEqual(metadata.title, 'Moo title', 'other metadata is kept');
+      assert.deepEqual(metadata.authors, [{ author: 'Moo Jones' }], 'other metadata is kept');
+      assert.deepEqual((this.owner.lookup('service:workflow') as Workflow).getReadOnlyProperties(), []);
+      assert.strictEqual(this.validateJournal.callCount, validateCalls, 'empty journal is not flagged invalid');
+    });
   });
 });

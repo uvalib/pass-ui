@@ -5,7 +5,8 @@ import { action } from '@ember/object';
 import ENV from 'pass-ui/config/environment';
 import { service } from '@ember/service';
 import { later, scheduleOnce } from '@ember/runloop';
-import swal from 'sweetalert2/dist/sweetalert2.js';
+import swal from 'pass-ui/util/swal';
+import { depositAgreementHtml } from 'pass-ui/util/deposit-agreement';
 import type RouterService from '@ember/routing/router-service';
 import type CurrentUserService from 'pass-ui/services/current-user';
 import type SubmissionHandlerService from 'pass-ui/services/submission-handler';
@@ -360,7 +361,7 @@ export default class SubmissionsDetail extends Controller {
       .map((repo: RepositoryModel) => ({
         id: repo.name,
         title: `Deposit requirements for ${repo.name}`,
-        html: `<textarea rows="16" cols="40" name="embargo" class="form-control disabled" disabled="" autocomplete="off">${repo.agreementText}</textarea>`,
+        html: depositAgreementHtml(repo.name, repo.agreementText),
       }));
 
     const withoutAgreement = repositories
@@ -528,6 +529,7 @@ export default class SubmissionsDetail extends Controller {
       confirmButtonText: 'Delete',
       confirmButtonColor: '#DC3545',
       showCancelButton: true,
+      focusCancel: true,
     });
     if (result.value) {
       const ignoreList = this.searchHelper;
@@ -538,6 +540,7 @@ export default class SubmissionsDetail extends Controller {
         ignoreList.clearIgnore();
         ignoreList.ignore(submission.id!);
         this.router.transitionTo('submissions');
+        this.flashMessages.success('Draft submission deleted.');
       } catch (e) {
         this.flashMessages.danger(
           'We encountered an error deleting this draft submission. Please try again later or contact your administrator',

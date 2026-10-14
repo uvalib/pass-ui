@@ -1917,7 +1917,7 @@ UVA already covers these in `branding-overrides.css`. No UVA production need unt
 
 **Suggested generic fix (no UVA colors)**
 
-1. Set SurveyJS theme tokens in `public/branding.css` (do not copy `--uva-grey-A` or `--uva-red-B`):
+1. Set SurveyJS theme tokens in `public/branding.css` (do not copy `--uva-grey-a` or `--uva-red-b`):
 
 ```css
 :root {
@@ -2051,13 +2051,13 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 
 **uvalib cleanup after this merges**
 
-- **Keep** `.sv-string-viewer { color: var(--uva-grey-A); }` in `branding-overrides.css` (UVA grey, not the generic token).
+- **Keep** `.sv-string-viewer { color: var(--uva-grey-a); }` in `branding-overrides.css` (UVA grey, not the generic token).
 - **Keep** the UVA `.sd-boolean` block (UVA greys, thumb colors). Core will add a generic 3:1 edge; UVA’s more specific border/fill still wins.
-- **Keep** the UVA `.sd-action--negative` block (`--uva-red-B`, hover `--uva-red-100`). Core will add a generic 3:1 edge; UVA’s more specific border/hover still wins.
-- **Keep** the UVA `.sd-error` block (grey-B text, `--uva-red-100` fill, `--uva-red-B` 10px left bar).
-- **Keep** UVA empty-dropdown `color: var(--uva-grey-A)` and `.sd-dropdown_*_svg use { fill: var(--uva-grey-A) }` if we still want UVA grey rather than the generic token.
+- **Keep** the UVA `.sd-action--negative` block (`--uva-red-b`, hover `--uva-red-100`). Core will add a generic 3:1 edge; UVA’s more specific border/hover still wins.
+- **Keep** the UVA `.sd-error` block (grey-B text, `--uva-red-100` fill, `--uva-red-b` 10px left bar).
+- **Keep** UVA empty-dropdown `color: var(--uva-grey-a)` and `.sd-dropdown_*_svg use { fill: var(--uva-grey-a) }` if we still want UVA grey rather than the generic token.
 - **Remove** the `input.form-control:disabled` / `:read-only` scoping block if core now owns it (duplicate of the generic fix).
-- Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-A`, and `--sjs-special-red` to `--uva-red-B`, in the UVA `:root`.
+- Optionally also set `--sjs-font-questiondescription-color` / `--sjs-general-forecolor-light` / `--sjs-font-editorfont-placeholdercolor` to `--uva-grey-a`, and `--sjs-special-red` to `--uva-red-b`, in the UVA `:root`.
 - Merge `main` into `uvalib`, check Details Authors/Embargo, Yes/No (text + track edge), Remove (text + edge), required-field errors (text + box edge), empty dropdowns, and dropdown icons, push `uvalib`, delete the contribution branch.
 
 ### 4. SweetAlert confirm fails 4.5:1 (F6-4 + F7-5)
@@ -2097,7 +2097,7 @@ Use a 4.5:1 pair with white. Default `--primary-600` in `branding.css` is `#1e40
 }
 ```
 
-Do not copy `--uva-blue-alt-A`. If a site remaps `--primary-600` to a light color (stock sample overlay orange), that site’s confirm button would fail again; that is the sample-overlay issue in Optional (D-4), not this PR.
+Do not copy `--uva-blue-alt-a`. If a site remaps `--primary-600` to a light color (stock sample overlay orange), that site’s confirm button would fail again; that is the sample-overlay issue in Optional (D-4), not this PR.
 
 **Issue title (eclipse-pass/main)**
 
@@ -2148,7 +2148,7 @@ This uses `var(--primary-600)` for the confirm background (default `#1e40af`, ~8
 
 **uvalib cleanup after this merges**
 
-- **Keep** the UVA `.swal2-confirm` block (`--uva-blue-alt-A` / `--uva-brand-blue`, white text). That is branding; core will use `--primary-600`, which UVA remaps to `--uva-blue-alt-A`, so the override may become redundant. Keep it until a visual check shows the token path is enough.
+- **Keep** the UVA `.swal2-confirm` block (`--uva-blue-alt-a` / `--uva-brand-blue`, white text). That is branding; core will use `--primary-600`, which UVA remaps to `--uva-blue-alt-a`, so the override may become redundant. Keep it until a visual check shows the token path is enough.
 - Merge `main` into `uvalib`, check Remove-file **I Agree** and Review **Next** / **Confirm**, push `uvalib`, delete the contribution branch.
 
 ### 5. Links need rest-state and keyboard-focus indicators (GS-3 + GS-4 + F3-2 + F6-3)
@@ -2262,7 +2262,7 @@ This keeps rest-state underline and adds `a:focus` / `a:focus-visible` next to `
 
 **uvalib cleanup after this merges**
 
-- **Keep** UVA `a` / `a:hover` / `a:focus` / `a:focus-visible` color (`--uva-blue-alt-A`).
+- **Keep** UVA `a` / `a:hover` / `a:focus` / `a:focus-visible` color (`--uva-blue-alt-a`).
 - **Keep** `.models-table-wrapper` and Files-row `:focus-visible` outlines if we still want the extra 2px ring.
 - Rest-state underline in core may make some UVA `text-decoration: underline` duplicates redundant; keep until a visual check.
 - Merge `main` into `uvalib`, check rest + Tab on Grants/Submissions/Policies/Files links, push `uvalib`, delete the contribution branch.
@@ -2298,7 +2298,7 @@ Give hover/focus a 3:1 pair and turn off link underline on the X. Example (white
 }
 ```
 
-`#ffffff` on `#495057` is about **8:1**. Do not copy `--uva-grey-A`. Do not use `--primary-600` here.
+`#ffffff` on `#495057` is about **8:1**. Do not copy `--uva-grey-a`. Do not use `--primary-600` here.
 
 **Issue title (eclipse-pass/main)**
 
@@ -2350,7 +2350,7 @@ This sets hover/focus to a 3:1 pair (white on `#495057`) and removes the link un
 
 **uvalib cleanup after this merges**
 
-- **Keep** UVA `.clearFilters` / `.clearFilterIcon` hover (`white` on `--uva-grey-A`) and `:focus-visible` outline. Core will add a generic 3:1 pair; UVA’s more specific rule still wins.
+- **Keep** UVA `.clearFilters` / `.clearFilterIcon` hover (`white` on `--uva-grey-a`) and `:focus-visible` outline. Core will add a generic 3:1 pair; UVA’s more specific rule still wins.
 - Merge `main` into `uvalib`, hover/Tab the PassTable X, push `uvalib`, delete the contribution branch.
 
 ### 7. Journal dropdown arrow and border fail 3:1 (F1-5)
@@ -2461,7 +2461,7 @@ First-focus link in `app/templates/application.gts`, visually hidden until `:foc
 
 - Stock `main` `branding-overrides.css` sets `--primary-600: #e37108`. `a:hover` uses that token. Orange on white is ~3.1:1. F3-3 is the same hover on the Policies “more information” links.
 - Generic `branding.css` default `--primary-600: #1e40af` already passes.
-- UVA remaps `--primary-600` to `--uva-blue-alt-A` (`#005679`) and restyles `a:hover`.
+- UVA remaps `--primary-600` to `--uva-blue-alt-a` (`#005679`) and restyles `a:hover`.
 - Possible PR: change the **sample** overlay tokens to passing colors. Do not change `branding.css`.
 - **uvalib cleanup:** none.
 
@@ -2522,7 +2522,7 @@ Add the leave-blank sentence to the lead paragraph (or a visible helper under th
 
 **Priority: low.** Auditor passed (visible label + focus ring) but strongly recommended a 3:1 edge. Bootstrap `.form-control` / `.input-group-text` border `#ced4da` on white is ~1.49:1 (PassTable Search, Basics fields).
 
-- UVA already sets `.form-control` and `.input-group-text` borders to `--uva-grey-A` (8.19:1) in `branding-overrides.css`.
+- UVA already sets `.form-control` and `.input-group-text` borders to `--uva-grey-a` (8.19:1) in `branding-overrides.css`.
 - Possible PR: `border-color: #767676` on `.form-control` and `.input-group-text` in `public/branding.css`. Fold into item 7 if we send that one.
 - **uvalib cleanup:** none (keep the UVA border).
 
@@ -2550,19 +2550,19 @@ Found while re-checking #1350 on `uvalib`. Every other step is `h1` → `h2`/`h3
 | D-4 / F3-3 hover orange (UVA build) | `--primary-600` / `a:hover` already overridden. |
 | D-5 header/nav reflow | Already in `branding-overrides.css`. |
 | F1-2 / GS-5 white `h1`/`h2` | `--secondary-500: #FFFFFF` is a UVA token used as button/banner color. Headings are forced to `--uva-brand-blue`. Generic `--secondary-500` is `#374151`. |
-| F7-7 / GS-8 back arrow | Same UVA white `--secondary-500` (at `opacity: 0.7`). UVA sets the arrow to `--uva-blue-alt-A` at full opacity (8.05:1). Generic `#374151` at 0.7 is ~4.3:1 and already passes 3:1. |
+| F7-7 / GS-8 back arrow | Same UVA white `--secondary-500` (at `opacity: 0.7`). UVA sets the arrow to `--uva-blue-alt-a` at full opacity (8.05:1). Generic `#374151` at 0.7 is ~4.3:1 and already passes 3:1. |
 | F1-5 journal arrow/border on UVA | Already `--uva-grey` on `.ember-power-select-status-icon` / `-trigger` (3.95:1); contribute the generic grey via backlog item 7. |
 | F1-3 / F1-4 on UVA | Already in `/* Submission wizard */` overrides; contribute the generic version via backlog item 1. |
 | F2-3 / F6-5 / F7-6 / GS-6 reflow on UVA | Already in `/* Reflow (320px / 400% zoom) */` (page scroll, PassTable footer stack, Review/details); contribute the generic page-scroll + PassTable footer stack via backlog item 2. Remove-button stretch and Review/details stacking stay UVA-only. |
-| F5-3 SurveyJS placeholder on UVA | Already `.sv-string-viewer { color: var(--uva-grey-A) }`; contribute the generic token fix via backlog item 3. |
+| F5-3 SurveyJS placeholder on UVA | Already `.sv-string-viewer { color: var(--uva-grey-a) }`; contribute the generic token fix via backlog item 3. |
 | F5-4 Yes/No toggle on UVA | Already the `.sd-boolean` block in `branding-overrides.css`; fold the generic token fix into backlog item 3. Keep the UVA toggle restyle. |
-| F5-5 SurveyJS Remove on UVA | Already `.sd-action--negative` uses `--uva-red-B`; fold `--sjs-special-red` into backlog item 3. Keep the UVA Remove restyle. |
-| F5-7 empty dropdown on UVA | Already white background + `--uva-grey-A` and `:read-only` scoped to input/textarea. The “Select...” text is the filter input’s `::placeholder` (SurveyJS `#909090`, 3.18:1 on white); UVA also sets `.sd-input::placeholder` and the empty-dropdown `::placeholder` to `--uva-grey-A`. Generic `--sjs-font-editorfont-placeholdercolor` in item 3 covers it. |
-| F5-8 Yes/No track on UVA | Already 2px `--uva-grey-A` edge on a light fill; fold a generic 3:1 `.sd-boolean` border into backlog item 3. Keep the UVA toggle restyle. |
-| F5-9 dropdown icons on UVA | Already `.sd-dropdown_*_svg use { fill: var(--uva-grey-A) }`; fold generic icon `fill` into backlog item 3. Keep UVA fill if desired. |
-| F5-10 Remove UI edge on UVA | Already 2px `--uva-red-B` border on transparent/light fill; fold a generic `.sd-action--negative` 3:1 edge into backlog item 3. Keep the UVA Remove restyle. |
-| F5-6 error text on UVA | Already `.sd-error` / `.sv-string-viewer` use `--uva-grey-B`; `--sjs-special-red` in item 3 covers generic error text. Keep the UVA error restyle. |
-| F5-11 error box on UVA | Already 2px/10px `--uva-red-B` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
-| F6-4 / F7-5 SweetAlert confirm on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-A`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
+| F5-5 SurveyJS Remove on UVA | Already `.sd-action--negative` uses `--uva-red-b`; fold `--sjs-special-red` into backlog item 3. Keep the UVA Remove restyle. |
+| F5-7 empty dropdown on UVA | Already white background + `--uva-grey-a` and `:read-only` scoped to input/textarea. The “Select...” text is the filter input’s `::placeholder` (SurveyJS `#909090`, 3.18:1 on white); UVA also sets `.sd-input::placeholder` and the empty-dropdown `::placeholder` to `--uva-grey-a`. Generic `--sjs-font-editorfont-placeholdercolor` in item 3 covers it. |
+| F5-8 Yes/No track on UVA | Already 2px `--uva-grey-a` edge on a light fill; fold a generic 3:1 `.sd-boolean` border into backlog item 3. Keep the UVA toggle restyle. |
+| F5-9 dropdown icons on UVA | Already `.sd-dropdown_*_svg use { fill: var(--uva-grey-a) }`; fold generic icon `fill` into backlog item 3. Keep UVA fill if desired. |
+| F5-10 Remove UI edge on UVA | Already 2px `--uva-red-b` border on transparent/light fill; fold a generic `.sd-action--negative` 3:1 edge into backlog item 3. Keep the UVA Remove restyle. |
+| F5-6 error text on UVA | Already `.sd-error` / `.sv-string-viewer` use `--uva-grey-b`; `--sjs-special-red` in item 3 covers generic error text. Keep the UVA error restyle. |
+| F5-11 error box on UVA | Already 2px/10px `--uva-red-b` edge on `--uva-red-100`; fold a generic `.sd-error` 3:1 border into backlog item 3. Keep the UVA error restyle. |
+| F6-4 / F7-5 SweetAlert confirm on UVA | Already `.swal2-confirm` uses `--uva-blue-alt-a`; contribute the generic `--primary-600` confirm via backlog item 4. Keep the UVA confirm restyle until the token path is enough. |
 | GS-3 / GS-4 / F3-2 / F6-3 links on UVA | Already rest-state underline and `a:focus` / `a:focus-visible` (global, tables, Files, Policies); contribute the generic rest + focus underline via backlog item 5. Keep UVA blues and extra outlines. |
-| GS-7 PassTable X on UVA | Already white on `--uva-grey-A` for `.clearFilters` hover/focus; contribute the generic 3:1 chip hover via backlog item 6. Keep the UVA X restyle. |
+| GS-7 PassTable X on UVA | Already white on `--uva-grey-a` for `.clearFilters` hover/focus; contribute the generic 3:1 chip hover via backlog item 6. Keep the UVA X restyle. |

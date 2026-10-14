@@ -3,6 +3,9 @@ import { setupTest } from 'ember-qunit';
 // @ts-expect-error no declaration file for sinon
 import Sinon from 'sinon';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { waitFor } from '@ember/test-helpers';
+import swal from 'pass-ui/util/swal';
+import type RepositoryModel from 'pass-ui/models/repository';
 import type SubmissionModel from 'pass-ui/models/submission';
 import type SubmissionsDetailController from 'pass-ui/controllers/submissions/detail';
 
@@ -37,6 +40,31 @@ module('Unit | Controller | submissions/detail', (hooks) => {
     swalStub.restore();
   });
 
+  test('success message shown after the submission is deleted', async function (assert) {
+    const submission = { id: '1' } as unknown as SubmissionModel;
+
+    const swalStub = Sinon.stub(Swal, 'fire').resolves({ value: true });
+
+    const controller = this.owner.lookup('controller:submissions/detail') as SubmissionsDetailController;
+    const routerService = this.owner.lookup('service:router');
+    const transitionFake = Sinon.replace(routerService, 'transitionTo', Sinon.fake());
+
+    controller.submissionHandler = this.owner.lookup(
+      'service:submission-handler',
+    ) as typeof controller.submissionHandler;
+    Sinon.replace(controller.submissionHandler, 'deleteSubmission', Sinon.fake.resolves());
+
+    controller.flashMessages = this.owner.lookup('service:flash-messages') as typeof controller.flashMessages;
+    const successFake = Sinon.replace(controller.flashMessages, 'success', Sinon.fake());
+
+    await controller.deleteSubmission(submission);
+
+    assert.ok(transitionFake.calledOnceWith('submissions'), 'Should go back to the submissions list');
+    assert.ok(successFake.calledOnceWith('Draft submission deleted.'), 'Success message should be shown');
+    assert.true(swalStub.firstCall.args[0].focusCancel, 'Cancel should get initial focus in the confirm dialog');
+    swalStub.restore();
+  });
+
   test('error message shown on submission deletion error', async function (assert) {
     const submission = {} as unknown as SubmissionModel;
 
@@ -54,6 +82,7 @@ module('Unit | Controller | submissions/detail', (hooks) => {
 
     controller.flashMessages = this.owner.lookup('service:flash-messages') as typeof controller.flashMessages;
     const flashFake = Sinon.replace(controller.flashMessages, 'danger', Sinon.fake());
+    const successFake = Sinon.replace(controller.flashMessages, 'success', Sinon.fake());
 
     // Note: using controller.send resolves immediately
     // making subsequent assertions evaluate before the controller action fires
@@ -64,6 +93,33 @@ module('Unit | Controller | submissions/detail', (hooks) => {
     assert.ok(deleteFake.calledOnce, 'Submission handler delete should be called');
     assert.ok(flashFake.calledOnce, 'Flash message should be called');
     assert.equal(transitionFake.callCount, 0, 'Transition should not be called');
+    assert.ok(successFake.notCalled, 'Success message should not be shown');
     swalStub.restore();
+  });
+
+  test('deposit agreement is a named, keyboard-focusable region in the approval dialog', async function (assert) {
+    // The agreement steps are private helpers of approveChanges
+    const controller = this.owner.lookup('controller:submissions/detail') as unknown as {
+      _categorizeRepositories(repos: RepositoryModel[]): {
+        withAgreement: { id: string; title: string; html: string }[];
+      };
+      _collectAgreements(repos: { id: string; title: string; html: string }[]): Promise<{ cancelled: boolean }>;
+    };
+    const repo = { name: 'JScholarship', agreementText: 'NON-EXCLUSIVE LICENSE', _isWebLink: false } as RepositoryModel;
+    const { withAgreement } = controller._categorizeRepositories([repo]);
+
+    const collected = controller._collectAgreements(withAgreement);
+    await waitFor('.swal2-popup [data-test-deposit-agreement]');
+
+    const region = '.swal2-popup[role="dialog"] .swal2-html-container [data-test-deposit-agreement]';
+    assert.dom(region, document.body).exists('agreement is inside the dialog');
+    assert.dom(region, document.body).hasAttribute('role', 'region');
+    assert.dom(region, document.body).hasAttribute('tabindex', '0');
+    assert.dom(region, document.body).hasAttribute('aria-label', 'Deposit agreement for JScholarship');
+    assert.dom(region, document.body).hasText('NON-EXCLUSIVE LICENSE');
+    assert.dom('.swal2-popup textarea[disabled]', document.body).doesNotExist('no disabled textarea');
+
+    swal.close();
+    assert.true((await collected).cancelled);
   });
 });

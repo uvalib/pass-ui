@@ -8,6 +8,10 @@ import config from 'pass-ui/config/environment';
 import NavBar from 'pass-ui/components/nav-bar';
 import NoticeBanner from 'pass-ui/components/notice-banner';
 import type ApplicationController from 'pass-ui/controllers/application';
+import { pageTitle } from 'ember-page-title';
+
+// Errors keep FlashMessage's role="alert"; other messages are announced politely by the container
+const flashRole = (type: string) => (type === 'danger' ? 'alert' : undefined);
 
 interface Signature {
   Args: {
@@ -17,19 +21,15 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'PASS'}}
   {{! template-lint-disable require-valid-alt-text }}
   <BasicDropdownWormhole />
   <div id='brand-site-container' class='site' tabindex='-1'>
     <header id='brand-header' class='navbar navbar-expand-xs justify-content-center mb-0'>
       <div class={{if @controller.fullWidth 'container-fluid' 'container'}}>
-        <a href='/' class='navbar-brand d-none d-sm-block'>
+        <a href='/' class='navbar-brand'>
           <span class='brand-header-title font-weight-light'>
             Public Access Submission System
-          </span>
-        </a>
-        <a href='/' class='navbar-brand custom-color d-xs-block d-sm-none'>
-          <span class='brand-header-title font-weight-light'>
-            P.A.S.S.
           </span>
         </a>
         {{#if @controller.logoUri}}
@@ -52,9 +52,9 @@ interface Signature {
       <NavBar @fullWidth={{@controller.fullWidth}} />
     </div>
     <main class='container-fluid site-content'>
-      <div class='flash-message-container'>
+      <div class='flash-message-container' aria-live='polite' data-test-flash-message-container>
         {{#each @controller.flashMessages.queue as |flash|}}
-          <FlashMessage @flash={{flash}} as |component flash close|>
+          <FlashMessage @flash={{flash}} role={{flashRole flash.type}} as |component flash close|>
             <div class='d-flex justify-content-between'>
               {{flash.message}}
               <span role='button' {{on 'click' close}}>
