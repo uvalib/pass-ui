@@ -5,9 +5,7 @@ import { tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import ENV from 'pass-ui/config/environment';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import swal from 'sweetalert2/dist/sweetalert2.js';
+import swal from 'pass-ui/util/swal';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import fileQueue from 'ember-file-upload/helpers/file-queue';
