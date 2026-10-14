@@ -11,6 +11,7 @@ import SubmissionsRepoidCell from 'pass-ui/components/submissions-repoid-cell';
 import SubmissionActionCell from 'pass-ui/components/submission-action-cell';
 import DateCell from 'pass-ui/components/date-cell';
 import type GrantDetailsController from 'pass-ui/controllers/grants/detail';
+import { pageTitle } from 'ember-page-title';
 
 interface Signature {
   Args: {
@@ -20,6 +21,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Grant Details'}}
   <div id='grant-details-title' class='d-flex justify-content-between align-items-center my-3'>
     <div class='d-flex align-items-center'>
       <LinkTo @route='grants' class='btn btn-small back-arrow mr-1' aria-label='Go back to the previous page'>
