@@ -1,5 +1,6 @@
 import Component from '@glimmer/component';
 import RepocopyDisplay from 'pass-ui/components/repocopy-display';
+import TooltipHost from 'pass-ui/components/tooltip-host';
 import type RepositoryModel from 'pass-ui/models/repository';
 import type DepositModel from 'pass-ui/models/deposit';
 import type RepositoryCopyModel from 'pass-ui/models/repository-copy';
@@ -100,14 +101,14 @@ export default class SubmissionRepoDetails extends Component<SubmissionRepoDetai
               {{#unless this.isExternalRepo}}
                 <div class='col'>
                   {{#if this.tooltip}}
-                    <span class='{{this.status}}' tooltip-position='left' tooltip='{{this.tooltip}}'>
-                      <i class='fas fa-info-circle deposit-status-icon'></i>
+                    <TooltipHost class='{{this.status}}' @position='left' @text={{this.tooltip}}>
+                      <i class='fas fa-info-circle deposit-status-icon' aria-hidden='true'></i>
                       {{#if (eq this.status 'not-submitted')}}
                         n&#47;a
                       {{else}}
                         {{this.status}}
                       {{/if}}
-                    </span>
+                    </TooltipHost>
                   {{else}}
                     <span class='{{this.status}}'>
                       <i class='fas fa-circle deposit-status-icon'></i>
