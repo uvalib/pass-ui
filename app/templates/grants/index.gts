@@ -7,6 +7,7 @@ import GrantActionCell from 'pass-ui/components/grant-action-cell';
 import DateCell from 'pass-ui/components/date-cell';
 import MessageDialog from 'pass-ui/components/message-dialog';
 import type GrantsIndexController from 'pass-ui/controllers/grants/index';
+import { pageTitle } from 'ember-page-title';
 
 interface Signature {
   Args: {
@@ -16,6 +17,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Your Grants'}}
   <div class='row'>
     <div class='col-12'>
       <h1 class='font-weight-light'>

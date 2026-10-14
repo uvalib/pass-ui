@@ -1,6 +1,7 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import { LinkTo } from '@ember/routing';
 import type DashboardController from 'pass-ui/controllers/dashboard';
+import { pageTitle } from 'ember-page-title';
 
 const or = (...args: unknown[]) => args.some(Boolean);
 
@@ -12,6 +13,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Dashboard'}}
   <h1 class='visually-hidden'>Dashboard</h1>
   <div id='dashboard-container' class='row row-eq-height'>
     <div class='col-md-6 mt-4 mb-4'>

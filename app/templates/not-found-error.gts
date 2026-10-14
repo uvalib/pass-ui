@@ -1,5 +1,6 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type NotFoundErrorController from 'pass-ui/controllers/not-found-error';
+import { pageTitle } from 'ember-page-title';
 
 interface Signature {
   Args: {
@@ -9,6 +10,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Page not found'}}
   {{outlet}}
   <div class='row'>
     <div class='col-2'>

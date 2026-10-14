@@ -9,6 +9,7 @@ import SubmissionRepoDetails from 'pass-ui/components/submission-repo-details';
 import DisplayMetadataKeys from 'pass-ui/components/display-metadata-keys';
 import CommentingBlock from 'pass-ui/components/commenting-block';
 import type SubmissionsDetail from 'pass-ui/controllers/submissions/detail';
+import { pageTitle } from 'ember-page-title';
 
 const eq = (a: unknown, b: unknown) => a === b;
 const or = (...args: unknown[]) => args.some(Boolean);
@@ -22,6 +23,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Submission Detail'}}
   {{! template-lint-disable link-rel-noopener require-button-type require-input-label }}
   <div class='block-user-input text-center'>
     <div class='lds-dual-ring mx-auto'></div>
