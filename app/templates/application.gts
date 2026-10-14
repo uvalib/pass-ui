@@ -10,6 +10,9 @@ import NoticeBanner from 'pass-ui/components/notice-banner';
 import type ApplicationController from 'pass-ui/controllers/application';
 import { pageTitle } from 'ember-page-title';
 
+// Errors keep FlashMessage's role="alert"; other messages are announced politely by the container
+const flashRole = (type: string) => (type === 'danger' ? 'alert' : undefined);
+
 interface Signature {
   Args: {
     controller: ApplicationController;
@@ -49,9 +52,9 @@ interface Signature {
       <NavBar @fullWidth={{@controller.fullWidth}} />
     </div>
     <main class='container-fluid site-content'>
-      <div class='flash-message-container'>
+      <div class='flash-message-container' aria-live='polite' data-test-flash-message-container>
         {{#each @controller.flashMessages.queue as |flash|}}
-          <FlashMessage @flash={{flash}} as |component flash close|>
+          <FlashMessage @flash={{flash}} role={{flashRole flash.type}} as |component flash close|>
             <div class='d-flex justify-content-between'>
               {{flash.message}}
               <span role='button' {{on 'click' close}}>

@@ -40,6 +40,31 @@ module('Unit | Controller | submissions/detail', (hooks) => {
     swalStub.restore();
   });
 
+  test('success message shown after the submission is deleted', async function (assert) {
+    const submission = { id: '1' } as unknown as SubmissionModel;
+
+    const swalStub = Sinon.stub(Swal, 'fire').resolves({ value: true });
+
+    const controller = this.owner.lookup('controller:submissions/detail') as SubmissionsDetailController;
+    const routerService = this.owner.lookup('service:router');
+    const transitionFake = Sinon.replace(routerService, 'transitionTo', Sinon.fake());
+
+    controller.submissionHandler = this.owner.lookup(
+      'service:submission-handler',
+    ) as typeof controller.submissionHandler;
+    Sinon.replace(controller.submissionHandler, 'deleteSubmission', Sinon.fake.resolves());
+
+    controller.flashMessages = this.owner.lookup('service:flash-messages') as typeof controller.flashMessages;
+    const successFake = Sinon.replace(controller.flashMessages, 'success', Sinon.fake());
+
+    await controller.deleteSubmission(submission);
+
+    assert.ok(transitionFake.calledOnceWith('submissions'), 'Should go back to the submissions list');
+    assert.ok(successFake.calledOnceWith('Draft submission deleted.'), 'Success message should be shown');
+    assert.true(swalStub.firstCall.args[0].focusCancel, 'Cancel should get initial focus in the confirm dialog');
+    swalStub.restore();
+  });
+
   test('error message shown on submission deletion error', async function (assert) {
     const submission = {} as unknown as SubmissionModel;
 
@@ -57,6 +82,7 @@ module('Unit | Controller | submissions/detail', (hooks) => {
 
     controller.flashMessages = this.owner.lookup('service:flash-messages') as typeof controller.flashMessages;
     const flashFake = Sinon.replace(controller.flashMessages, 'danger', Sinon.fake());
+    const successFake = Sinon.replace(controller.flashMessages, 'success', Sinon.fake());
 
     // Note: using controller.send resolves immediately
     // making subsequent assertions evaluate before the controller action fires
@@ -67,6 +93,7 @@ module('Unit | Controller | submissions/detail', (hooks) => {
     assert.ok(deleteFake.calledOnce, 'Submission handler delete should be called');
     assert.ok(flashFake.calledOnce, 'Flash message should be called');
     assert.equal(transitionFake.callCount, 0, 'Transition should not be called');
+    assert.ok(successFake.notCalled, 'Success message should not be shown');
     swalStub.restore();
   });
 
