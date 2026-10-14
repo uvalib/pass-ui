@@ -280,7 +280,7 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
     {{/each}}
     {{#if this.hasFiles}}
       <div class='row'>
-        <div class='col-lg-12 table-responsive-md'>
+        <div class='col-lg-12 table-responsive-sm'>
           <table class='table table-responsive-sm table-sm'>
             <thead>
               <tr class='text-center'>
