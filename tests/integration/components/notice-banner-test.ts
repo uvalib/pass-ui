@@ -36,5 +36,7 @@ module('Integration | Component | notice-banner', (hooks) => {
       'https://test-contact/',
       'contact us url populated',
     );
+    assert.dom('.info-banner').exists('banner is rendered');
+    assert.dom('nav').doesNotExist('help text is not exposed as a navigation landmark');
   });
 });

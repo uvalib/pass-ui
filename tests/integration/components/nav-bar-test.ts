@@ -27,6 +27,6 @@ module('Integration | Component | nav bar', (hooks) => {
     this.owner.register('service:app-static-config', mockStaticConfig);
 
     await render(hbs`<NavBar />`);
-    assert.ok(true);
+    assert.dom('nav#header-navbar').hasAttribute('aria-label', 'Main', 'site menu landmark has an accessible name');
   });
 });
