@@ -117,6 +117,42 @@ module('Integration | Component | policy card', (hooks) => {
       assert.strictEqual(effectivePolicies.length, 0, 'Should be ZERO effective policies');
     });
 
+    test('PMC radios are a named group labeled by their visible text', async function (assert) {
+      await render(
+        hbs`<PolicyCard @policy={{this.policy}} @journal={{this.journal}} @submission={{this.submission}} />`,
+      );
+
+      const noDeposit = this.element.querySelector('[data-test-workflow-policies-radio-no-direct-deposit]')!;
+      const directDeposit = this.element.querySelector('[data-test-workflow-policies-radio-direct-deposit]')!;
+
+      // Accessible name comes from the wrapping <label>, not a developer aria-label
+      for (const radio of [noDeposit, directDeposit]) {
+        assert.dom(radio).doesNotHaveAttribute('aria-label');
+        assert.dom(radio).hasAttribute('name', 'pmc-deposit-arrangement');
+        assert.ok(radio.closest('label'), 'radio is wrapped in a label');
+      }
+      assert
+        .dom(noDeposit.closest('label'))
+        .includesText('I would like to submit my manuscript to PMC via the NIH Manuscript System (NIHMS)');
+      assert
+        .dom(directDeposit.closest('label'))
+        .includesText('I have made (or intend to make) an arrangement with the publisher');
+
+      // Both radios sit in one fieldset whose legend is the intro text
+      const fieldset = noDeposit.closest('fieldset');
+      assert.ok(fieldset, 'radios are grouped in a fieldset');
+      assert.strictEqual(directDeposit.closest('fieldset'), fieldset, 'both radios share the fieldset');
+      assert
+        .dom(fieldset!.querySelector(':scope > legend'))
+        .includesText('Please indicate below whether or not you have made an arrangement with the publisher');
+
+      // Clicking the visible text selects the radio
+      await click(directDeposit.closest('label')!);
+      assert.dom(directDeposit).isChecked();
+      assert.dom(noDeposit).isNotChecked();
+      assert.strictEqual(this.submission.effectivePolicies.length, 0, 'Should be ZERO effective policies');
+    });
+
     test('PMC type A journal as no inputs and is not added to submission', async function (assert) {
       const repositoryFactory = this.server.create('repository', { repositoryKey: 'pmc' });
       const policyFactory = this.server.create('policy', {
