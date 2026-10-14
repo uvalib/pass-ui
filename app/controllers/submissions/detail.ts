@@ -528,6 +528,7 @@ export default class SubmissionsDetail extends Controller {
       confirmButtonText: 'Delete',
       confirmButtonColor: '#DC3545',
       showCancelButton: true,
+      focusCancel: true,
     });
     if (result.value) {
       const ignoreList = this.searchHelper;
@@ -538,6 +539,7 @@ export default class SubmissionsDetail extends Controller {
         ignoreList.clearIgnore();
         ignoreList.ignore(submission.id!);
         this.router.transitionTo('submissions');
+        this.flashMessages.success('Draft submission deleted.');
       } catch (e) {
         this.flashMessages.danger(
           'We encountered an error deleting this draft submission. Please try again later or contact your administrator',

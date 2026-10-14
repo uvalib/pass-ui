@@ -50,6 +50,7 @@ export default class SubmissionActionCell extends Component<SubmissionActionCell
         confirmButtonText: 'Delete',
         confirmButtonColor: '#DC3545',
         showCancelButton: true,
+        focusCancel: true,
       })
       .then((result) => {
         if (result.value) {
@@ -60,7 +61,9 @@ export default class SubmissionActionCell extends Component<SubmissionActionCell
 
   async do_delete(submission: SubmissionModel) {
     try {
+      // Resolves only after every file, the submission and its publication are deleted
       await this.submissionHandler.deleteSubmission(submission);
+      this.flashMessages.success('Draft submission deleted.');
     } catch (e) {
       this.flashMessages.danger(
         'We encountered an error deleting this draft submission. Please try again later or contact your administrator',
@@ -69,7 +72,6 @@ export default class SubmissionActionCell extends Component<SubmissionActionCell
   }
 
   <template>
-    {{! template-lint-disable link-href-attributes no-invalid-interactive }}
     {{#if @record.isStub}}
       <LinkTo
         @route='submissions.new'
@@ -98,12 +100,13 @@ export default class SubmissionActionCell extends Component<SubmissionActionCell
       <LinkTo @route='submissions.new' @query={{hash submission=@record.id}} class='btn btn-outline-primary w-100 mb-2'>
         Edit
       </LinkTo>
-      <a
+      <button
+        type='button'
         class='btn btn-outline-danger text-danger w-100 delete-button'
         {{on 'click' (fn this.deleteSubmission @record)}}
       >
         Delete
-      </a>
+      </button>
     {{else}}
       <span class='cell-span'><i>No actions available.</i></span>
     {{/if}}

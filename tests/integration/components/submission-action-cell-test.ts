@@ -74,13 +74,45 @@ module('Integration | Component | submission action cell', (hooks) => {
     const handlerFake = Sinon.replace(submissionHandler, 'deleteSubmission', Sinon.fake.resolves());
     this.owner.register('service:submission-handler', submissionHandler);
 
-    await render(hbs`<SubmissionActionCell @record={{this.record}} />`);
-    await click('a.delete-button');
+    this.flashMessages = this.owner.lookup('service:flash-messages');
+    await render(hbs`{{#each this.flashMessages.queue as |flash|}}
+  <div class='flash-message-container'>
+    <FlashMessage @flash={{flash}} as |component flash close|>
+      <div class='d-flex justify-content-between'>
+        {{flash.message}}
+        <span role='button' {{on 'click' close}}>
+          x
+        </span>
+      </div>
+    </FlashMessage>
+  </div>
+{{/each}}
+<SubmissionActionCell @record={{this.record}} />`);
+    await click('button.delete-button');
+    // Destructive confirm: Cancel gets initial focus so Enter doesn't delete by accident
+    assert.dom('.swal2-cancel').isFocused();
     await click(document.querySelector('.swal2-confirm')!);
 
     await settled();
 
     assert.ok(handlerFake.calledOnce, 'Submission handler delete should be called');
+    await waitFor('.flash-message.alert-success');
+    assert.dom('.flash-message.alert-success').containsText('Draft submission deleted.');
+  });
+
+  test('cancelling the confirm dialog does not delete', async function (assert) {
+    const record = { preparers: [], isDraft: true, submitter: { id: 1 } };
+    this.set('record', record);
+
+    const submissionHandler = this.owner.lookup('service:submission-handler')!;
+    const handlerFake = Sinon.replace(submissionHandler, 'deleteSubmission', Sinon.fake.resolves());
+
+    await render(hbs`<SubmissionActionCell @record={{this.record}} />`);
+    await click('button.delete-button');
+    await click(document.querySelector('.swal2-cancel')!);
+    await settled();
+
+    assert.ok(handlerFake.notCalled, 'Submission handler delete should not be called');
   });
 
   test('Should show error message on submission deletion error', async function (assert) {
@@ -111,15 +143,16 @@ module('Integration | Component | submission action cell', (hooks) => {
 {{/each}}
 <SubmissionActionCell @record={{this.record}} />`);
 
-    assert.dom('a.delete-button').exists();
+    assert.dom('button.delete-button').exists();
     assert.dom('a.btn').containsText('Edit');
 
-    await click('a.delete-button');
+    await click('button.delete-button');
     await click(document.querySelector('.swal2-confirm')!);
     await settled();
 
     await waitFor('.flash-message.alert-danger');
     assert.dom('.flash-message.alert-danger').containsText('We encountered an error deleting this draft submission');
+    assert.dom('.flash-message.alert-success').doesNotExist('No success message when the delete fails');
 
     assert.ok(handlerFake.calledOnce, 'Submission handler delete should be called');
   });
@@ -137,11 +170,15 @@ module('Integration | Component | submission action cell', (hooks) => {
 
     await render(hbs`<SubmissionActionCell @record={{this.record}} />`);
 
-    const buttons = this.element.querySelectorAll('a');
+    const links = this.element.querySelectorAll('a');
+    assert.strictEqual(links.length, 1, `There should be one link, instead, ${links.length} were found`);
+    assert.strictEqual(links[0]!.textContent!.trim(), 'Edit');
 
-    assert.ok(buttons, 'No buttons were found');
-    assert.strictEqual(buttons.length, 2, `There should be two buttons, instead, ${buttons.length} were found`);
-    assert.strictEqual(buttons[0]!.textContent!.trim(), 'Edit');
-    assert.strictEqual(buttons[1]!.textContent!.trim(), 'Delete');
+    // Delete is a real button so it is in the tab order and works with Enter/Space
+    const buttons = this.element.querySelectorAll('button');
+    assert.strictEqual(buttons.length, 1, `There should be one button, instead, ${buttons.length} were found`);
+    assert.dom(buttons[0]!).hasText('Delete');
+    assert.dom(buttons[0]!).hasAttribute('type', 'button');
+    assert.dom(buttons[0]!).hasClass('delete-button');
   });
 });
