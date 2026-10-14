@@ -18,6 +18,21 @@ interface MetadataFormSignature {
   };
 }
 
+// The form renders under the page heading, so its top-level titles start at h2
+// (SurveyJS defaults to h5 for questions) and nested titles step down from there.
+const BASE_HEADING_LEVEL = 2;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function headingLevel(element: any): number {
+  let level = BASE_HEADING_LEVEL;
+  let parent = element.parentQuestion ?? element.parent;
+  while (parent && !parent.isPage) {
+    if (parent.hasTitle) level++;
+    parent = parent.parentQuestion ?? parent.parent;
+  }
+  return Math.min(level, 6);
+}
+
 export default class MetadataForm extends Component<MetadataFormSignature> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   survey: any = null;
@@ -45,6 +60,26 @@ export default class MetadataForm extends Component<MetadataFormSignature> {
 
     this.survey.css = customCss;
     this.survey.showCompleteButton = false;
+
+    // Spell out the required mark instead of an unexplained "*". SurveyJS renders it
+    // aria-hidden; screen readers get aria-required on the input instead.
+    this.survey.requiredMark = '(required)';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.survey.onGetTitleTagName.add((_sender: any, options: any) => {
+      options.tagName = `h${headingLevel(options.element)}`;
+    });
+
+    // SurveyJS gives dynamic panels role="textbox", which is wrong for a repeating
+    // section. Expose them as a group named by the question title (aria-labelledby).
+    // aria-required is not allowed on a group. Safe to run on every re-render.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.survey.onAfterRenderQuestion.add((_sender: any, options: any) => {
+      if (options.question.getType() !== 'paneldynamic') return;
+      const root = options.htmlElement as HTMLElement;
+      root.setAttribute('role', 'group');
+      root.removeAttribute('aria-required');
+    });
 
     this.survey.mergeData(data);
 
