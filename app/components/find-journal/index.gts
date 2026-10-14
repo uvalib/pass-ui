@@ -18,13 +18,21 @@ const perform =
 
 const DEBOUNCE_MS = 750;
 
+// The parts of the power-select public API used here (types/ember-power-select overrides the addon's types)
+interface Select {
+  isOpen: boolean;
+  selected: unknown;
+  actions: { select: (selected: unknown, event?: Event) => void };
+}
+
 interface FindJournalSignature {
   Element: HTMLDivElement;
   Args: {
     journalClass: string;
     value: JournalModel | null;
-    selectJournal: (journal: JournalModel) => void;
+    selectJournal: (journal: JournalModel | null) => void;
     id?: string;
+    ariaLabelledBy?: string;
     isValidDOI?: boolean;
   };
 }
@@ -41,9 +49,26 @@ export default class FindJournal extends Component<FindJournalSignature> {
   });
 
   @action
-  async onSelect(selected: JournalModel) {
+  async onSelect(selected: JournalModel | null) {
+    // The clear control (and Delete/Backspace) selects null
+    if (!selected) {
+      this.args.selectJournal(null);
+      return;
+    }
     const { content } = await this.store.request(findRecord('journal', selected.id!));
     this.args.selectJournal((content as { data: JournalModel }).data);
+  }
+
+  // The addon's clear control only responds to the mouse, so let keyboard users
+  // clear the selection with Delete or Backspace while the dropdown is closed.
+  @action
+  onKeydown(select: Select, event: KeyboardEvent) {
+    if (!select.isOpen && select.selected && (event.key === 'Delete' || event.key === 'Backspace')) {
+      event.preventDefault();
+      select.actions.select(null, event);
+      return false;
+    }
+    return true;
   }
 
   <template>
@@ -53,6 +78,10 @@ export default class FindJournal extends Component<FindJournalSignature> {
       @searchEnabled={{true}}
       @selected={{@value}}
       @placeholder='Journal'
+      @allowClear={{true}}
+      @triggerId={{@id}}
+      @ariaLabelledBy={{@ariaLabelledBy}}
+      @onKeydown={{this.onKeydown}}
       data-test-find-journal-select
       @onChange={{this.onSelect}}
       as |journal|
