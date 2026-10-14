@@ -4,7 +4,7 @@ import Service from '@ember/service';
 import { setupRenderingTest } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import { module, test } from 'qunit';
-import { doubleClick, fillIn, render, settled, triggerKeyEvent } from '@ember/test-helpers';
+import { click, doubleClick, fillIn, render, settled, triggerKeyEvent } from '@ember/test-helpers';
 import { run } from '@ember/runloop';
 import { task } from 'ember-concurrency';
 // @ts-expect-error no declaration file for sinon
@@ -419,5 +419,43 @@ module('Integration | Component | workflow basics', (hooks) => {
     await doubleClick('[data-test-workflow-basics-next]');
 
     assert.ok(this.validateAndLoadTab.calledOnce, 'validateAndLoadTab called once');
+  });
+
+  test('proxy submitter fields have visible labels and the user search dialog is named', async function (assert) {
+    (this.submission as { isProxySubmission?: boolean }).isProxySubmission = true;
+    this.set('preLoadedGrant', null);
+
+    await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @updatePublication={{this.updatePublication}}
+/>`);
+
+    const labelFor = (selector: string) => {
+      const input = this.element.querySelector(selector) as HTMLInputElement;
+      return this.element.querySelector(`label[for="${input.id}"]`)?.textContent?.trim();
+    };
+
+    assert.strictEqual(labelFor('[data-test-proxy-search-input]'), 'Search for an existing PASS user');
+    assert.strictEqual(labelFor('[data-test-proxy-submitter-email-input]'), 'Email address');
+    assert.strictEqual(labelFor('[data-test-proxy-submitter-name-input]'), 'Name');
+    assert.dom('[data-test-proxy-search-input]').doesNotHaveAttribute('aria-label');
+    assert.dom('[data-test-proxy-submitter-email-input]').doesNotHaveAttribute('placeholder');
+    assert.dom('[data-test-proxy-submitter-name-input]').doesNotHaveAttribute('placeholder');
+
+    // The DOI leave-blank instruction is persistent text, not a placeholder
+    assert.dom('#doi').doesNotHaveAttribute('placeholder');
+    assert.dom('#doi').hasAttribute('aria-describedby', 'doi-blank-hint');
+    assert.dom('#doi-blank-hint').hasText('Leave blank if your manuscript or article has not yet been assigned a DOI.');
+
+    await click('[data-test-proxy-user-search-button]');
+
+    assert.dom('dialog.user-search-modal').hasAttribute('aria-labelledby', 'user-search-title');
+    assert.dom('#user-search-title').hasText('Search Users');
   });
 });
