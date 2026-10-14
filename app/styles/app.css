@@ -955,3 +955,43 @@ a.navbar-brand:hover {
 .btn:hover {
   text-decoration: none !important;
 }
+
+/*
+ * Reflow at 320px (WCAG 1.4.10). Bootstrap's `.row > * { flex-shrink: 0 }` and the
+ * table column min-widths push pages wider than a narrow viewport. Let row children
+ * shrink, and stack the fixed-width PassTable footer and Submission Details header
+ * columns on small screens. Wide data tables scroll inside their own
+ * `.table-responsive` / `.table-container` wrapper instead of the page.
+ */
+.row > * {
+  min-width: 0;
+}
+
+@media (width < 576px) {
+  .row > * {
+    flex-shrink: 1;
+  }
+
+  /* PassTable footer: summary, rows-per-page and pager each take a full line */
+  .models-table-wrapper > .row > .table-summary,
+  .models-table-wrapper > .row > .col-2,
+  .models-table-wrapper > .row > .table-nav {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .models-table-wrapper > .row > .table-nav {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  /* Submission Details header: let the action buttons wrap below the title */
+  #submission-details-title {
+    flex-wrap: wrap;
+  }
+
+  #submission-details-title > .col-6 {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
