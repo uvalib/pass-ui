@@ -22,14 +22,9 @@ interface Signature {
   <div id='brand-site-container' class='site' tabindex='-1'>
     <header id='brand-header' class='navbar navbar-expand-xs justify-content-center mb-0'>
       <div class={{if @controller.fullWidth 'container-fluid' 'container'}}>
-        <a href='/' class='navbar-brand d-none d-sm-block'>
+        <a href='/' class='navbar-brand'>
           <span class='brand-header-title font-weight-light'>
             Public Access Submission System
-          </span>
-        </a>
-        <a href='/' class='navbar-brand custom-color d-xs-block d-sm-none'>
-          <span class='brand-header-title font-weight-light'>
-            P.A.S.S.
           </span>
         </a>
         {{#if @controller.logoUri}}
