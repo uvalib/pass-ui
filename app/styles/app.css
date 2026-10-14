@@ -913,6 +913,13 @@ a.navbar-brand:hover {
   border-bottom: 1px solid #ccc; /* Add a bottom border except for the last item */
 }
 
+/* Label/value <dl> laid out inline as "Label : value", like the old <b>Label</b> : value lines */
+.key-value-list dt,
+.key-value-list dd {
+  display: inline;
+  margin: 0;
+}
+
 /* Reset border-radius for common UI elements */
 /* stylelint-disable selector-class-pattern */
 .ember-basic-dropdown-trigger,

@@ -33,39 +33,37 @@ export default class DisplayMetadataKeys extends Component<DisplayMetadataKeysSi
 
   <template>
     {{! template-lint-disable no-triple-curlies }}
-    <ul class='d-flex flex-column list-unstyled gap-3'>
+    <dl class='key-value-list d-flex flex-column gap-3'>
       {{#each this.displayData as |data|}}
-        <li>
+        <div>
           {{#if data.isArray}}
-            <span class='col-6'>
-              <b>{{data.label}}</b>
+            <dt>{{data.label}}</dt>
+            <dd class='d-block'>
               <ul>
                 {{! @glint-expect-error - data.value is unknown }}
                 {{#each data.value as |moo|}}
                   <li>
-                    {{#each-in moo as |key val|}}
-                      <span class='col-6'>
-                        {{! @glint-ignore - key/val are unknown from each-in on unknown value }}
-                        <b>{{key}}</b>
-                        :
-                        {{val}}
-                      </span>
-                    {{/each-in}}
+                    <dl class='key-value-list mb-0'>
+                      {{#each-in moo as |key val|}}
+                        <div class='d-inline'>
+                          {{! @glint-ignore - key/val are unknown from each-in on unknown value }}
+                          <dt>{{key}}<span aria-hidden='true'> :</span></dt>
+                          <dd>{{val}}</dd>
+                        </div>
+                      {{/each-in}}
+                    </dl>
                   </li>
                 {{/each}}
               </ul>
-            </span>
+            </dd>
           {{else}}
-            <span class='col-6'>
-              <b>{{data.label}}</b>
-              :
-              {{! @glint-expect-error - data.value is unknown }}
-              {{{data.value}}}
-            </span>
+            <dt>{{data.label}}<span aria-hidden='true'> :</span></dt>
+            {{! @glint-expect-error - data.value is unknown }}
+            <dd>{{{data.value}}}</dd>
           {{/if}}
-        </li>
+        </div>
       {{/each}}
-    </ul>
+    </dl>
     {{yield}}
   </template>
 }
