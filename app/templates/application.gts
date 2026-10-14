@@ -8,6 +8,7 @@ import config from 'pass-ui/config/environment';
 import NavBar from 'pass-ui/components/nav-bar';
 import NoticeBanner from 'pass-ui/components/notice-banner';
 import type ApplicationController from 'pass-ui/controllers/application';
+import { pageTitle } from 'ember-page-title';
 
 interface Signature {
   Args: {
@@ -17,6 +18,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'PASS'}}
   {{! template-lint-disable require-valid-alt-text }}
   <BasicDropdownWormhole />
   <div id='brand-site-container' class='site' tabindex='-1'>
