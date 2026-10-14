@@ -427,4 +427,46 @@ module('Integration | Component | workflow review', (hooks) => {
     );
     assert.deepEqual(labels, ['PDF', 'File']);
   });
+
+  test('key-value rows use row headers and grant details use a description list', async function (assert) {
+    this.submission = {
+      metadata: '{}',
+      repositories: [{ id: 'r1', name: 'PubMed Central', integrationType: 'full' }],
+      grants: [{ awardNumber: 'R01EY012124', projectName: 'Synaptic Plasticity', primaryFunder: { name: 'NIH' } }],
+    };
+    this.publication = {};
+    this.submit = () => {};
+    this.loadPrevious = () => {};
+    this.files = [];
+    this.comment = '';
+    this.uploading = '';
+    this.waitingMessage = '';
+
+    await render(hbs`<WorkflowReview
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @previouslyUploadedFiles={{this.files}}
+  @comment={{this.comment}}
+  @back={{this.loadPrevious}}
+  @submitSubmission={{this.submit}}
+  @uploading={{this.uploading}}
+  @waitingMessage={{this.waitingMessage}}
+/>`);
+
+    const rowHeaders = [...this.element.querySelectorAll('#review-step-table > tbody > tr > th[scope="row"]')].map(
+      (th) => th.textContent!.trim(),
+    );
+    assert.deepEqual(rowHeaders, ['Repositories', 'Grants', 'Details', 'Files']);
+    assert.dom('#review-step-table > tbody > tr > td:first-child').doesNotExist('no row starts with a data cell');
+
+    assert.dom('[data-test-workflow-review-grant-list]').hasTagName('dl');
+    const terms = [...this.element.querySelectorAll('[data-test-workflow-review-grant-list] dt')].map((dt) =>
+      dt.textContent!.replace(':', '').trim(),
+    );
+    const values = [...this.element.querySelectorAll('[data-test-workflow-review-grant-list] dd')].map((dd) =>
+      dd.textContent!.trim(),
+    );
+    assert.deepEqual(terms, ['R01EY012124', 'Funder']);
+    assert.deepEqual(values, ['Synaptic Plasticity', 'NIH']);
+  });
 });
