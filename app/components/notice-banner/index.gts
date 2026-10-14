@@ -35,7 +35,7 @@ export default class NoticeBanner extends Component<NoticeBannerSignature> {
 
   <template>
     {{#if this.displayInfoBanner}}
-      <nav class='info-banner p-1 text-center font-weight-bold'>
+      <div class='info-banner p-1 text-center font-weight-bold'>
         Need help making a submission? Read our submission workflow
         <a class='instructions-url' href={{this.instructionsUrl}} target='_blank' rel='noopener noreferrer'>
           instructions
@@ -47,7 +47,7 @@ export default class NoticeBanner extends Component<NoticeBannerSignature> {
           </a>
         {{/if}}
         .
-      </nav>
+      </div>
     {{/if}}
   </template>
 }
