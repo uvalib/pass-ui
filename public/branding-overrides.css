@@ -156,7 +156,9 @@ h4.card-title {
   padding: 0.6rem 1.25rem;
   text-align: center;
   text-decoration: none;
-  width: 100%;
+
+  /* full width inside the 0.4rem side margins, so the button does not overflow its container */
+  width: calc(100% - 0.8rem);
   border-color: var(--uva-blue-alt);
   background-color: var(--uva-blue-alt);
   color: var(--secondary-500);
@@ -542,9 +544,11 @@ p.lead label {
   cursor: pointer;
 }
 
-/* UX Heuristic Issue 3: Remove redundant navigation buttons after adding grants */
-[data-test-submission-funding-table] + button.btn-outline-primary,
-[data-test-submission-funding-table] + button.btn-outline-primary + button.btn-primary.next {
+/* UX Heuristic Issue 3: Remove redundant navigation buttons after adding grants.
+   Core wraps the funding table in .table-responsive (eclipse-pass/main#1279), so the
+   buttons follow the wrapper, not the table. */
+.table-responsive:has(> [data-test-submission-funding-table]) + button.btn-outline-primary,
+.table-responsive:has(> [data-test-submission-funding-table]) + button.btn-outline-primary + button.btn-primary.next {
   display: none !important;
 }
 
