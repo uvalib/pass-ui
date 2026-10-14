@@ -424,10 +424,13 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
           <p class='mb-0'>
             Please indicate on behalf of whom this submission is being completed:
           </p>
+          <label for='proxy-search-input' class='d-block mt-2'>
+            Search for an existing PASS user
+          </label>
           <div class='input-group pb-3'>
             <input
+              id='proxy-search-input'
               type='text'
-              aria-label='Proxy search input'
               {{on 'keydown' this.handleProxySearchEnter}}
               {{on 'input' this.handleSearchInput}}
               value={{this.userSearchTerm}}
@@ -470,26 +473,30 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
             </strong>
             , please provide their email address and name so we may notify them:
           </p>
-          <div class='form-inline'>
+          <div class='mt-1'>
+            <label for='proxy-submitter-email'>
+              Email address
+            </label>
             <input
+              id='proxy-submitter-email'
               type='text'
-              aria-label='Proxy submitter email input'
-              class={{concat 'mt-1 mb-3 form-control w-50 ' this.submitterEmailClass}}
+              class={{concat 'mb-3 form-control w-50 ' this.submitterEmailClass}}
               {{on 'keyup' @validateSubmitterEmail}}
               {{on 'input' this.handleEmailInput}}
               disabled={{@submission.submitter.id}}
               value={{this.inputSubmitterEmail}}
-              placeholder='Email address'
               data-test-proxy-submitter-email-input
             />
+            <label for='proxy-submitter-name'>
+              Name
+            </label>
             <input
+              id='proxy-submitter-name'
               type='text'
-              aria-label='Proxy submitter name input'
-              class='mt-1 mb-3 form-control w-50'
+              class='mb-3 form-control w-50'
               {{on 'input' this.handleNameInput}}
               disabled={{@submission.submitter.id}}
               value={{@submission.submitterName}}
-              placeholder='Name'
               data-test-proxy-submitter-name-input
             />
           </div>
@@ -514,11 +521,14 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
         </i>
       </p>
 
+      <p id='doi-blank-hint' class='mb-1'>
+        Leave blank if your manuscript or article has not yet been assigned a DOI.
+      </p>
       <input
         id='doi'
         type='text'
         class={{this.doiClass}}
-        placeholder='Leave blank if your manuscript or article has not yet been assigned a DOI'
+        aria-describedby='doi-blank-hint'
         value={{@publication.doi}}
         data-test-doi-input={{true}}
         {{on 'input' this.handleDoiInput}}
@@ -610,6 +620,7 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
     {{#if this.isShowingUserSearchModal}}
       <dialog
         class='ember-modal-dialog pass-modal-translucent user-search-modal'
+        aria-labelledby='user-search-title'
         {{this.showModal}}
         {{on 'close' this.toggleUserSearchModal}}
       >

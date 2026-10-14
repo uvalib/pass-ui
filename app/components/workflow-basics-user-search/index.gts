@@ -7,6 +7,7 @@ import type { Task } from 'ember-concurrency';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
 import { Input } from '@ember/component';
+import { next } from '@ember/runloop';
 import { query } from 'pass-ui/builders/pass-api';
 import type CurrentUserService from 'pass-ui/services/current-user';
 import type UserModel from 'pass-ui/models/user';
@@ -36,6 +37,7 @@ export default class WorkflowBasicsUserSearch extends Component<WorkflowBasicsUs
   @tracked currentPage = 1;
   @tracked usersPerPage = 30;
   @tracked numberOfPages = 1;
+  @tracked statusMessage = '';
 
   get pageNumbers(): number[] {
     const arr = [];
@@ -111,7 +113,29 @@ export default class WorkflowBasicsUserSearch extends Component<WorkflowBasicsUs
     }
 
     this.matchingUsers = users;
+    this.announceResults();
   });
+
+  // Clear the live region, then set the message on the next runloop so
+  // screen readers re-announce it even when it matches the previous one.
+  announceResults() {
+    const count = this.filteredUsers.length;
+    let message = 'No results found.';
+    if (count > 0) {
+      message = `${count} ${count === 1 ? 'user' : 'users'} found`;
+      if (this.moreThanOnePage) {
+        message += `, page ${this.currentPage} of ${this.numberOfPages}`;
+      }
+      message += '.';
+    }
+
+    this.statusMessage = '';
+    next(() => {
+      if (!this.isDestroying && !this.isDestroyed) {
+        this.statusMessage = message;
+      }
+    });
+  }
 
   <template>
     {{! template-lint-disable link-href-attributes require-button-type require-input-label }}
@@ -122,7 +146,7 @@ export default class WorkflowBasicsUserSearch extends Component<WorkflowBasicsUs
         {{on 'click' @toggleUserSearchModal}}
       >X</button>
       <div class='container'>
-        <h2>Search Users</h2>
+        <h2 id='user-search-title'>Search Users</h2>
         <p class='text-muted'>Search by name or email and click on a user to assign them to the submitter role.</p>
         <div class='input-group pb-3'>
           <Input @value={{@searchInput}} {{on 'keydown' this.handleEnterSearch}} class='form-control' />
@@ -136,6 +160,9 @@ export default class WorkflowBasicsUserSearch extends Component<WorkflowBasicsUs
           </span>
         </div>
         <h3 class='my-4'>Results</h3>
+        <p class='visually-hidden' role='status' aria-live='polite' data-test-user-search-status>
+          {{this.statusMessage}}
+        </p>
         {{#if this.filteredUsers}}
           <div class='row user-search-results'>
             {{#each this.filteredUsers as |user|}}
