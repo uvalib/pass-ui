@@ -8,6 +8,7 @@ import SubmissionStatus from 'pass-ui/components/submission-status';
 import SubmissionRepoDetails from 'pass-ui/components/submission-repo-details';
 import DisplayMetadataKeys from 'pass-ui/components/display-metadata-keys';
 import CommentingBlock from 'pass-ui/components/commenting-block';
+import FileTypeIcon from 'pass-ui/components/file-type-icon';
 import type SubmissionsDetail from 'pass-ui/controllers/submissions/detail';
 import { pageTitle } from 'ember-page-title';
 
@@ -290,7 +291,7 @@ interface Signature {
                     <table class='files-table w-100'>
                       <thead class='border-bottom border-top'>
                         <tr>
-                          <th scope='col'></th>
+                          <th scope='col'>File Type</th>
                           <th scope='col' class='font-weight-light'>
                             Name
                           </th>
@@ -306,19 +307,7 @@ interface Signature {
                         {{#each @controller.submissionFiles as |file|}}
                           <tr>
                             <td data-label='icon'>
-                              {{#if (eq file.mimeType 'png')}}
-                                <i class='fas fa-file-image line-height-35 text-gray fa-30'></i>
-                              {{else if
-                                (eq file.mimeType 'vnd.openxmlformats-officedocument.presentationml.presentation')
-                              }}
-                                <i class='fas fa-file-powerpoint line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'msword')}}
-                                <i class='fas fa-file-word line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'pdf')}}
-                                <i class='fas fa-file-pdf line-height-35 text-gray fa-30'></i>
-                              {{else}}
-                                <i class='far fa-file line-height-35 text-gray fa-30'></i>
-                              {{/if}}
+                              <FileTypeIcon @mimeType={{file.mimeType}} />
                             </td>
                             <td id='submissions-detail-file-cell' data-label='name'>
                               <a href={{file.uri}}>
