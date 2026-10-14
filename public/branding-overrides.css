@@ -680,29 +680,6 @@ table.table.d-flex {
 }
 
 
-/* #F1-3, #F1-4: Prevent tab label clipping and allow step bar reflow when zoomed */
-.steps {
-  height: auto;
-  min-height: 2.1875rem;
-  align-items: center;
-  overflow: visible;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.5rem;
-}
-
-.steps .step {
-  width: auto;
-  flex: 1 1 8rem;
-  min-width: 0;
-  line-height: 1.3;
-  white-space: normal;
-  padding: 0.5rem 0.25rem;
-}
-
-.steps .btn-primary {
-  margin: 0.25rem 0.4rem;
-}
-
 
 /* ==========================================================================
    UX Heuristics Report Remediations
@@ -722,13 +699,6 @@ p.lead label {
 /* UX Heuristic Issue 2: Current step of submission form blocked out on navigation bar */
 .steps .step.btn-primary,
 .steps .btn-primary {
-  margin: 0 !important;
-  padding: 0.25rem 0.6rem !important;
-  height: 100% !important;
-  line-height: normal !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   background-color: var(--uva-brand-blue) !important;
   color: var(--secondary-500) !important;
   border-radius: 0 !important;
@@ -832,34 +802,8 @@ h2 {
   color: var(--uva-brand-blue) !important;
 }
 
-/* #F1-3, #F1-4: Prevent active tab label clipping and allow step bar reflow when resized/zoomed */
-.steps {
-  height: auto;
-  min-height: 2.1875rem;
-  align-items: center;
-  overflow: visible;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.5rem;
-}
-
-.steps .step {
-  width: auto;
-  flex: 1 1 8rem;
-  min-width: 0;
-  line-height: 1.3;
-  white-space: normal;
-  padding: 0.5rem 0.25rem;
-}
-
 .steps .step.btn-primary,
 .steps .btn-primary {
-  margin: 0 !important;
-  padding: 0.25rem 0.6rem !important;
-  height: 100% !important;
-  line-height: normal !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   background-color: var(--uva-brand-blue) !important;
   color: var(--secondary-500) !important;
   border-radius: 0 !important;
@@ -1237,25 +1181,4 @@ textarea.form-control:read-only {
 .models-table-wrapper .clearFilters:focus-visible:not(:disabled) {
   outline: 2px solid var(--uva-grey-A);
   outline-offset: 2px;
-}
-
-/* Redundant Link (best practice); 1.3.1 Info and Relationships
-   Header has two same-destination brand links: full name (sm+) and
-   P.A.S.S. (<sm). Hide the short link and keep the full name at all
-   widths so it wraps instead of swapping strings. Markup left for JHU. */
-#brand-header .navbar-brand.d-sm-none {
-  display: none !important;
-}
-
-#brand-header .navbar-brand.d-none.d-sm-block {
-  display: block !important;
-  min-width: 0;
-  max-width: 100%;
-  white-space: normal;
-}
-
-#brand-header .brand-header-title {
-  white-space: normal;
-  overflow-wrap: break-word;
-  max-width: 100%;
 }
