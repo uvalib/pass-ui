@@ -879,10 +879,8 @@ footer {
   white-space: nowrap;
 }
 
-#grants-selection-table .grant-select-btn {
-  border: none;
-  background: none;
-  padding: 0;
+#grants-selection-table .grant-select-checkbox {
+  margin-top: 0;
   cursor: pointer;
 }
 
