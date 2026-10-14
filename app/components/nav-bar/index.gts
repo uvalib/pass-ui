@@ -79,7 +79,12 @@ export default class NavBar extends Component<NavBarSignature> {
   }
 
   <template>
-    <nav id='header-navbar' class='navbar navbar-light navbar-fixed-top navbar-expand-md w-100' {{this.scrollToAnchor}}>
+    <nav
+      id='header-navbar'
+      aria-label='Main'
+      class='navbar navbar-light navbar-fixed-top navbar-expand-md w-100'
+      {{this.scrollToAnchor}}
+    >
       <div class={{if @fullWidth 'container-fluid' 'container'}}>
         <div class='col-xs-12 w-100'>
           <button
