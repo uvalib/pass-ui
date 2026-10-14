@@ -2,6 +2,7 @@ import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import type SubmissionsNewReview from 'pass-ui/controllers/submissions/new/review';
 import WorkflowWrapper from 'pass-ui/components/workflow-wrapper';
 import WorkflowReview from 'pass-ui/components/workflow-review';
+import { pageTitle } from 'ember-page-title';
 
 interface Signature {
   Args: {
@@ -11,6 +12,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Review'}}
   <WorkflowWrapper
     @submission={{@controller.submission}}
     @title={{@controller.publication.title}}

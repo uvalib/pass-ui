@@ -1,6 +1,7 @@
 import type { TemplateOnlyComponent } from '@ember/component/template-only';
 import { LinkTo } from '@ember/routing';
 import type ThanksController from 'pass-ui/controllers/thanks';
+import { pageTitle } from 'ember-page-title';
 
 const eq = (a: unknown, b: unknown) => a === b;
 
@@ -12,6 +13,7 @@ interface Signature {
 
 // prettier-ignore
 <template>
+  {{pageTitle 'Thank you'}}
   {{outlet}}
   <h1 data-test-workflow-thanks-thank-you>Thank you!</h1>
   <p>
