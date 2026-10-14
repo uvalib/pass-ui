@@ -125,7 +125,7 @@ module('Acceptance | submission', function (hooks) {
       );
     assert.dom('[data-test-workflow-review-doi]').includesText('10.1039/c7an01256j');
     assert
-      .dom('[data-test-workflow-review-grant-list] li')
+      .dom('[data-test-workflow-review-grant-list] dd')
       .includesText('Regulation of Synaptic Plasticity in Visual Cortex');
     assert.dom('[data-test-workflow-review-file-name]').includesText('my-submission.pdf');
 
@@ -249,6 +249,15 @@ module('Acceptance | submission', function (hooks) {
     assert.dom('[data-test-submission-detail-status]').includesText('draft');
     assert.dom('[data-test-submission-detail-funder]').includesText('NATIONAL INSTITUTE OF HEALTH');
     assert.dom('[data-test-submission-detail-grant]').includesText('R01EY012124');
+    // Key-value labels are row headers, and grant lines are <dt>/<dd> pairs
+    const rowHeaders = [...document.querySelectorAll('#submission-details-body th[scope="row"]')].map((th) =>
+      th.textContent!.trim(),
+    );
+    assert.ok(rowHeaders.includes('Grants'), 'Grants label is a row header');
+    assert.ok(rowHeaders.includes('Details'), 'Details label is a row header');
+    assert.dom('[data-test-submission-detail-grant] dt').includesText('R01EY012124');
+    assert.dom('[data-test-submission-detail-funder] dt').includesText('Funder');
+    assert.dom('[data-test-submission-detail-funder] dd').hasText('NATIONAL INSTITUTE OF HEALTH');
 
     await click('[data-test-submission-detail-edit-submission]');
 
@@ -321,7 +330,7 @@ module('Acceptance | submission', function (hooks) {
       );
     assert.dom('[data-test-workflow-review-doi]').includesText('10.1039/c7an01256j');
     assert
-      .dom('[data-test-workflow-review-grant-list] li')
+      .dom('[data-test-workflow-review-grant-list] dd')
       .includesText('Regulation of Synaptic Plasticity in Visual Cortex');
     assert.dom('[data-test-workflow-review-file-name]').includesText('my-submission.pdf');
 
@@ -484,7 +493,7 @@ module('Acceptance | submission', function (hooks) {
 
     assert.dom('[data-test-workflow-review-title]').includesText('My article');
     assert
-      .dom('[data-test-workflow-review-grant-list] li')
+      .dom('[data-test-workflow-review-grant-list] dd')
       .includesText('Regulation of Synaptic Plasticity in Visual Cortex');
     assert.dom('[data-test-workflow-review-file-name]').includesText('my-submission.pdf');
 
@@ -627,7 +636,7 @@ module('Acceptance | submission', function (hooks) {
     assert.dom('[data-test-workflow-review-repository-list]').includesText('JScholarship');
     assert.dom('[data-test-workflow-review-title]').includesText('My article');
     assert
-      .dom('[data-test-workflow-review-grant-list] li')
+      .dom('[data-test-workflow-review-grant-list] dd')
       .includesText('Regulation of Synaptic Plasticity in Visual Cortex');
     assert.dom('[data-test-workflow-review-file-name]').includesText('my-submission.pdf');
 
@@ -790,7 +799,7 @@ module('Acceptance | submission', function (hooks) {
     assert.dom('[data-test-workflow-review-repository-list]').includesText('JScholarship');
     assert.dom('[data-test-workflow-review-title]').includesText('a pub title');
     assert
-      .dom('[data-test-workflow-review-grant-list] li')
+      .dom('[data-test-workflow-review-grant-list] .grant-item')
       .includesText(
         '90105531 : Pre-Study of wild-type Enterotoxigenic E. coli (ETEC) strain E24377A for verification of a planned challenge dose',
       );

@@ -118,4 +118,33 @@ module('Integration | Component | display-metadata-keys', (hooks) => {
     assert.dom(this.element as Element).includesText('Authors');
     assert.dom(this.element as Element).includesText('name : Moo Jones');
   });
+
+  test('labels and values are a description list', async function (assert) {
+    await render(hbs`<DisplayMetadataKeys @submission={{this.submission}} />`);
+
+    const pairs = [...this.element.querySelectorAll(':scope > dl > div')].map((pair) => ({
+      term: pair.querySelector(':scope > dt')!.textContent!.replace(':', '').trim(),
+      hasValue: !!pair.querySelector(':scope > dd'),
+    }));
+    assert.ok(pairs.length > 0, 'renders top-level pairs');
+    assert.ok(
+      pairs.every((p) => p.hasValue),
+      'every term has a value',
+    );
+    assert.ok(
+      pairs.some((p) => p.term === 'Journal Title'),
+      'Journal Title is a term',
+    );
+    assert.dom('b').doesNotExist('no presentational bold labels');
+
+    const journalTitle = [...this.element.querySelectorAll('dt')].find((dt) =>
+      dt.textContent!.includes('Journal Title'),
+    );
+    assert.dom(journalTitle!.nextElementSibling).hasTagName('dd');
+    assert.dom(journalTitle!.nextElementSibling).hasText('Journal moo');
+    assert.dom(journalTitle!.querySelector('[aria-hidden="true"]')).hasText(':', 'the visual separator is hidden');
+
+    // Array entries nest a <dl> per item
+    assert.dom('dd ul li dl dt').exists();
+  });
 });
