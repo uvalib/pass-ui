@@ -25,4 +25,17 @@ module('Integration | Component | submissions status cell', (hooks) => {
     assert.ok(this.element, 'Failed to render');
     assert.ok(this.element.textContent!.includes('draft'), 'unexpected text found');
   });
+
+  test('status tooltip is a keyboard-focusable button with a description', async function (assert) {
+    this.set('record', { submissionStatus: 'draft' });
+
+    await render(hbs`<SubmissionsStatusCell @record={{this.record}} />`);
+
+    assert.dom('button[tooltip]').hasAttribute('type', 'button');
+    assert.dom('button[tooltip]').hasText('draft');
+    const describedBy = this.element.querySelector('button[tooltip]')!.getAttribute('aria-describedby');
+    assert
+      .dom(`#${describedBy}`)
+      .hasText('This submission is a draft. No action will be taken on this submission until it is completed.');
+  });
 });

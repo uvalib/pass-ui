@@ -11,6 +11,7 @@ import swal from 'pass-ui/util/swal';
 // @ts-ignore
 import fileQueue from 'ember-file-upload/helpers/file-queue';
 import FoundManuscripts from 'pass-ui/components/found-manuscripts';
+import TooltipHost from 'pass-ui/components/tooltip-host';
 import { deleteFileWithBytes } from 'pass-ui/builders/pass-api';
 import { FileState, type UploadFile } from 'ember-file-upload';
 import type Workflow from 'pass-ui/services/workflow';
@@ -290,13 +291,10 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
                   File Role
                 </th>
                 <th>
-                  <span
-                    tooltip-position='top'
-                    tooltip='Brief descriptive label, may be displayed in some repositories.'
-                  >
-                    <i class='fas fa-info-circle d-inline'></i>
+                  <TooltipHost @position='top' @text='Brief descriptive label, may be displayed in some repositories.'>
+                    <i class='fas fa-info-circle d-inline' aria-hidden='true'></i>
                     Description
-                  </span>
+                  </TooltipHost>
                 </th>
                 <th>
                   Action

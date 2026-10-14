@@ -21,7 +21,7 @@ module('Integration | Component | submission repo details', (hooks) => {
 
     await render(hbs`<SubmissionRepoDetails @deposit={{this.deposit}} @submission={{this.submission}} />`);
     assert
-      .dom('span.failed')
+      .dom('button.failed')
       .hasAttribute(
         'tooltip',
         'The system failed to receive the files for this submission. Message: test-status-message. Please try again by starting a new submission',
@@ -34,7 +34,7 @@ module('Integration | Component | submission repo details', (hooks) => {
 
     await render(hbs`<SubmissionRepoDetails @deposit={{this.deposit}} @submission={{this.submission}} />`);
     assert
-      .dom('span.failed')
+      .dom('button.failed')
       .hasAttribute(
         'tooltip',
         'The system failed to receive the files for this submission. Please try again by starting a new submission',
@@ -47,9 +47,23 @@ module('Integration | Component | submission repo details', (hooks) => {
 
     await render(hbs`<SubmissionRepoDetails @deposit={{this.deposit}} @submission={{this.submission}} />`);
     assert
-      .dom('span.retry')
+      .dom('button.retry')
       .hasAttribute(
         'tooltip',
+        'The system failed to connect to the target repository. The deposit will be automatically retried later.',
+      );
+  });
+
+  test('deposit status tooltip is exposed as the button description', async function (assert) {
+    this.set('submission', { submitted: true });
+    this.set('deposit', { depositStatus: 'retry' });
+
+    await render(hbs`<SubmissionRepoDetails @deposit={{this.deposit}} @submission={{this.submission}} />`);
+    assert.dom('button.retry').hasAttribute('type', 'button');
+    const describedBy = this.element.querySelector('button.retry')!.getAttribute('aria-describedby');
+    assert
+      .dom(`#${describedBy}`)
+      .hasText(
         'The system failed to connect to the target repository. The deposit will be automatically retried later.',
       );
   });
