@@ -304,17 +304,13 @@ a.instructions-url {
    table pushes the whole page wide. This revision scopes horizontal scroll to each table's
    wrapper and lets the table keep its natural content width, so it stays roomy and only the
    table scrolls (horizontal scroll IS allowed for data tables under WCAG 1.4.10).
-   Your prior rules are all retained unchanged (.row > * shrink/wrap, the cell min-width:0,
-   and the 400px row-stacking); the table-scroll rules below are added on top. */
+   Core pass-ui now lets .row children shrink, wraps each workflow table in .table-responsive,
+   and stacks the PassTable footer and Submission Details header (eclipse-pass/main#1279), so
+   only UVA's own reflow choices remain here. */
 
-/* Shared: let non-table grid children shrink and wrap */
+/* Break long strings in grid children instead of overflowing (WCAG C33) */
 .row > * {
-  min-width: 0;
-
-  /* override default min-width:auto so content can shrink (MDN) */
   overflow-wrap: break-word;
-
-  /* break long strings instead of overflowing (WCAG C33) */
 }
 
 /* Kept from prior fix: let the remove-button cell shrink (harmless with table scroll) */
@@ -324,36 +320,11 @@ td.projectname-date-column {
   min-width: 0;
 }
 
-/* Retained from your prior fix, unchanged: stack non-table rows below 400px */
-@media (width <= 400px) {
-  .row {
-    flex-direction: column;
-  }
-
-  .row > * {
-    flex-shrink: 1;
-  }
-}
-
 @media (width <= 575.98px) {
   /* Bootstrap 'sm' and below; 320px falls in range */
 
-  /* Put the horizontal scroll on the element that DIRECTLY wraps each data table, so the
-     table keeps its natural (content) width instead of being squeezed to the viewport
-     (which is what caused the squashed/too-narrow tables). :has() targets whatever element
-     directly contains a .table (a col, .models-table-wrapper, a .list-group-item, etc.). */
-  :has(> table.table) {
-    overflow-x: auto;
-    min-width: 0;
-
-    /* let the wrapper shrink (e.g. a flex item) so it scrolls instead of growing */
-    max-width: 100%;
-
-    /* keep the wrapper from expanding to the table's full width */
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Let each data table size to its content (roomy); the wrapper above scrolls. */
+  /* Let each data table size to its content (roomy); its .table-responsive / .table-container
+     wrapper scrolls. */
   table.table {
     width: max-content;
     max-width: none;
@@ -477,19 +448,8 @@ td.projectname-date-column {
     max-width: 100% !important;
   }
 
-  /* Step-2 "grants added" funding table (data-test-submission-funding-table): it has no
-     wrapper of its own, so a parent-scroll can't be scoped to it — that's why the whole form
-     scrolled. Make the TABLE ITSELF the horizontal scroll box, capped to the viewport, and
-     keep cells on one line (nowrap) so the columns keep their content-fit widths and the
-     overflow goes into the table's own scrollbar. A wrapping <div> in the markup is still the
-     cleaner long-term fix (documented). */
-  table.table[data-test-submission-funding-table] {
-    display: block;
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
+  /* Step-2 "grants added" funding table: keep cells on one line so the columns keep their
+     content-fit widths; the .table-responsive wrapper around it scrolls. */
   table[data-test-submission-funding-table] td,
   table[data-test-submission-funding-table] th {
     white-space: nowrap;
@@ -541,34 +501,9 @@ table.table.d-flex {
   min-width: 0;
 }
 
-/* #GS-6: Stack table controls at narrow viewports — REVISED (2 fixes).
-   (1) The prior rule used descendant selectors ('.table-summary .col-5', with a space) that
-       matched nothing — the classes are compound on one element ('.table-summary.col-5', no
-       space), verified in the DOM and passui.css; only '.col-2' matched, so the two col-5
-       blocks never stacked and kept overlapping.
-   (2) Size the controls with width:100% instead of flex-basis:100%. The 400px rule above
-       sets the row to flex-direction:column, where flex-basis:100% means 100% *height* and
-       piles the controls on top of each other. width:100% is full-width in either direction. */
+/* #GS-6: core pass-ui stacks the PassTable footer (eclipse-pass/main#1279); floats don't
+   reflow, so return them to normal flow at narrow widths. */
 @media (width <= 575.98px) {
-  .table-summary.col-5,
-  .col-2,
-  .table-nav.col-5 {
-    flex: 0 0 auto;
-
-    /* size by width below, not flex-basis */
-    width: 100%;
-
-    /* full-row width regardless of the row's flex-direction (WCAG C32) */
-    max-width: 100%;
-  }
-
-  .table-nav.col-5 {
-    flex-wrap: wrap;
-
-    /* let the pager buttons + Page selector wrap instead of being cut off */
-    justify-content: flex-start;
-  }
-
   .pull-left,
   .pull-right {
     float: none;
@@ -577,19 +512,10 @@ table.table.d-flex {
   }
 }
 
-/* Submission Details header: the "Edit submission" / "Delete" buttons live in a fixed
-   50%-wide column (.col-6) in the page header — only ~160px at 320px — so they crowd and
-   wrap. This header is NOT part of the layout-table problem below, so it fixes cleanly:
-   let the header wrap and give the button group its own full-width row. */
+/* Submission Details header: core pass-ui wraps the "Edit submission" / "Delete" buttons
+   onto their own row (eclipse-pass/main#1279); add a little space above them. */
 @media (width <= 575.98px) {
-  #submission-details-title {
-    flex-wrap: wrap;
-  }
-
   #submission-details-title .col-6 {
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: 100%;
     margin-top: 0.5rem;
   }
 }
