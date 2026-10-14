@@ -256,4 +256,41 @@ module('Integration | Component | workflow grants', (hooks) => {
     assert.dom(checkbox).isNotChecked('Checkbox is unchecked after a second click');
     assert.strictEqual(this.submission.grants.length, 0, 'Grant is removed from the submission');
   });
+
+  test('Grants tables scroll inside their own wrapper at 320px instead of widening the page', async function (assert) {
+    this.set('preLoadedGrant', knownGrant);
+
+    await render(hbs`<div data-test-narrow-container style='width: 320px'>
+  <WorkflowGrants
+    @submission={{this.submission}}
+    @preLoadedGrant={{this.preLoadedGrant}}
+    @next={{this.loadNext}}
+    @back={{this.loadPrevious}}
+  />
+</div>`);
+    await settled();
+
+    const container = this.element.querySelector('[data-test-narrow-container]') as HTMLElement;
+    const right = container.getBoundingClientRect().right;
+
+    const wrappers = findAll('.table-responsive');
+    assert.strictEqual(wrappers.length, 2, 'both grants tables have a scroll wrapper');
+    wrappers.forEach((wrapper) => {
+      assert.strictEqual(wrapper.firstElementChild?.tagName, 'TABLE', 'wrapper sits directly around its table');
+      assert.ok(wrapper.getBoundingClientRect().right <= right + 1, 'wrapper fits the container');
+    });
+
+    const available = this.element.querySelector('#grants-selection-table') as HTMLElement;
+    assert.ok(available.scrollWidth > available.clientWidth, 'wide grants table scrolls inside its wrapper');
+
+    // Anything outside a table scroller must stay within the container
+    const overflowing = Array.from(container.querySelectorAll('*')).filter(
+      (el) => !el.closest('.table-responsive') && el.getBoundingClientRect().right > right + 1,
+    );
+    assert.deepEqual(
+      overflowing.map((el) => el.outerHTML.slice(0, 80)),
+      [],
+      'no element outside a table scroller extends past the container',
+    );
+  });
 });

@@ -335,6 +335,8 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 Please review the information below
               </div>
             </div>
+            {{! prettier-ignore }}
+            <div class='table-responsive'>
             <table id='review-step-table' class='table table-responsive-sm w-100'>
               <tbody>
                 {{#if this.mustVisitWeblink}}
@@ -491,6 +493,7 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                 {{/if}}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>

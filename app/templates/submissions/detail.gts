@@ -94,6 +94,7 @@ interface Signature {
               {{/if}}
             </p>
           </div>
+          <div class='table-responsive'>
           <table class='table table-responsive-sm table-bordered w-100 d-flex'>
             <tbody>
               <tr>
@@ -328,6 +329,7 @@ interface Signature {
               {{/if}}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>
