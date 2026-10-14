@@ -84,7 +84,7 @@ module('Integration | Component | workflow files', (hooks) => {
   @abort={{this.fakeAction}}
 />`);
 
-      const btn = this.element.querySelector('button');
+      const btn = this.element.querySelector('[data-test-remove-file-button]');
       assert.ok(btn);
       assert.ok(btn!.textContent!.includes('Remove'));
 
@@ -206,7 +206,7 @@ module('Integration | Component | workflow files', (hooks) => {
   @abort={{this.fakeAction}}
 />`);
 
-      const btn = this.element.querySelector('button');
+      const btn = this.element.querySelector('[data-test-remove-file-button]');
       assert.ok(btn);
       assert.ok(btn!.textContent!.includes('Remove'));
 

@@ -10,6 +10,7 @@ import SubmissionsStatusCell from 'pass-ui/components/submissions-status-cell';
 import SubmissionsRepoidCell from 'pass-ui/components/submissions-repoid-cell';
 import SubmissionActionCell from 'pass-ui/components/submission-action-cell';
 import DateCell from 'pass-ui/components/date-cell';
+import TooltipHost from 'pass-ui/components/tooltip-host';
 import type GrantDetailsController from 'pass-ui/controllers/grants/detail';
 
 interface Signature {
@@ -127,9 +128,9 @@ interface Signature {
             <th class='date-column'>Submitted Date</th>
             <th class='status-column'>Status</th>
             <th class='msid-column'>Manuscript IDs
-              <span id='manuscriptIdTooltip' tooltip-position='bottom' tooltip='IDs are assigned to manuscripts by target repositories.'>
-                <i class='fas fa-info-circle d-inline'></i>
-              </span>
+              <TooltipHost id='manuscriptIdTooltip' aria-label='About Manuscript IDs' @position='bottom' @text='IDs are assigned to manuscripts by target repositories.'>
+                <i class='fas fa-info-circle d-inline' aria-hidden='true'></i>
+              </TooltipHost>
             </th>
             <th class='actions-column'>Actions</th>
           </:header>
