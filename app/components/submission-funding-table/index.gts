@@ -28,7 +28,9 @@ const perform = (task: Task<unknown, unknown[]> | undefined) => () => task?.perf
       <tr>
         <th>Award Number</th>
         <th>Project name (funding period)</th>
-        <th></th>
+        {{#if @remove}}
+          <th>Remove</th>
+        {{/if}}
       </tr>
     </thead>
     <tbody>
@@ -47,15 +49,15 @@ const perform = (task: Task<unknown, unknown[]> | undefined) => () => task?.perf
             ({{formatDate grant.startDate}}
             -
             {{formatDate grant.endDate}})</td>
-          <td class='pr-0 mr-0'>
-            {{#if @remove}}
+          {{#if @remove}}
+            <td class='pr-0 mr-0'>
               <button
                 type='button'
                 class='btn btn-outline-danger pull-right'
                 {{on 'click' (queue (fn @remove grant) (perform @setup))}}
               >Remove</button>
-            {{/if}}
-          </td>
+            </td>
+          {{/if}}
         </tr>
       {{/each}}
     </tbody>
