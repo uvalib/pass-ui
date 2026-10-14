@@ -391,4 +391,40 @@ module('Integration | Component | workflow review', (hooks) => {
 
     assert.false(submitted);
   });
+
+  test('file type icons have accessible names', async function (assert) {
+    const workflow = this.owner.lookup('service:workflow') as {
+      setFiles: (files: unknown[]) => void;
+    };
+    workflow.setFiles([
+      { id: 'f1', name: 'article.pdf', mimeType: 'application/pdf', fileRole: 'manuscript', submission: { id: 's1' } },
+      { id: 'f2', name: 'data.csv', mimeType: 'text/csv', fileRole: 'supplemental', submission: { id: 's1' } },
+    ]);
+
+    this.submission = { id: 's1', metadata: '{}', repositories: [] };
+    this.publication = {};
+    this.submit = () => {};
+    this.loadPrevious = () => {};
+    this.files = [];
+    this.comment = '';
+    this.uploading = '';
+    this.waitingMessage = '';
+
+    await render(hbs`<WorkflowReview
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @previouslyUploadedFiles={{this.files}}
+  @comment={{this.comment}}
+  @back={{this.loadPrevious}}
+  @submitSubmission={{this.submit}}
+  @uploading={{this.uploading}}
+  @waitingMessage={{this.waitingMessage}}
+/>`);
+
+    assert.dom('.files-table thead th').hasText('File Type');
+    const labels = [...this.element.querySelectorAll('.files-table td[data-label="icon"]')].map((td) =>
+      td.textContent!.trim(),
+    );
+    assert.deepEqual(labels, ['PDF', 'File']);
+  });
 });
