@@ -18,6 +18,7 @@ import FlashMessage from 'ember-cli-flash/components/flash-message';
 import ExternalRepoReview from 'pass-ui/components/external-repo-review';
 import CommentingBlock from 'pass-ui/components/commenting-block';
 import DisplayMetadataKeys from 'pass-ui/components/display-metadata-keys';
+import FileTypeIcon from 'pass-ui/components/file-type-icon';
 import type Workflow from 'pass-ui/services/workflow';
 import type CurrentUserService from 'pass-ui/services/current-user';
 import type SubmissionHandlerService from 'pass-ui/services/submission-handler';
@@ -34,8 +35,6 @@ interface ReviewFile extends WorkflowFile {
   fileRole: string;
   description: string;
 }
-
-const eq = (a: unknown, b: unknown) => a === b;
 
 const perform =
   (task: Task<unknown, unknown[]>) =>
@@ -422,19 +421,7 @@ export default class WorkflowReview extends Component<WorkflowReviewSignature> {
                         {{#each this.parsedFiles as |file|}}
                           <tr>
                             <td data-label='icon'>
-                              {{#if (eq file.mimeType 'png')}}
-                                <i class='fas fa-file-image line-height-35 text-gray fa-30'></i>
-                              {{else if
-                                (eq file.mimeType 'vnd.openxmlformats-officedocument.presentationml.presentation')
-                              }}
-                                <i class='fas fa-file-powerpoint line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'msword')}}
-                                <i class='fas fa-file-word line-height-35 text-gray fa-30'></i>
-                              {{else if (eq file.mimeType 'pdf')}}
-                                <i class='fas fa-file-pdf line-height-35 text-gray fa-30'></i>
-                              {{else}}
-                                <i class='far fa-file line-height-35 text-gray fa-30'></i>
-                              {{/if}}
+                              <FileTypeIcon @mimeType={{file.mimeType}} />
                             </td>
                             <td class='workflow-review-file-name' data-label='name' data-test-workflow-review-file-name>
                               {{file.name}}
