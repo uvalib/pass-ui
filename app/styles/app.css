@@ -649,8 +649,26 @@ table td {
 }
 
 [tooltip]:hover::after,
-[tooltip]:hover::before {
+[tooltip]:hover::before,
+[tooltip]:focus-visible::after,
+[tooltip]:focus-visible::before {
   opacity: 1;
+}
+
+/* Escape dismisses the tooltip (see components/tooltip-host) */
+[tooltip].tooltip-dismissed::after,
+[tooltip].tooltip-dismissed::before {
+  opacity: 0;
+}
+
+/* Tooltip hosts are buttons for keyboard access; keep them looking like inline text */
+.tooltip-host {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
 }
 
 div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm):focus-visible {
