@@ -71,6 +71,21 @@ a.text-danger:hover {
   color: #536c79;
 }
 
+/* The addon's #aaaaaa borders and arrow are below the 3:1 non-text contrast minimum */
+/* stylelint-disable selector-class-pattern */
+.ember-power-select-trigger,
+.ember-power-select-trigger:focus,
+.ember-power-select-trigger--active,
+.ember-power-select-search-input,
+.ember-power-select-search-input:focus {
+  border-color: #767676;
+}
+
+.ember-power-select-status-icon {
+  border-top-color: #767676;
+}
+/* stylelint-enable selector-class-pattern */
+
 /* Buttons */
 .btn-primary {
   background-color: var(--primary-500) !important;
