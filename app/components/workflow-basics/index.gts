@@ -290,7 +290,11 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
   }
 
   @action
-  selectJournal(journal: JournalModel) {
+  selectJournal(journal: JournalModel | null) {
+    if (!journal) {
+      this.clearJournal();
+      return;
+    }
     const metadata = this.doiService.doiToMetadata({}, journal, this.schemaService.getAllFields());
     metadata['journal-title'] = journal.journalName;
     metadata['title'] = this.publication.title;
@@ -298,6 +302,30 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
 
     this.publication.journal = journal;
     this.args.validateJournal();
+  }
+
+  /**
+   * Journal is optional, so clearing the picker goes back to the initial empty state:
+   * no journal, none of the journal fields that selectJournal added to the metadata,
+   * and nothing read-only. validateJournal is not called so the empty field is not flagged.
+   */
+  clearJournal() {
+    this.publication.journal = null;
+
+    const metadata = this.submission.metadata ? JSON.parse(this.submission.metadata) : {};
+    delete metadata['journal-title'];
+    delete metadata['journal-NLMTA-ID'];
+    delete metadata['issns'];
+    this.submission.metadata = JSON.stringify(metadata);
+    this.workflow.setReadOnlyProperties([]);
+  }
+
+  // A <label for> cannot target the power-select trigger (a div), so focus it by hand
+  @action
+  focusJournalPicker() {
+    if (!this.isValidDOI) {
+      (document.getElementById('journal') as HTMLElement | null)?.focus();
+    }
   }
 
   @action
@@ -563,7 +591,7 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
         JScholarship.
       </p>
       <div>
-        <label for='journal'>
+        <label id='journal-label' for={{if this.isValidDOI 'journal'}} {{on 'click' this.focusJournalPicker}}>
           Journal
         </label>
         {{#if this.contactUrl}}
@@ -576,6 +604,7 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
         {{#unless this.isValidDOI}}
           <FindJournal
             @id='journal'
+            @ariaLabelledBy='journal-label'
             @selectJournal={{this.selectJournal}}
             @value={{@publication.journal}}
             @journalClass={{this.journalClass}}
