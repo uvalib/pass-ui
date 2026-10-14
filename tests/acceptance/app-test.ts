@@ -23,4 +23,15 @@ module('Acceptance | application', function (hooks) {
     assert.dom('h1').exists();
     assert.dom('h1').includesText('Submission');
   });
+
+  test('Site header has a single brand link and named navigation landmarks', async function (assert) {
+    sharedScenario(this.server);
+
+    await visit('/app/submissions');
+
+    assert.dom('#brand-header a[href="/"]').exists({ count: 1 }, 'only one brand link to the home page');
+    assert.dom('#brand-header a[href="/"]').hasText('Public Access Submission System');
+    assert.dom('nav:not([aria-label]):not([aria-labelledby])').doesNotExist('every nav landmark has a name');
+    assert.dom('nav#header-navbar').hasAttribute('aria-label', 'Main');
+  });
 });

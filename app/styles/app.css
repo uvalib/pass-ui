@@ -890,6 +890,13 @@ a.navbar-brand:hover {
   text-decoration: none !important;
 }
 
+/* Let the site name wrap on narrow screens instead of swapping in a second, abbreviated link */
+#brand-header .navbar-brand {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
 #navbar-supported-content a:hover {
   text-decoration: none !important;
 }
