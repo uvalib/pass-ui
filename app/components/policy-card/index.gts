@@ -99,7 +99,7 @@ export default class PolicyCard extends Component<PolicyCardSignature> {
   }
 
   <template>
-    {{! template-lint-disable link-rel-noopener no-triple-curlies require-input-label }}
+    {{! template-lint-disable link-rel-noopener no-triple-curlies }}
     <div class='card w-100 my-2' {{this.setupOnInsert}}>
       <div class='card-body'>
         <h2 class='card-title' data-test-policy-title>
@@ -141,30 +141,35 @@ export default class PolicyCard extends Component<PolicyCardSignature> {
               </div>
             {{else}}
               <div class='alert alert-info' data-test-non-method-a-journal-pmc-intro>
-                <p>
-                  Some journals would submit your article to PMC on your behalf, for a fee. Specific arrangements would
-                  be required. Please indicate below whether or not you have made an arrangement with the publisher to
-                  have your article deposited by your journal/publisher.
-                </p>
-                <input
-                  aria-label='Workflow policies radio indicating no direct deposit'
-                  type='radio'
-                  checked={{not this.pmcPublisherDeposit}}
-                  {{on 'change' (fn this.pmcPublisherDepositToggled false)}}
-                  data-test-workflow-policies-radio-no-direct-deposit
-                />
-                I would like to submit my manuscript to PMC via the NIH Manuscript System (NIHMS) as part of this
-                process.
-                <br />
-                <input
-                  aria-label='Workflow policies radio indicating a direct deposit'
-                  type='radio'
-                  checked={{this.pmcPublisherDeposit}}
-                  {{on 'change' (fn this.pmcPublisherDepositToggled true)}}
-                  data-test-workflow-policies-radio-direct-deposit
-                />
-                I have made (or intend to make) an arrangement with the publisher to deposit my article directly to PMC
-                and will not submit my article as part of this process.
+                <fieldset>
+                  <legend class='fs-6 mb-3' data-test-workflow-policies-radio-legend>
+                    Some journals would submit your article to PMC on your behalf, for a fee. Specific arrangements
+                    would be required. Please indicate below whether or not you have made an arrangement with the
+                    publisher to have your article deposited by your journal/publisher.
+                  </legend>
+                  <label class='d-block'>
+                    <input
+                      type='radio'
+                      name='pmc-deposit-arrangement'
+                      checked={{not this.pmcPublisherDeposit}}
+                      {{on 'change' (fn this.pmcPublisherDepositToggled false)}}
+                      data-test-workflow-policies-radio-no-direct-deposit
+                    />
+                    I would like to submit my manuscript to PMC via the NIH Manuscript System (NIHMS) as part of this
+                    process.
+                  </label>
+                  <label class='d-block'>
+                    <input
+                      type='radio'
+                      name='pmc-deposit-arrangement'
+                      checked={{this.pmcPublisherDeposit}}
+                      {{on 'change' (fn this.pmcPublisherDepositToggled true)}}
+                      data-test-workflow-policies-radio-direct-deposit
+                    />
+                    I have made (or intend to make) an arrangement with the publisher to deposit my article directly to
+                    PMC and will not submit my article as part of this process.
+                  </label>
+                </fieldset>
               </div>
             {{/if}}
           {{/if}}
