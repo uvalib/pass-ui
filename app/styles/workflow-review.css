@@ -8,10 +8,16 @@
 
 #review-step-table {
   /* stylelint-disable-next-line no-descending-specificity */
-  td {
+  td,
+  th[scope='row'] {
     border-width: 0 !important;
     border-style: none !important;
     border-color: transparent !important;
+  }
+
+  /* Row headers keep the plain label look the old <td> cells had */
+  th[scope='row'] {
+    font-weight: normal;
   }
 }
 

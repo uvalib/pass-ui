@@ -78,14 +78,14 @@ export default class ExternalRepoReviewComponent extends Component<ExternalRepoR
 
   <template>
     <tr>
-      <td class='text-nowrap text-center' id='externalSubmission'>
+      <th scope='row' class='text-nowrap text-center' id='externalSubmission'>
         <p class='{{if this.hasUnvisited "text-danger"}}'>
           External Submission Required
         </p>
         {{#if this.hasUnvisited}}
           <i class='fa fa-exclamation-triangle fa-2x notice-triangle text-danger'></i>
         {{/if}}
-      </td>
+      </th>
       <td>
         <label>
           You are required to make a submission to these repositories directly because PASS cannot integrate with these
