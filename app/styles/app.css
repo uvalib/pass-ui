@@ -933,3 +933,58 @@ a.navbar-brand:hover {
 .btn:hover {
   text-decoration: none !important;
 }
+
+/* SurveyJS (Details step) contrast, WCAG 1.4.3 / 1.4.11.
+   SurveyJS's default muted grey (#909090 / rgba(0, 0, 0, 0.45)) and red
+   (#e60a3e) fall below 4.5:1 for text and 3:1 for control edges. The theme
+   applied in components/metadata-form leaves these variables unset, so
+   setting them on the container reaches the survey and its dropdown popups.
+   #595959 is 7.0:1 on white, #b00000 is 7.38:1 on white (6.23:1 on the pink
+   error/hover wash) and #767676 is 4.54:1 on white. */
+#metadata-form {
+  --sjs-general-forecolor-light: #595959;
+  --sjs-font-questiondescription-color: #595959;
+  --sjs-font-editorfont-placeholdercolor: #595959;
+  --sjs-special-red: #b00000;
+}
+
+/* SurveyJS renders its dropdown as a div.form-control, which Bootstrap's
+   .form-control:read-only grey matches even when the dropdown is enabled.
+   That made live dropdowns look disabled and dropped the placeholder and
+   icons below contrast. Keep the grey for disabled/read-only ones only. */
+#metadata-form .sv-dropdown_select-wrapper div.form-control:not(.sd-input--disabled, .sd-input--readonly) {
+  background-color: #fff;
+}
+
+/* Yes/No track has no visible edge. An inset ring keeps the toggle's size and
+   leaves SurveyJS's outer focus ring in place. */
+#metadata-form .sd-boolean:not(.sd-boolean--readonly, .sd-boolean--preview) {
+  box-shadow: inset 0 0 0 2px #767676;
+}
+
+#metadata-form .sd-boolean.sd-boolean--allowhover:focus-within {
+  box-shadow:
+    inset 0 0 0 2px #767676,
+    0 0 0 2px var(--sjs-primary-backcolor, #19b394);
+}
+
+/* Remove: SurveyJS turns off the outline on hover/focus and shows only a faint
+   pink wash, so add a visible edge. Inset so the button does not change size. */
+#metadata-form .sd-action:not(.sd-action--pressed):hover.sd-action--negative,
+#metadata-form .sd-action:not(.sd-action--pressed):focus.sd-action--negative {
+  box-shadow: inset 0 0 0 2px var(--sjs-special-red);
+}
+
+/* Required-field error alert: give the pink box an edge. */
+#metadata-form .sd-error {
+  border: 2px solid var(--sjs-special-red);
+}
+
+/* Form control borders, WCAG 1.4.11 (best practice). Bootstrap's #ced4da
+   is 1.49:1 on white; #767676 is 4.54:1. Focus and validation borders
+   (.form-control:focus, .is-valid, .is-invalid) are more specific and still win. */
+/* stylelint-disable-next-line no-descending-specificity -- only sets border-color, which the earlier rules do not */
+.form-control,
+.input-group-text {
+  border-color: #767676;
+}
