@@ -15,7 +15,9 @@ Remotes: `origin` = `uvalib/pass-ui`, `upstream` = `eclipse-pass/pass-ui`. `main
 5. Open a PR on [eclipse-pass/pass-ui](https://github.com/eclipse-pass/pass-ui) against `main`, with `Fixes eclipse-pass/main#{issueNumber}` in the body.
 6. Sign the Eclipse ECA with the GitHub account that opens the PR.
 
-Local test of a contribution branch: check it out, refresh `http://localhost:8080/app/` (Vite on `:4200`, pass-core on `:8080`). Login `superuser` / `moo`.
+Local test of a contribution branch: check it out, refresh `http://localhost:8080/app/` (Vite on `:4200`, pass-core on `:8080`). Login `superuser` / `moo` (preparer) or `nih-user` / `moo` (Nihu Ser, a submitter with grants). The deposit agreement dialog only appears when the submitter submits or approves, not when a preparer requests approval.
+
+Restart a stopped pass-docker stack with `docker compose -f docker-compose.yml -f eclipse-pass.local.yml start`, not `up -d`: `up` re-runs the `loader` container, which appends the demo data again and creates duplicate users (login then fails with `Found multiple users matching locator`). Use `up -d` only after `down -v`, which wipes the database.
 
 ## After Eclipse merges a PR
 
@@ -58,6 +60,39 @@ Local test of a contribution branch: check it out, refresh `http://localhost:808
 
 ---
 
+## Ready to open upstream (branches pushed, already in `uvalib`)
+
+Built 2026-10-14 from the WCAG 2.1 AA audit queue. Each branch is cut from `main`, pushed to `origin`, passed lint, typecheck and the full suite on its own, and was merged into `uvalib` through `a11y-integration` (uvalib merge `e2e1f583`). The combined build passed 282/282 tests and a browser check (39 pass, 1 blocked: F3-4 PMC radios, no non-method-A PMC journal in the demo data). PR descriptions are drafted locally in `workspace/pass/pass-a11y-prs/<branch>.md`. Every PR body says `Part of eclipse-pass/main#718`.
+
+Open them in this order where noted: stacked branches include their base branch's commit until it merges.
+
+| Issue | Branch | Covers (backlog items below) | Open after |
+| --- | --- | --- | --- |
+| #1269 | `1269-sweetalert-a11y` | F6-2 + F6-8, item 4 (F6-4 + F7-5) | — (base for #1265, #1267) |
+| #1265 | `1265-keyboard-scrollable-agreement` | F7-8 | #1269 |
+| #1267 | `1267-draft-delete-button` | GS-11 + GS-14 + GS-16 | #1269 |
+| #1273 | `1273-file-icon-names` | F7-1, F6-1, F7-4 (File Type header) | — (base for #1274) |
+| #1274 | `1274-review-details-row-headers` | F7-3, optional `<b>` label/value pairs | #1273 |
+| #1266 | `1266-grant-select-checkboxes` | F2-4, F2-2 (Remove header) | — |
+| #1268 | `1268-keyboard-tooltips` | F7-9 + GS-10 + F6-6 | — |
+| #1270 | `1270-proxy-submitter-labels` | F1-8, F1-10 + F1-11, optional DOI placeholder | — |
+| #1271 | `1271-surveyjs-structure` | F5-1 + F5-2 + F5-12, optional Details heading levels | — |
+| #1272 | `1272-route-page-titles` | F1-6 + D-7 + GS-12 | — |
+| #1275 | `1275-header-landmarks` | D-8, optional redundant P.A.S.S. link | — (small overlap with #1350 in `application.gts`) |
+| #1276 | `1276-pass-table-live-count` | GS-15 | — |
+| #1277 | `1277-pmc-radio-labels` | F3-4 | — (small overlap with #1350 in `policy-card`) |
+| #1176 | `1176-journal-picker-a11y` | F1-9, item 7 (F1-5) | — (Mark's issue; comment posted 2026-10-07) |
+| #1278 | `1278-link-states` | item 5, item 6 (GS-7), optional sample-overlay hover (D-4 + F3-3) | — |
+| #1279 | `1279-reflow-320` | item 2 | — |
+| #1280 | `1280-wizard-steps-text-resize` | item 1 | — |
+| none yet | `surveyjs-contrast` | item 3, optional form-control border 3:1 | file an issue first, then rename the branch |
+
+Not done: D-3 (header DOM order) did not reproduce on stock (the mismatch comes from UVA's own `row-reverse`), so it was dropped from #1275. D-6 (skip link) and D-5 are still optional.
+
+**UVA overrides already removed on `uvalib`** (no need to repeat these after Eclipse merges): duplicate brand-link rules (#1275); step-bar layout duplicates (#1280); reflow `.row > *` min-width, under-400px row stacking, `:has(> table.table)` scroller, funding-table self-scroll and PassTable footer stacking (#1279); `.form-control:disabled, :read-only` block (SurveyJS contrast). Also updated for #1279's markup: the hide-duplicate-buttons rule now targets the `.table-responsive` wrapper, and UVA `.btn-primary` width subtracts its side margins. UVA stylesheets now pass stylelint (tokens renamed to kebab-case, duplicate rules merged).
+
+When one of these merges upstream, the "After Eclipse merges a PR" steps still apply, but step 4 is mostly done: check the item's cleanup notes below for anything still marked to keep or verify.
+
 ## Already fixed on `main` (nothing to contribute)
 
 Audit items closed by Eclipse PRs that are already in `main` and `uvalib`. Listed so the audit cross-check is complete.
@@ -73,9 +108,11 @@ Audit items closed by Eclipse PRs that are already in `main` and `uvalib`. Liste
 
 ## Backlog (contribute later)
 
-Work **Do first** items before the numbered CSS items. They are still broken on `uvalib` (markup/JS, not branding-overrides). Merge each contribution branch into `uvalib` as soon as it exists; do not wait for Eclipse to merge.
+Every item below now has a branch (see "Ready to open upstream"), except where its status line says otherwise. The detail is kept as the source for each PR and for the cleanup notes. Work **Do first** items before the numbered CSS items. Merge each contribution branch into `uvalib` as soon as it exists; do not wait for Eclipse to merge.
 
 ### Do first: Empty table headers (F2-2 + F7-4)
+
+**Status (2026-10-14):** Branched: F2-2 in `1266-grant-select-checkboxes` (#1266), F7-4 in `1273-file-icon-names` (#1273). In `uvalib`.
 
 **Priority: highest.** Still fails on `uvalib`. Independent of #1350, #1351, F2-4, F7-1, F7-3 (row headers on Review/Details key-value tables), and numbered items 1–6 (different files: table `<th>` text only). Same Grants step as F2-4 (Available grants Select column). Details files empty `<th>` is the column header only; F7-1 names the icon in that cell. Keep them as separate PRs.
 
@@ -166,6 +203,8 @@ This sets the grants-added header to “Remove” and the Details icon header to
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Available grants Select checkboxes (F2-4)
+
+**Status (2026-10-14):** Branched: `1266-grant-select-checkboxes` (#1266). In `uvalib`.
 
 **Priority: highest** (same Grants step as F2-2; do after empty headers or in parallel). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F1-10/F1-11, F1-6, and numbered items 1–6. Markup/JS only; cannot be done in `branding-overrides.css`.
 
@@ -272,6 +311,8 @@ This replaces it with a native checkbox labelled “Select {awardNumber}”, kee
 
 ### Do first: File type icon accessible name (F7-1)
 
+**Status (2026-10-14):** Branched: `1273-file-icon-names` (#1273). In `uvalib`. Also fixes PDFs always showing the generic icon (mime-type compare).
+
 **Priority: high** (after empty table headers and grant select checkboxes). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-9, F1-10/F1-11, F1-6, and numbered items 1–6. Markup only; cannot be done in `branding-overrides.css`.
 
 The icon is the only mime-type cue besides the filename. The adjacent Type / Manuscript/Supplement column is `fileRole`, not PDF vs Word vs image. Review already has a File Type header (F2-2 still needed for the empty Details `<th>`).
@@ -360,6 +401,8 @@ This adds visually hidden format text (PDF, Image, Word, PowerPoint, File) next 
 
 ### Do first: Review and Details row headers (F7-3)
 
+**Status (2026-10-14):** Branched: `1274-review-details-row-headers` (#1274), stacked on #1273. In `uvalib`.
+
 **Priority: high** (after empty table headers, grant select checkboxes, and file type icons). Still fails on `uvalib`. Independent of #1350, #1351, F2-2 (empty **column** headers on files / grants-added tables), F2-4, F7-1, F7-2 (already h1→h2), numbered items 1–6, and the Optional Review/Details `<b>` label/value lists. Markup only; cannot be done in `branding-overrides.css`. Same Review/Details key-value pattern as **one** PR.
 
 Left-hand labels (Repositories, Grants, Details, Files, …) are `<td>` (Details wraps them in `<strong>`). Assistive tech does not get row headers. Nested files tables already use `<th scope="col">`. Inner `<b>Label</b> : value` lists (`display-metadata-keys`, grant award/funder) are a separate Optional item.
@@ -438,6 +481,8 @@ This switches those cells to `<th scope="row">`. Nested files tables are unchang
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Deposit agreement scrollable region is keyboard-operable (F7-8)
+
+**Status (2026-10-14):** Branched: `1265-keyboard-scrollable-agreement` (#1265), stacked on #1269. In `uvalib`. Browser-checked on both paths (submit and approve).
 
 **Priority: high** (CRITICAL 2.1.1; after Review row headers). Still fails on `uvalib`. Independent of #1350, #1351, F6-2 (Swal icon `aria-hidden`), F7-3, and numbered items 1–6 (item 4 is confirm **button contrast** only). Markup/JS; cannot be done in `branding-overrides.css`.
 
@@ -523,6 +568,8 @@ This uses a readonly, named textarea (or a focusable region) on both Review and 
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Files cloud download icon accessible name (F6-1)
+
+**Status (2026-10-14):** Branched: `1273-file-icon-names` (#1273). In `uvalib`.
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, and Review row headers). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1 (Review/Details file-type icons), F7-3, F7-8, F7-9/GS-10, and numbered items 1–6. Markup only; cannot be done in `branding-overrides.css`.
 
@@ -613,6 +660,8 @@ This names the icon (or removes it from the sentence) so the download instructio
 
 ### Do first: SweetAlert icon and dialog announcement (F6-2 + F6-8)
 
+**Status (2026-10-14):** Branched: `1269-sweetalert-a11y` (#1269), which adds the shared `app/util/swal.ts`. In `uvalib`.
+
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, and cloud download icon). Still fails on `uvalib`. Independent of #1350, #1351 (`returnFocus` only), F6-1, F7-8 (agreement scroll), F7-9/GS-10, and numbered items 1–6 (item 4 is confirm **contrast** only). JS; cannot be done in `branding-overrides.css`. Same `Swal.mixin` as **one** PR.
 
 Files Remove uses `icon: 'warning'`. SweetAlert2 renders `<div class="swal2-icon-content">!</div>` (F6-2) and `role="dialog"` with `aria-labelledby` / `aria-describedby` correctly wired, plus `aria-live="assertive"` on the popup. Focus goes to **I Agree**. Screen readers often announce “!” and the button, not “Are you sure?” (F6-8). Auditor marked F6-8 **UNSURE** on 4.1.2 because the name attributes exist. Same `icon: 'warning'` / `'error'` on Basics, Repositories, Review, error-handler, and Delete.
@@ -694,6 +743,8 @@ This mixin marks `.swal2-icon` decorative and removes `aria-live` from the popup
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Keyboard-accessible tooltips (F7-9 + GS-10 + F6-6)
+
+**Status (2026-10-14):** Branched: `1268-keyboard-tooltips` (#1268). In `uvalib`. The Files Description tooltip is clipped below 576px by the table's scroll box (as before this work).
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, cloud download icon, and SweetAlert icon). Still fails on `uvalib`. Independent of #1350, #1351 (different hunks in `workflow-files`), F2-2, F2-4, F7-1, F6-1, F6-2/F6-8, F1-10/F1-11, F1-6, and numbered items 1–6. Markup + generic `app.css`; `branding-overrides.css` cannot put a `<span>` in the tab order.
 
@@ -789,6 +840,8 @@ This uses a button host, shows the tooltip on `:focus-visible` as well as hover,
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Draft Delete is not a keyboard-operable control (GS-11 + GS-14 + GS-16)
+
+**Status (2026-10-14):** Branched: `1267-draft-delete-button` (#1267), stacked on #1269. In `uvalib`.
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, and keyboard tooltips). Still fails on `uvalib`. Independent of #1350, #1351 (Files-step **file** remove already has `aria-live`), GS-15 (table **count** live region), F2-2, F2-4, F7-1, F7-9/GS-10, F1-10/F1-11, F1-6, and numbered items 1–6. Markup only; cannot be done in `branding-overrides.css`. Same PassTable Actions Delete as **one** PR.
 
@@ -894,6 +947,8 @@ This switches it to `<button type="button">`, flashes “Draft submission delete
 
 ### Do first: PassTable result count is a status message (GS-15)
 
+**Status (2026-10-14):** Branched: `1276-pass-table-live-count` (#1276). In `uvalib`.
+
 **Priority: high** (after draft Delete; same PassTable). Still fails on `uvalib`. Independent of #1350, #1351, GS-11/GS-14/GS-16 (explicit “deleted” flash vs this **count**), F1-10/F1-11 (same `aria-live` idea, Search Users modal), and numbered items 1–6. Markup only; cannot be done in `branding-overrides.css`.
 
 Search, Rows, and pagination update **Show X–Y of Z** without announcing it. There is no `aria-live`. Sort-by / `aria-sort` is obsolete: PassTable does not sort (GS-9 / GS-13 already gone).
@@ -980,6 +1035,8 @@ This marks the existing summary as `aria-live="polite"` (including “No data fo
 
 ### Do first: Header DOM order matches visual order (D-3)
 
+**Status (2026-10-14):** Not branched. Did not reproduce on stock; the order mismatch comes from UVA's `row-reverse`. Stays UVA-only.
+
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, and draft Delete). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1, F7-9/GS-10, GS-11/GS-14, GS-15, F1-10/F1-11, F1-6, and numbered items 1–6. Related to optional D-5 (small-width stacking) but a different criterion.
 
 Visual order is logo left, product name right. DOM is product name, then logo. Tab and screen-reader order follow the DOM. CSS `flex-flow: row-reverse` / `order` cannot satisfy 1.3.2.
@@ -1057,6 +1114,8 @@ This puts the logo link first when present, drops `pull-right`, and uses flex so
 
 ### Do first: Two navigation landmarks need distinct names (D-8)
 
+**Status (2026-10-14):** Branched: `1275-header-landmarks` (#1275). In `uvalib`; UVA brand-link overrides removed.
+
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, draft Delete, and header DOM order). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1, F7-9/GS-10, GS-11, D-3, F1-10/F1-11, F1-6/D-7, and numbered items 1–6. Related to optional D-6 (skip link uses landmarks) but a different criterion.
 
 The instructions banner and the site menu are both unnamed `<nav>`s. Grant pagination already has `aria-label="Grant pagination"`. CSS cannot name landmarks.
@@ -1131,6 +1190,8 @@ This changes the banner to a `div` and adds `aria-label="Main"` on `#header-navb
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Proxy submitter labels on Basics (F1-8)
+
+**Status (2026-10-14):** Branched: `1270-proxy-submitter-labels` (#1270). In `uvalib`.
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, draft Delete, header DOM order, and unnamed navs). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1, F7-9/GS-10, GS-11, D-3, D-8, F1-10/F1-11 (same Basics step, different controls — modal name/live region vs visible labels), F1-6/D-7, numbered items 1–6, and the Optional DOI placeholder instructions. Markup only; cannot be done in `branding-overrides.css`.
 
@@ -1219,6 +1280,8 @@ This adds `<label for>` on those three fields.
 
 ### Do first: Allow clearing the selected journal on Basics (F1-9)
 
+**Status (2026-10-14):** Branched: `1176-journal-picker-a11y` (#1176). In `uvalib`.
+
 **Priority: high** (after proxy labels; same Basics step). Still fails on `uvalib`. Independent of #1350, #1351, F1-8, F1-10/F1-11, and numbered items 1–6. Markup/JS; cannot be done in `branding-overrides.css`. Auditor marked 3.3.4 **UNSURE**; clearing journal is still undo (it changes policies/repos later). Copy on the same step says journal is optional except NIH/PMC.
 
 `FindJournal` PowerSelect has no `@allowClear`. `selectJournal` only accepts a `JournalModel`. After a pick, the only change is another search hit. DOI-filled journal is a **disabled** input — out of scope for this PR.
@@ -1301,6 +1364,8 @@ This enables ember-power-select `@allowClear` and sets `publication.journal` to 
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Search Users dialog name and search status (F1-10 + F1-11)
+
+**Status (2026-10-14):** Branched: `1270-proxy-submitter-labels` (#1270). In `uvalib`. Follow-up: the search field inside the dialog still has no accessible name.
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, draft Delete, header DOM order, unnamed navs, proxy labels, and journal clear). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1, F7-9/GS-10, GS-11, D-3, D-8, F1-8, F1-9, and numbered items 1–6. Same modal as one PR.
 
@@ -1396,6 +1461,8 @@ This sets `aria-labelledby` on the dialog to the “Search Users” heading, and
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Policies PMC radios use visible text as the name (F3-4)
+
+**Status (2026-10-14):** Branched: `1277-pmc-radio-labels` (#1277). In `uvalib`. Not browser-checked: the demo data has no non-method-A PMC journal.
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, draft Delete, header DOM order, unnamed navs, proxy labels, and Search Users). Still fails on `uvalib` for 4.1.2. Independent of #1350, #1351 (policy-card headings only), F2-2, F2-4, F7-1, F7-9/GS-10, GS-11, D-3, D-8, F1-8, F1-10/F1-11, F1-6/D-7, and numbered items 1–6. Markup only; cannot be done in `branding-overrides.css`. Same radios as **one** PR (include the 1.3.1 grouping).
 
@@ -1505,6 +1572,8 @@ This wraps the intro in a `<fieldset>` / `<legend>`, each option in a `<label>`,
 
 ### Do first: SurveyJS Details groups and required (F5-1 + F5-2 + F5-12)
 
+**Status (2026-10-14):** Branched: `1271-surveyjs-structure` (#1271). In `uvalib`.
+
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, draft Delete, header DOM order, unnamed navs, proxy labels, Search Users, and Policies radios). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1, F7-9/GS-10, GS-11, D-3, D-8, F1-8, F1-10/F1-11, F3-4, F1-6/D-7, and numbered items 1–6 (item 3 is SurveyJS **contrast** only). Same Details SurveyJS form as **one** PR. Markup/JS; cannot be done in `branding-overrides.css`.
 
 Authors and ISSN are SurveyJS `paneldynamic` with `role="textbox"` and an add-entry hint in the name. Required fields (auditor: `publicationDate`) get `<span class="sd-question__required-text" aria-hidden="true">*</span>`: sighted users see an unexplained star (F5-12); AT never hears it (F5-2). Required flags come from `repository.json` (e.g. jscholarship / inveniordm `publicationDate`). Basics already uses visible “(required)” on Manuscript/Article Title.
@@ -1587,6 +1656,8 @@ This labels those sections as groups, clarifies Add/Remove copy, explains requir
 - Delete the contribution branch locally and on `origin`.
 
 ### Do first: Unique document titles per route (F1-6 + D-7 + GS-12)
+
+**Status (2026-10-14):** Branched: `1272-route-page-titles` (#1272). In `uvalib`.
 
 **Priority: high** (after empty table headers, grant select checkboxes, file type icons, keyboard tooltips, draft Delete, header DOM order, unnamed navs, proxy labels, Search Users, Policies radios, and SurveyJS groups/required). Still fails on `uvalib`. Independent of #1350, #1351, F2-2, F2-4, F7-1, F7-9/GS-10, GS-11, D-3, D-8, F1-8, F1-10/F1-11, F3-4, F5-1/F5-2/F5-12, and numbered items 1–6. Cannot be done in `branding-overrides.css`; every site currently shares a static `<title>PASS</title>`.
 
@@ -1678,6 +1749,8 @@ This adds `{{pageTitle}}` on the application template (site name), list/detail/t
 - Delete the contribution branch locally and on `origin`.
 
 ### 1. Wizard step bar clips labels at 200% zoom (F1-3 + F1-4)
+
+**Status (2026-10-14):** Branched: `1280-wizard-steps-text-resize` (#1280). In `uvalib`; UVA layout duplicates already removed (cleanup below is done).
 
 Do this as **one** generic PR. Same `.steps` bar. Independent of #1350 and #1351 (no shared hunks; #1350 touches `app.css` in other places only).
 
@@ -1778,6 +1851,8 @@ In `public/branding-overrides.css`, section `/* Submission wizard */`:
 - Merge `main` into `uvalib`, visual-check the wizard at 200% zoom, push `uvalib`, delete the contribution branch.
 
 ### 2. Reflow at 320px: page scroll and PassTable controls (F2-3 + F6-5 + F7-6 + GS-6)
+
+**Status (2026-10-14):** Branched: `1279-reflow-320` (#1279). In `uvalib`; UVA duplicates already removed (cleanup below is done, `overflow-wrap` on `.row > *` kept). The Files table only scrolls below 576px so its header tooltip isn't clipped.
 
 Independent of #1350, #1351, and backlog item 1 (different CSS: `.row` / tables / PassTable footer, not `.steps`).
 
@@ -1883,6 +1958,8 @@ In `public/branding-overrides.css`, section `/* Reflow (320px / 400% zoom) */`:
 - Merge `main` into `uvalib`, check Grants, Files, Review, Submission Details, and Grants/Submissions PassTable footers at 320px (page does not pan; data tables may; Review/details still stack; footer stacks), push `uvalib`, delete the contribution branch.
 
 ### 3. SurveyJS Details contrast (F5-3 + F5-4 + F5-5 + F5-6 + F5-7 + F5-8 + F5-9 + F5-10 + F5-11)
+
+**Status (2026-10-14):** Branched: `surveyjs-contrast` (no issue yet; file one, then rename the branch). In `uvalib`; the disabled/read-only block is already removed, UVA colors kept.
 
 Do this as **one** generic PR. Same SurveyJS token family, plus `form-control` scoping, 3:1 Yes/No, Remove, and error edges, and dropdown icon fills. Independent of #1350, #1351, backlog items 1–2, and Do-first F5-1/F5-2/F5-12 (groups + required; structure, not contrast).
 
@@ -2062,6 +2139,8 @@ This sets `--sjs-font-questiondescription-color`, `--sjs-general-forecolor-light
 
 ### 4. SweetAlert confirm fails 4.5:1 (F6-4 + F7-5)
 
+**Status (2026-10-14):** Branched: `1269-sweetalert-a11y` (#1269). In `uvalib`. UVA confirm block kept (13.56:1 in the browser check).
+
 Independent of #1350, #1351 (1351 uses this dialog; it does not set button colors), backlog items 1–3, Do-first F6-2/F6-8 (icon + dialog announcement, not contrast), and F7-8 (agreement region keyboard scroll).
 
 UVA already restyles `.swal2-confirm` in `branding-overrides.css`. No UVA production need until we want that override slimmed down.
@@ -2152,6 +2231,8 @@ This uses `var(--primary-600)` for the confirm background (default `#1e40af`, ~8
 - Merge `main` into `uvalib`, check Remove-file **I Agree** and Review **Next** / **Confirm**, push `uvalib`, delete the contribution branch.
 
 ### 5. Links need rest-state and keyboard-focus indicators (GS-3 + GS-4 + F3-2 + F6-3)
+
+**Status (2026-10-14):** Branched: `1278-link-states` (#1278). In `uvalib`; UVA link colors kept.
 
 Independent of #1350, #1351, and backlog items 1–4.
 
@@ -2269,6 +2350,8 @@ This keeps rest-state underline and adds `a:focus` / `a:focus-visible` next to `
 
 ### 6. PassTable clear (X) hover fails 3:1 (GS-7)
 
+**Status (2026-10-14):** Branched: `1278-link-states` (#1278). In `uvalib`.
+
 Independent of #1350, #1351, and backlog items 1–4. Related to item 5: `a:hover` / `.btn-link:hover` must **not** paint this control with `--primary-600`.
 
 UVA already restyles `.clearFilters` / `.clearFilterIcon` hover and focus in `branding-overrides.css`. No UVA production need until we want that override slimmed down.
@@ -2354,6 +2437,8 @@ This sets hover/focus to a 3:1 pair (white on `#495057`) and removes the link un
 - Merge `main` into `uvalib`, hover/Tab the PassTable X, push `uvalib`, delete the contribution branch.
 
 ### 7. Journal dropdown arrow and border fail 3:1 (F1-5)
+
+**Status (2026-10-14):** Branched: `1176-journal-picker-a11y` (#1176). In `uvalib`; UVA grey kept.
 
 Independent of #1350, #1351, and backlog items 1–6. Not SurveyJS (item 3 covers the Details dropdown icons, F5-9). This is the ember-power-select journal picker on Basics.
 
