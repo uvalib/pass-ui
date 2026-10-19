@@ -635,6 +635,8 @@ h2 {
   color: var(--uva-brand-blue) !important;
 }
 
+/* UX Heuristic Issue 2: Current step of submission form blocked out on navigation bar.
+   Highlight the current step in UVA blue with legible white bold text, no rounded block. */
 .steps .step.btn-primary,
 .steps .btn-primary {
   background-color: var(--uva-brand-blue) !important;
