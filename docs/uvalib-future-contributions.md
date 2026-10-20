@@ -32,37 +32,22 @@ Restart a stopped pass-docker stack with `docker compose -f docker-compose.yml -
 
 ## Open PRs (wait, then clean up)
 
-### Heading hierarchy — eclipse-pass/main#1261 / pass-ui#1350
+None open right now. The 18 accessibility branches below are ready to open.
 
-- Branch: `1261-fix-heading-hierarchy`
-- Audit: D-2, F1-1 (no `h1`; Dashboard / New Submission), F2-1 (Available grants `h4`), F3-1 (policy `h6`), F7-2 (Review title `h4`). Verified on `uvalib`: every audited page now starts at `h1` with no skipped levels.
-- Companion TestCafe PR: [eclipse-pass/pass-acceptance-testing#39](https://github.com/eclipse-pass/pass-acceptance-testing/pull/39)
-- Already merged into `uvalib`
+## Merged upstream
 
-**uvalib cleanup after #1350 merges**
+| Issue | PR | Merged | uvalib cleanup |
+| --- | --- | --- | --- |
+| eclipse-pass/main#1263 file upload/removal focus (F6-7, F6-9) | pass-ui#1351 (squash `912f1de7`) | 2026-10-20 | Done: `main` merged into `uvalib` (`b88eb33a`); branch `1263-keep-file-upload-focus` deleted. No overrides to remove. |
+| eclipse-pass/main#1261 heading hierarchy (D-2, F1-1, F2-1, F3-1, F7-2) | pass-ui#1350 (squash `1b20f569`), with pass-acceptance-testing#39 (merged first) | 2026-10-20 | Done: `main` merged into `uvalib` (`b88eb33a`); branch `1261-fix-heading-hierarchy` deleted. UVA `h1, h2` brand colour kept. |
 
-- Merge `main` into `uvalib` (heading markup/`app.css` will already be present; expect a clean merge).
-- Keep UVA `h1, h2 { color: var(--uva-brand-blue) !important; }` in `branding-overrides.css`. That is branding, not the heading-order fix.
-- Delete `1261-fix-heading-hierarchy` locally and on `origin`.
-- Merge or close acceptance-testing #39 with the pass-ui PR.
-
-### File upload/removal focus — eclipse-pass/main#1263 / pass-ui#1351
-
-- Branch: `1263-keep-file-upload-focus`
-- Audit: F6-7 (focus jumps to window after upload/remove), F6-9 (no upload/remove status message; polite live region in `workflow-files`).
-- Already merged into `uvalib`
-
-**uvalib cleanup after #1351 merges**
-
-- Merge `main` into `uvalib`.
-- No branding-overrides to remove (this was component JS/tests only).
-- Delete `1263-keep-file-upload-focus` locally and on `origin`.
+Both squashes matched the branches `uvalib` already had, so the `main` → `uvalib` merge changed no app files (conflicts in `application.gts`, `dashboard.gts` and `workflow-grants` kept `uvalib`'s side, which includes the later accessibility fixes). Eclipse squash-merges, so delete merged branches with `git branch -D`.
 
 ---
 
 ## Ready to open upstream (branches pushed, already in `uvalib`)
 
-Built 2026-10-14 from the WCAG 2.1 AA audit queue. Each branch is cut from `main`, pushed to `origin`, passed lint, typecheck and the full suite on its own, and was merged into `uvalib` through `a11y-integration` (uvalib merge `e2e1f583`). The combined build passed 282/282 tests and a browser check (39 pass, 1 blocked: F3-4 PMC radios, no non-method-A PMC journal in the demo data). PR descriptions are drafted locally in `workspace/pass/pass-a11y-prs/<branch>.md`. Every PR body says `Part of eclipse-pass/main#718`.
+Built 2026-10-14 from the WCAG 2.1 AA audit queue. Each branch was cut from the `main` of that date (`d9617828`), before #1350 and #1351 merged: **rebase onto current `main` before opening its PR** (expect small conflicts where a branch touches `application.gts`, `dashboard.gts`, `policy-card`, `workflow-grants`, `workflow-files`, `workflow-review`, `submissions/detail` or `app.css`). Each branch is pushed to `origin`, passed lint, typecheck and the full suite on its own, and was merged into `uvalib` through `a11y-integration` (uvalib merge `e2e1f583`). The combined build passed 282/282 tests and a browser check (39 pass, 1 blocked: F3-4 PMC radios, no non-method-A PMC journal in the demo data). PR descriptions are drafted locally in `workspace/pass/pass-a11y-prs/<branch>.md`. Every PR body says `Part of eclipse-pass/main#718`.
 
 Open them in this order where noted: stacked branches include their base branch's commit until it merges.
 
