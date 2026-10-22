@@ -32,7 +32,16 @@ Restart a stopped pass-docker stack by naming the services, so the one-shot `loa
 
 ## Open PRs (wait, then clean up)
 
-None open right now. The 18 accessibility branches below are ready to open.
+### SweetAlert dialogs — eclipse-pass/main#1269 / pass-ui#1363
+
+- Branch: `1269-sweetalert-a11y` (opened 2026-10-22). Base for `1265-keyboard-scrollable-agreement` and `1267-draft-delete-button`: open those after this merges, rebased onto the new `main`.
+- Includes a darker stock sample overlay (`--primary-500` / `--primary-600` → `#b35400` / `#8a3f00`) so the confirm button passes 4.5:1 in pass-docker. `1278-link-states` makes the identical change.
+
+**uvalib cleanup after #1363 merges**
+
+- Merge `main` into `uvalib`. Expect a conflict in `public/branding-overrides.css` (UVA's file): keep `uvalib`'s side.
+- Keep the UVA `.swal2-confirm` block unless a visual check shows the token path is enough.
+- Delete `1269-sweetalert-a11y` locally and on `origin` (`git branch -D`, squash-merged).
 
 ## Merged upstream
 
@@ -53,7 +62,7 @@ Open them in this order where noted: stacked branches include their base branch'
 
 | Issue | Branch | Covers (backlog items below) | Open after |
 | --- | --- | --- | --- |
-| #1269 | `1269-sweetalert-a11y` | F6-2 + F6-8, item 4 (F6-4 + F7-5) | — (base for #1265, #1267) |
+| #1269 | `1269-sweetalert-a11y` | F6-2 + F6-8, item 4 (F6-4 + F7-5) | **Opened as pass-ui#1363** (base for #1265, #1267) |
 | #1265 | `1265-keyboard-scrollable-agreement` | F7-8 | #1269 |
 | #1267 | `1267-draft-delete-button` | GS-11 + GS-14 + GS-16 | #1269 |
 | #1273 | `1273-file-icon-names` | F7-1, F6-1, F7-4 (File Type header) | — (base for #1274) |
