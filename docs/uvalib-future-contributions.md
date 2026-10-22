@@ -17,7 +17,7 @@ Remotes: `origin` = `uvalib/pass-ui`, `upstream` = `eclipse-pass/pass-ui`. `main
 
 Local test of a contribution branch: check it out, refresh `http://localhost:8080/app/` (Vite on `:4200`, pass-core on `:8080`). Login `superuser` / `moo` (preparer) or `nih-user` / `moo` (Nihu Ser, a submitter with grants). The deposit agreement dialog only appears when the submitter submits or approves, not when a preparer requests approval.
 
-Restart a stopped pass-docker stack with `docker compose -f docker-compose.yml -f eclipse-pass.local.yml start`, not `up -d`: `up` re-runs the `loader` container, which appends the demo data again and creates duplicate users (login then fails with `Found multiple users matching locator`). Use `up -d` only after `down -v`, which wipes the database.
+Restart a stopped pass-docker stack by naming the services, so the one-shot `loader` stays stopped: `docker compose -f docker-compose.yml -f eclipse-pass.local.yml start postgres ldap localstack idp pass-core pass-ui`. Both `up -d` and a bare `start` re-run `loader`, which appends the demo data again and duplicates every user (login then fails with `Found multiple users matching locator`). After a duplicate, reset with `down -v` and `up -d` (this wipes the local database).
 
 ## After Eclipse merges a PR
 
