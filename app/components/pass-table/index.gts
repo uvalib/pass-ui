@@ -256,33 +256,37 @@ export default class PassTable<T = unknown> extends Component<PassTableSignature
                 type='button'
                 class='{{if this.hasPrevPage "enabled" "disabled"}} btn btn-secondary'
                 disabled={{if this.hasPrevPage false true}}
+                aria-label='Go to first page'
                 {{on 'click' this.goToFirstPage}}
               >
-                <i class='fa fa-fw fa-angle-double-left'></i>
+                <i class='fa fa-fw fa-angle-double-left' aria-hidden='true'></i>
               </button>
               <button
                 type='button'
                 class='{{if this.hasPrevPage "enabled" "disabled"}} btn btn-secondary'
                 disabled={{if this.hasPrevPage false true}}
+                aria-label='Go to previous page'
                 {{on 'click' this.prevPage}}
               >
-                <i class='fa fa-fw fa-angle-left'></i>
+                <i class='fa fa-fw fa-angle-left' aria-hidden='true'></i>
               </button>
               <button
                 type='button'
                 class='{{if this.hasNextPage "enabled" "disabled"}} btn btn-secondary'
                 disabled={{if this.hasNextPage false true}}
+                aria-label='Go to next page'
                 {{on 'click' this.nextPage}}
               >
-                <i class='fa fa-fw fa-angle-right'></i>
+                <i class='fa fa-fw fa-angle-right' aria-hidden='true'></i>
               </button>
               <button
                 type='button'
                 class='{{if this.hasNextPage "enabled" "disabled"}} btn btn-secondary'
                 disabled={{if this.hasNextPage false true}}
+                aria-label='Go to last page'
                 {{on 'click' this.goToLastPage}}
               >
-                <i class='fa fa-fw fa-angle-double-right'></i>
+                <i class='fa fa-fw fa-angle-double-right' aria-hidden='true'></i>
               </button>
             </div>
             <div class='pull-right'>

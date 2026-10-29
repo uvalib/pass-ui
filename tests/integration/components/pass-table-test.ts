@@ -29,6 +29,27 @@ module('Integration | Component | pass-table', (hooks) => {
     </PassTable>
   `;
 
+  test('pager buttons are named for what they do and hide their icons', async function (assert) {
+    this.set('totalItems', 25);
+    this.set('totalPages', 3);
+    this.set('page', 2);
+    await render(template);
+
+    const names = ['Go to first page', 'Go to previous page', 'Go to next page', 'Go to last page'];
+    const buttons = Array.from(this.element.querySelectorAll('.table-nav .btn-group button'));
+    assert.deepEqual(
+      buttons.map((b) => b.getAttribute('aria-label')),
+      names,
+      'each pager button has an accessible name',
+    );
+    buttons.forEach((b) => {
+      assert.ok(
+        Array.from(b.children).every((icon) => icon.getAttribute('aria-hidden') === 'true'),
+        `${b.getAttribute('aria-label')}: icon is hidden from assistive tech`,
+      );
+    });
+  });
+
   test('result summary is a polite, atomic live region', async function (assert) {
     await render(template);
 
