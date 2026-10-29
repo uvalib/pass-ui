@@ -104,4 +104,19 @@ module('Integration | Component | workflow basics user search', (hooks) => {
     assert.dom('[data-test-user-search-status]').exists();
     assert.dom('[data-test-user-search-status]').hasNoText();
   });
+
+  test('close button and search field have accessible names', async function (assert) {
+    this.set('userSearchTerm', '');
+
+    await render(hbs`<WorkflowBasicsUserSearch
+  @toggleUserSearchModal={{this.toggleUserSearchModal}}
+  @pickSubmitter={{this.pickSubmitter}}
+  @searchInput={{this.userSearchTerm}}
+/>`);
+
+    assert.dom('.close-button').hasAttribute('aria-label', 'Close Search Users dialog');
+    assert.dom('.close-button').hasText('X', 'the visible X is kept');
+    assert.dom('.close-button span').hasAttribute('aria-hidden', 'true');
+    assert.dom('.user-search-container input').hasAttribute('aria-label', 'Search by name or email');
+  });
 });

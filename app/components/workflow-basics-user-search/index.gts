@@ -143,13 +143,19 @@ export default class WorkflowBasicsUserSearch extends Component<WorkflowBasicsUs
       <button
         class='btn btn-outline-primary close-button'
         type='button'
+        aria-label='Close Search Users dialog'
         {{on 'click' @toggleUserSearchModal}}
-      >X</button>
+      ><span aria-hidden='true'>X</span></button>
       <div class='container'>
         <h2 id='user-search-title'>Search Users</h2>
         <p class='text-muted'>Search by name or email and click on a user to assign them to the submitter role.</p>
         <div class='input-group pb-3'>
-          <Input @value={{@searchInput}} {{on 'keydown' this.handleEnterSearch}} class='form-control' />
+          <Input
+            @value={{@searchInput}}
+            {{on 'keydown' this.handleEnterSearch}}
+            class='form-control'
+            aria-label='Search by name or email'
+          />
           <span class='input-group-btn'>
             <button
               id='search-for-users'

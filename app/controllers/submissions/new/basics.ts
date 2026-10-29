@@ -58,12 +58,14 @@ export default class SubmissionsNewBasics extends Controller {
   @tracked titleError: boolean = false;
   @tracked journalError: boolean = false;
   @tracked submitterEmailError: boolean = false;
+  @tracked submitterNameError: boolean = false;
 
   get flaggedFields(): string[] {
     const fields = [];
     if (this.titleError) fields.push('title');
     if (this.journalError) fields.push('journal');
     if (this.submitterEmailError) fields.push('submitterEmail');
+    if (this.submitterNameError) fields.push('submitterName');
 
     return fields;
   }
@@ -88,6 +90,10 @@ export default class SubmissionsNewBasics extends Controller {
     return !this.submission?.submitter?.id && (!email || !emailPattern.test(email));
   }
 
+  get submitterNameIsInvalid(): boolean {
+    return !this.submission?.submitter?.id && !this.submission?.submitterName?.trim();
+  }
+
   @action
   async loadTab(gotoRoute: string): Promise<void> {
     // Make sure title is saved in metadata
@@ -104,6 +110,7 @@ export default class SubmissionsNewBasics extends Controller {
     this.titleError = false;
     this.journalError = false;
     this.submitterEmailError = false;
+    this.submitterNameError = false;
 
     if (this.titleIsInvalid) {
       this.titleError = true;
@@ -116,6 +123,9 @@ export default class SubmissionsNewBasics extends Controller {
     if (this.submission.isProxySubmission) {
       // If there's no submitter or submitter info and the submission is a new proxy submission:
       if (this.submitterIsInvalid) {
+        // Mark the missing email and name fields so they show the same error state
+        this.submitterEmailError = this.submitterEmailIsInvalid;
+        this.submitterNameError = this.submitterNameIsInvalid;
         this.flashMessages.warning(
           'You have indicated that you are submitting on behalf of someone, please select the user or enter their name and email address.',
         );
@@ -159,6 +169,11 @@ export default class SubmissionsNewBasics extends Controller {
   @action
   validateSubmitterEmail(): void {
     this.submitterEmailError = this.submitterEmailIsInvalid;
+  }
+
+  @action
+  validateSubmitterName(): void {
+    this.submitterNameError = this.submitterNameIsInvalid;
   }
 
   @action

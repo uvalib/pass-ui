@@ -27,6 +27,7 @@ interface Signature {
       @validateTitle={{@controller.validateTitle}}
       @validateJournal={{@controller.validateJournal}}
       @validateSubmitterEmail={{@controller.validateSubmitterEmail}}
+      @validateSubmitterName={{@controller.validateSubmitterName}}
       @updatePublication={{@controller.updatePublication}}
       @validateAndLoadTab={{@controller.validateAndLoadTab}}
       @abort={{@controller.abort}}
