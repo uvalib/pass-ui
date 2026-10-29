@@ -38,5 +38,9 @@ module('Integration | Component | notice-banner', (hooks) => {
     );
     assert.dom('.info-banner').exists('banner is rendered');
     assert.dom('nav').doesNotExist('help text is not exposed as a navigation landmark');
+    assert
+      .dom('.info-banner')
+      .hasAttribute('role', 'complementary', 'help text is a complementary landmark')
+      .hasAttribute('aria-label', 'Submission help');
   });
 });

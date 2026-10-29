@@ -35,7 +35,8 @@ export default class NoticeBanner extends Component<NoticeBannerSignature> {
 
   <template>
     {{#if this.displayInfoBanner}}
-      <div class='info-banner p-1 text-center font-weight-bold'>
+      {{! A complementary landmark, so assistive tech can jump to the help text (WCAG 1.3.1) }}
+      <div class='info-banner p-1 text-center font-weight-bold' role='complementary' aria-label='Submission help'>
         Need help making a submission? Read our submission workflow
         <a class='instructions-url' href={{this.instructionsUrl}} target='_blank' rel='noopener noreferrer'>
           instructions
