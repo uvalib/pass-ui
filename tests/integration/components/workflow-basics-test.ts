@@ -43,6 +43,8 @@ module('Integration | Component | workflow basics', (hooks) => {
 
     this.set('validateSubmitterEmail', () => {});
 
+    this.set('validateSubmitterName', () => {});
+
     this.set('loadNext', () => {});
 
     this.set('updatePublication', (publication: unknown) => this.set('publication', publication));
@@ -434,17 +436,18 @@ module('Integration | Component | workflow basics', (hooks) => {
   @validateTitle={{this.validateTitle}}
   @validateJournal={{this.validateJournal}}
   @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @validateSubmitterName={{this.validateSubmitterName}}
   @updatePublication={{this.updatePublication}}
 />`);
 
     const labelFor = (selector: string) => {
       const input = this.element.querySelector(selector) as HTMLInputElement;
-      return this.element.querySelector(`label[for="${input.id}"]`)?.textContent?.trim();
+      return this.element.querySelector(`label[for="${input.id}"]`)?.textContent?.replace(/\s+/g, ' ').trim();
     };
 
     assert.strictEqual(labelFor('[data-test-proxy-search-input]'), 'Search for an existing PASS user');
-    assert.strictEqual(labelFor('[data-test-proxy-submitter-email-input]'), 'Email address');
-    assert.strictEqual(labelFor('[data-test-proxy-submitter-name-input]'), 'Name');
+    assert.strictEqual(labelFor('[data-test-proxy-submitter-email-input]'), 'Email address (required)');
+    assert.strictEqual(labelFor('[data-test-proxy-submitter-name-input]'), 'Name (required)');
     assert.dom('[data-test-proxy-search-input]').doesNotHaveAttribute('aria-label');
     assert.dom('[data-test-proxy-submitter-email-input]').doesNotHaveAttribute('placeholder');
     assert.dom('[data-test-proxy-submitter-name-input]').doesNotHaveAttribute('placeholder');
@@ -546,5 +549,121 @@ module('Integration | Component | workflow basics', (hooks) => {
       assert.deepEqual((this.owner.lookup('service:workflow') as Workflow).getReadOnlyProperties(), []);
       assert.strictEqual(this.validateJournal.callCount, validateCalls, 'empty journal is not flagged invalid');
     });
+  });
+
+  test('proxy email and name fields are marked required and share the invalid state', async function (assert) {
+    (this.submission as { isProxySubmission?: boolean }).isProxySubmission = true;
+    this.set('preLoadedGrant', null);
+    this.set('flaggedFields', []);
+
+    await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @validateSubmitterName={{this.validateSubmitterName}}
+  @updatePublication={{this.updatePublication}}
+/>`);
+
+    const email = '[data-test-proxy-submitter-email-input]';
+    const name = '[data-test-proxy-submitter-name-input]';
+
+    assert.dom(email).hasAttribute('aria-required', 'true');
+    assert.dom(name).hasAttribute('aria-required', 'true');
+    assert.dom(email).doesNotHaveClass('is-invalid');
+    assert.dom(name).doesNotHaveClass('is-invalid');
+    assert.dom(email).doesNotHaveAttribute('aria-invalid');
+    assert.dom(name).doesNotHaveAttribute('aria-invalid');
+
+    this.set('flaggedFields', ['submitterName']);
+    await settled();
+
+    assert.dom(name).hasClass('is-invalid', 'name field turns red like the email field');
+    assert.dom(name).hasAttribute('aria-invalid', 'true');
+    assert.dom(email).doesNotHaveClass('is-invalid');
+
+    this.set('flaggedFields', ['submitterEmail', 'submitterName']);
+    await settled();
+
+    assert.dom(email).hasClass('is-invalid');
+    assert.dom(email).hasAttribute('aria-invalid', 'true');
+    assert.dom(name).hasClass('is-invalid');
+  });
+
+  test('name field keyup runs the submitter name validation', async function (assert) {
+    (this.submission as { isProxySubmission?: boolean }).isProxySubmission = true;
+    this.set('preLoadedGrant', null);
+    const validateSubmitterName = sinon.spy();
+    this.set('validateSubmitterName', validateSubmitterName);
+
+    await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @validateSubmitterName={{this.validateSubmitterName}}
+  @updatePublication={{this.updatePublication}}
+/>`);
+
+    await triggerKeyEvent('[data-test-proxy-submitter-name-input]', 'keyup', 'A');
+
+    assert.ok(validateSubmitterName.calledOnce, 'validateSubmitterName called on keyup');
+  });
+
+  test('user search dialog is modal, keeps Tab focus inside, and fits small viewports', async function (assert) {
+    (this.submission as { isProxySubmission?: boolean }).isProxySubmission = true;
+    this.set('preLoadedGrant', null);
+
+    await render(hbs`<WorkflowBasics
+  @submission={{this.submission}}
+  @publication={{this.publication}}
+  @preLoadedGrant={{this.preLoadedGrant}}
+  @flaggedFields={{this.flaggedFields}}
+  @validateTitle={{this.validateTitle}}
+  @validateJournal={{this.validateJournal}}
+  @validateSubmitterEmail={{this.validateSubmitterEmail}}
+  @validateSubmitterName={{this.validateSubmitterName}}
+  @updatePublication={{this.updatePublication}}
+/>`);
+
+    // The Search button label stays on one line
+    const basicsButton = this.element.querySelector('[data-test-proxy-user-search-button]') as HTMLElement;
+    assert.strictEqual(getComputedStyle(basicsButton).whiteSpace, 'nowrap');
+    assert.strictEqual(getComputedStyle(basicsButton.parentElement as HTMLElement).flexShrink, '0');
+
+    await click('[data-test-proxy-user-search-button]');
+
+    const dialog = this.element.querySelector('dialog.user-search-modal') as HTMLDialogElement;
+    assert.dom(dialog).hasAttribute('aria-modal', 'true');
+
+    // Content scrolls inside the dialog instead of overflowing the viewport
+    const dialogStyle = getComputedStyle(dialog);
+    assert.strictEqual(dialogStyle.overflowY, 'auto');
+    assert.notStrictEqual(dialogStyle.maxHeight, 'none');
+    assert.ok(parseFloat(dialogStyle.maxWidth) <= window.innerWidth, 'dialog max-width does not exceed the viewport');
+
+    const dialogButton = dialog.querySelector('#search-for-users') as HTMLElement;
+    assert.strictEqual(getComputedStyle(dialogButton).whiteSpace, 'nowrap');
+
+    const closeButton = dialog.querySelector('.close-button') as HTMLElement;
+    const searchInput = dialog.querySelector('input') as HTMLElement;
+
+    dialogButton.focus();
+    await triggerKeyEvent(dialogButton, 'keydown', 'Tab');
+    assert.strictEqual(document.activeElement, closeButton, 'Tab on the last control wraps to the first');
+
+    await triggerKeyEvent(closeButton, 'keydown', 'Tab', { shiftKey: true });
+    assert.strictEqual(document.activeElement, dialogButton, 'Shift+Tab on the first control wraps to the last');
+
+    // Tab between controls in the middle is left to the browser
+    searchInput.focus();
+    await triggerKeyEvent(searchInput, 'keydown', 'Tab');
+    assert.strictEqual(document.activeElement, searchInput, 'focus is not moved by the handler mid-dialog');
   });
 });

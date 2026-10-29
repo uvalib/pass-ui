@@ -40,6 +40,15 @@ const perform =
 
 const DEBOUNCE_MS = 250;
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
 interface WorkflowBasicsSignature {
   Args: {
     submission: SubmissionModel;
@@ -50,6 +59,7 @@ interface WorkflowBasicsSignature {
     validateTitle: () => void;
     validateJournal: () => void;
     validateSubmitterEmail: () => void;
+    validateSubmitterName: () => void;
     updatePublication: (publication: PublicationModel) => void;
     validateAndLoadTab: (gotoRoute: string) => Promise<void>;
     abort: () => void;
@@ -77,6 +87,8 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
 
   showModal = modifier((el: HTMLDialogElement) => {
     el.showModal();
+    el.addEventListener('keydown', this.trapDialogFocus);
+    return () => el.removeEventListener('keydown', this.trapDialogFocus);
   });
 
   get publication(): PublicationModel {
@@ -176,8 +188,20 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
     return this.flaggedFields.indexOf('journal') > -1 ? 'is-invalid' : 'is-valid';
   }
 
+  get submitterEmailInvalid(): boolean {
+    return this.flaggedFields.indexOf('submitterEmail') > -1;
+  }
+
   get submitterEmailClass(): string {
-    return this.flaggedFields.indexOf('submitterEmail') > -1 ? 'is-invalid' : '';
+    return this.submitterEmailInvalid ? 'is-invalid' : '';
+  }
+
+  get submitterNameInvalid(): boolean {
+    return this.flaggedFields.indexOf('submitterName') > -1;
+  }
+
+  get submitterNameClass(): string {
+    return this.submitterNameInvalid ? 'is-invalid' : '';
   }
 
   get doiClass(): string {
@@ -237,12 +261,37 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
     }
   }
 
+  // Keep Tab and Shift+Tab inside the open user search dialog
+  @action
+  trapDialogFocus(event: KeyboardEvent) {
+    if (event.key !== 'Tab') {
+      return;
+    }
+    const dialog = event.currentTarget as HTMLDialogElement;
+    const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+    if (focusable.length === 0) {
+      return;
+    }
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    const active = document.activeElement;
+
+    if (event.shiftKey && (active === first || active === dialog)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   @action
   pickSubmitter(submitter: UserModel) {
     this.changeSubmitter(true, submitter);
     this.toggleUserSearchModal();
     this.userSearchTerm = '';
     this.args.validateSubmitterEmail();
+    this.args.validateSubmitterName();
   }
 
   @action
@@ -504,11 +553,16 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
           <div class='mt-1'>
             <label for='proxy-submitter-email'>
               Email address
+              <span class='text-muted'>
+                (required)
+              </span>
             </label>
             <input
               id='proxy-submitter-email'
               type='text'
               class={{concat 'mb-3 form-control w-50 ' this.submitterEmailClass}}
+              aria-required='true'
+              aria-invalid={{if this.submitterEmailInvalid 'true'}}
               {{on 'keyup' @validateSubmitterEmail}}
               {{on 'input' this.handleEmailInput}}
               disabled={{@submission.submitter.id}}
@@ -517,11 +571,17 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
             />
             <label for='proxy-submitter-name'>
               Name
+              <span class='text-muted'>
+                (required)
+              </span>
             </label>
             <input
               id='proxy-submitter-name'
               type='text'
-              class='mb-3 form-control w-50'
+              class={{concat 'mb-3 form-control w-50 ' this.submitterNameClass}}
+              aria-required='true'
+              aria-invalid={{if this.submitterNameInvalid 'true'}}
+              {{on 'keyup' @validateSubmitterName}}
               {{on 'input' this.handleNameInput}}
               disabled={{@submission.submitter.id}}
               value={{@submission.submitterName}}
@@ -650,6 +710,7 @@ export default class WorkflowBasics extends Component<WorkflowBasicsSignature> {
       <dialog
         class='ember-modal-dialog pass-modal-translucent user-search-modal'
         aria-labelledby='user-search-title'
+        aria-modal='true'
         {{this.showModal}}
         {{on 'close' this.toggleUserSearchModal}}
       >

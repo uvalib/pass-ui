@@ -900,11 +900,23 @@ footer {
   color: var(--grey-dark);
 }
 
+/* Fit the viewport at high zoom and scroll inside the dialog */
 .ember-modal-dialog.user-search-modal {
   width: 90%;
-  min-width: 20rem;
-  max-width: 60rem;
-  min-height: 25rem;
+  min-width: min(20rem, calc(100vw - 2rem));
+  max-width: min(60rem, calc(100vw - 2rem));
+  min-height: min(25rem, calc(100dvh - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+}
+
+/* Keep the proxy Search button label on one line next to its input */
+.input-group > .input-group-btn {
+  flex-shrink: 0;
+}
+
+.input-group-btn > .btn {
+  white-space: nowrap;
 }
 
 .user-search-results .col-6 {

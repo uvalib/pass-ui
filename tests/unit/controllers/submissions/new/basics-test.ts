@@ -164,7 +164,7 @@ module('Unit | Controller | submissions/new/basics', (hooks) => {
   });
 
   test('check validateAndLoadTab rejects incomplete submitter', function (assert) {
-    assert.expect(9);
+    assert.expect(11);
     const controller = this.owner.lookup('controller:submissions/new/basics') as SubmissionsNewBasics;
     let loadTabAccessed = false;
     const submission = {
@@ -194,18 +194,20 @@ module('Unit | Controller | submissions/new/basics', (hooks) => {
     controller.send('validateAndLoadTab', 'submissions.new.basics');
 
     assert.true(controller.submitterIsInvalid);
-    // no flagged fields in this instance and loadTab not accessed
+    // only the missing email and name are flagged, and loadTab not accessed
     assert.false(controller.titleError);
     assert.false(controller.journalError);
-    assert.false(controller.submitterEmailError);
+    assert.true(controller.submitterEmailError);
+    assert.true(controller.submitterNameError);
     assert.strictEqual(controller.flaggedFields.indexOf('journal'), -1);
     assert.strictEqual(controller.flaggedFields.indexOf('title'), -1);
-    assert.strictEqual(controller.flaggedFields.indexOf('submitterEmail'), -1);
+    assert.ok(controller.flaggedFields.indexOf('submitterEmail') > -1);
+    assert.ok(controller.flaggedFields.indexOf('submitterName') > -1);
     assert.false(loadTabAccessed);
   });
 
   test('check validateAndLoadTab accepts complete information', function (assert) {
-    assert.expect(11);
+    assert.expect(12);
 
     let subSaved = false;
 
@@ -250,11 +252,42 @@ module('Unit | Controller | submissions/new/basics', (hooks) => {
       assert.strictEqual(controller.flaggedFields.indexOf('journal'), -1);
       assert.strictEqual(controller.flaggedFields.indexOf('title'), -1);
       assert.strictEqual(controller.flaggedFields.indexOf('submitterEmail'), -1);
+      assert.strictEqual(controller.flaggedFields.indexOf('submitterName'), -1);
 
       assert.ok(subSaved, 'submission was not saved');
     }) as typeof routerService.transitionTo;
 
     assert.true(controller.model.newSubmission.isProxySubmission);
     controller.send('validateAndLoadTab', 'submissions.new.basics');
+  });
+
+  test('validateSubmitterName flags a missing name unless a user is selected', function (assert) {
+    const controller = this.owner.lookup('controller:submissions/new/basics') as SubmissionsNewBasics;
+    const submission: BasicsSubmissionFixture = {
+      isProxySubmission: true,
+      submitterName: '  ',
+      repositories: [],
+      grants: [],
+    };
+    const model = {
+      newSubmission: submission,
+      publication: { journal: {} },
+      submissionEvents: [],
+      journal: null,
+    };
+    controller.model = model as unknown as typeof controller.model;
+
+    controller.validateSubmitterName();
+    assert.true(controller.submitterNameError);
+    assert.ok(controller.flaggedFields.indexOf('submitterName') > -1);
+
+    submission.submitterName = 'Test Submitter';
+    controller.validateSubmitterName();
+    assert.false(controller.submitterNameError);
+
+    submission.submitterName = '';
+    submission.submitter = { id: 'user:1' } as unknown as UserModel;
+    controller.validateSubmitterName();
+    assert.false(controller.submitterNameError, 'a selected PASS user needs no name');
   });
 });
