@@ -4,7 +4,7 @@ import Service from '@ember/service';
 import { setupRenderingTest } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import { module, test } from 'qunit';
-import { click, doubleClick, fillIn, render, settled, triggerEvent, triggerKeyEvent } from '@ember/test-helpers';
+import { click, doubleClick, fillIn, render, settled, triggerKeyEvent } from '@ember/test-helpers';
 import { run } from '@ember/runloop';
 import { task } from 'ember-concurrency';
 // @ts-expect-error no declaration file for sinon
@@ -497,7 +497,7 @@ module('Integration | Component | workflow basics', (hooks) => {
       assert.deepEqual(metadata.issns, ['Print:0003-2654']);
       const validateCalls = this.validateJournal.callCount;
 
-      await triggerEvent('.ember-power-select-clear-btn', 'mousedown');
+      await click('[data-test-find-journal-clear]');
 
       assert.strictEqual(this.publication.journal, null, 'journal removed from the publication');
       metadata = JSON.parse(this.submission.metadata);
