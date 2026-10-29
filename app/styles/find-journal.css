@@ -6,3 +6,35 @@
 .is-valid {
   width: 100%;
 }
+
+/* The clear button sits over the right end of the trigger, as a sibling rather than a child of the combobox */
+.find-journal {
+  position: relative;
+}
+
+.find-journal-clearable .ember-power-select-trigger {
+  padding-right: 48px;
+}
+
+.find-journal-clear {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #212529;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.find-journal-clear:focus-visible {
+  outline: 2px solid #212529;
+  outline-offset: 0;
+}
