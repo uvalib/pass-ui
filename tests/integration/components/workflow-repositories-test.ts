@@ -270,4 +270,119 @@ module('Integration | Component | workflow repositories', (hooks) => {
     assert.dom(weblinkList).exists('Weblink repositories list should exist');
     assert.strictEqual(weblinkList!.childElementCount, 1, 'Should show only 1 weblink repo');
   });
+
+  test('repository checkboxes are named by their visible labels', async function (assert) {
+    this.optionalRepositories = [
+      {
+        repository: this.storeService.push({
+          data: { id: 'opt-1', type: 'repository', attributes: { name: 'LibraOpen' } },
+        }),
+        funders: 'U.S. NIH Institute of General Medical Science',
+      },
+    ];
+    this.choiceRepositories = [
+      [
+        {
+          repository: this.storeService.push({
+            data: { id: 'choice-1', type: 'repository', attributes: { name: 'PubMed Central (PMC)', _selected: true } },
+          }),
+        },
+        {
+          repository: this.storeService.push({
+            data: { id: 'choice-2', type: 'repository', attributes: { name: "Moo's Repo / 2", _selected: false } },
+          }),
+        },
+      ],
+    ];
+
+    await render(hbs`<WorkflowRepositories
+  @submission={{this.submission}}
+  @requiredRepositories={{this.requiredRepositories}}
+  @optionalRepositories={{this.optionalRepositories}}
+  @choiceRepositories={{this.choiceRepositories}}
+/>`);
+
+    const expected = [
+      { id: 'repository-checkbox-choice-1', name: 'PubMed Central (PMC)' },
+      { id: 'repository-checkbox-choice-2', name: "Moo's Repo / 2" },
+      { id: 'repository-checkbox-opt-1', name: 'LibraOpen' },
+    ];
+    const checkboxes = this.element.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
+    assert.strictEqual(checkboxes.length, expected.length, 'expected number of checkboxes found');
+
+    checkboxes.forEach((checkbox, i) => {
+      const { id, name } = expected[i]!;
+      assert.dom(checkbox).doesNotHaveAttribute('aria-label', `${name} checkbox has no generic aria-label`);
+      assert.dom(checkbox).hasAttribute('id', id, `${name} checkbox id is derived from the repository id`);
+      assert.dom(checkbox).hasAttribute('name', name, `${name} checkbox keeps its name attribute`);
+
+      const labels = this.element.querySelectorAll(`label[for="${id}"]`);
+      assert.strictEqual(labels.length, 1, `exactly one label points at the ${name} checkbox`);
+      assert.true(labels[0]!.textContent!.trim().startsWith(name), `${name} label text starts with the repo name`);
+      assert.strictEqual(checkbox.labels?.length, 1, `${name} checkbox is associated with its label`);
+    });
+
+    assert
+      .dom(this.element.querySelector('label[for="repository-checkbox-opt-1"]'))
+      .includesText('U.S. NIH Institute of General Medical Science', 'optional label keeps the funder text');
+  });
+
+  test('clicking a repository label toggles its checkbox', async function (assert) {
+    this.optionalRepositories = [
+      {
+        repository: this.storeService.push({
+          data: { id: 'opt-1', type: 'repository', attributes: { name: 'LibraOpen', _selected: false } },
+        }),
+      },
+    ];
+
+    await render(hbs`<WorkflowRepositories
+  @submission={{this.submission}}
+  @requiredRepositories={{this.requiredRepositories}}
+  @optionalRepositories={{this.optionalRepositories}}
+  @choiceRepositories={{this.choiceRepositories}}
+/>`);
+
+    assert.dom('#repository-checkbox-opt-1').isNotChecked();
+
+    await click('label[for="repository-checkbox-opt-1"]');
+
+    assert.dom('#repository-checkbox-opt-1').isChecked('clicking the label checks the checkbox');
+    let repos = await this.submission.repositories;
+    assert.ok(
+      repos.some((repo: { name?: string }) => repo.name === 'LibraOpen'),
+      'repo added to submission',
+    );
+
+    await click('label[for="repository-checkbox-opt-1"]');
+
+    assert.dom('#repository-checkbox-opt-1').isNotChecked('clicking the label again unchecks the checkbox');
+    repos = await this.submission.repositories;
+    assert.notOk(
+      repos.some((repo: { name?: string }) => repo.name === 'LibraOpen'),
+      'repo removed from submission',
+    );
+  });
+
+  test('repository checkbox ids stay unique for repositories without an id', async function (assert) {
+    this.optionalRepositories = [
+      { repository: this.storeService.createRecord('repository', { name: 'Moo-pository 1' }) },
+      { repository: this.storeService.createRecord('repository', { name: 'Moo-pository 2' }) },
+    ];
+
+    await render(hbs`<WorkflowRepositories
+  @submission={{this.submission}}
+  @requiredRepositories={{this.requiredRepositories}}
+  @optionalRepositories={{this.optionalRepositories}}
+  @choiceRepositories={{this.choiceRepositories}}
+/>`);
+
+    const checkboxes = Array.from(this.element.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'));
+    const ids = checkboxes.map((checkbox) => checkbox.id);
+    assert.strictEqual(new Set(ids).size, 2, 'checkbox ids are unique');
+    checkboxes.forEach((checkbox) => {
+      assert.true(checkbox.id.startsWith('repository-checkbox-'), 'checkbox has a repository checkbox id');
+      assert.strictEqual(checkbox.labels?.length, 1, 'checkbox is associated with its label');
+    });
+  });
 });
