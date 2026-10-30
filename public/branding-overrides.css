@@ -170,7 +170,9 @@ h4.card-title {
   color: var(--secondary-500);
 }
 
-.btn-primary:hover {
+/* Keyboard focus matches hover (white on --uva-blue-alt-a, 8.05:1) */
+.btn-primary:hover,
+.btn-primary:focus-visible {
   background-color: var(--uva-blue-alt-a) !important;
 }
 
