@@ -180,5 +180,7 @@ module('Integration | Component | submission action cell', (hooks) => {
     assert.dom(buttons[0]!).hasText('Delete');
     assert.dom(buttons[0]!).hasAttribute('type', 'button');
     assert.dom(buttons[0]!).hasClass('delete-button');
+    // text-danger forces red text with !important, which made the hover state red on red
+    assert.dom(buttons[0]!).hasClass('btn-outline-danger').doesNotHaveClass('text-danger');
   });
 });

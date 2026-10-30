@@ -102,7 +102,7 @@ export default class SubmissionActionCell extends Component<SubmissionActionCell
       </LinkTo>
       <button
         type='button'
-        class='btn btn-outline-danger text-danger w-100 delete-button'
+        class='btn btn-outline-danger w-100 delete-button'
         {{on 'click' (fn this.deleteSubmission @record)}}
       >
         Delete
