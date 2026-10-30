@@ -942,24 +942,25 @@ textarea.form-control:read-only {
 /* #GS-3: Focus State Indicator; 1.4.1 Use of Color
    branding.css only styles a:hover. Grants / Grant Details / Submissions
    list links must use the same color + underline on keyboard focus as
-   on hover. :focus-visible adds a 2px ring so Tab is visible. */
-.models-table-wrapper a,
+   on hover. :focus-visible adds a 2px ring so Tab is visible. Links styled as
+   buttons (Edit) are excluded so they keep the button's hover/focus colours. */
+.models-table-wrapper a:not(.btn),
 .models-table-wrapper .btn-link {
   color: var(--uva-blue-alt-a);
   text-decoration: underline;
 }
 
-.models-table-wrapper a:hover,
+.models-table-wrapper a:not(.btn):hover,
 .models-table-wrapper .btn-link:hover,
-.models-table-wrapper a:focus,
+.models-table-wrapper a:not(.btn):focus,
 .models-table-wrapper .btn-link:focus,
-.models-table-wrapper a:focus-visible,
+.models-table-wrapper a:not(.btn):focus-visible,
 .models-table-wrapper .btn-link:focus-visible {
   color: var(--uva-blue-alt-a);
   text-decoration: underline;
 }
 
-.models-table-wrapper a:focus-visible,
+.models-table-wrapper a:not(.btn):focus-visible,
 .models-table-wrapper .btn-link:focus-visible {
   outline: 2px solid var(--uva-blue-alt-a);
   outline-offset: 2px;
