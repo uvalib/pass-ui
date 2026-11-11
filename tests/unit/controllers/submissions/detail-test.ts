@@ -2,9 +2,8 @@ import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
 // @ts-expect-error no declaration file for sinon
 import Sinon from 'sinon';
-import Swal from 'sweetalert2/dist/sweetalert2.js';
+import Swal from 'pass-ui/util/swal';
 import { waitFor } from '@ember/test-helpers';
-import swal from 'pass-ui/util/swal';
 import type RepositoryModel from 'pass-ui/models/repository';
 import type SubmissionModel from 'pass-ui/models/submission';
 import type SubmissionsDetailController from 'pass-ui/controllers/submissions/detail';
@@ -119,7 +118,7 @@ module('Unit | Controller | submissions/detail', (hooks) => {
     assert.dom(region, document.body).hasText('NON-EXCLUSIVE LICENSE');
     assert.dom('.swal2-popup textarea[disabled]', document.body).doesNotExist('no disabled textarea');
 
-    swal.close();
+    Swal.close();
     assert.true((await collected).cancelled);
   });
 });
