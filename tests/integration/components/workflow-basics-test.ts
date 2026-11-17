@@ -452,6 +452,33 @@ module('Integration | Component | workflow basics', (hooks) => {
     assert.dom('[data-test-proxy-submitter-email-input]').doesNotHaveAttribute('placeholder');
     assert.dom('[data-test-proxy-submitter-name-input]').doesNotHaveAttribute('placeholder');
 
+    // "(required)" on the gray proxy block meets 4.5:1 contrast
+    const luminance = (color: string) => {
+      const [r, g, b] = (color.match(/[\d.]+/g) as string[]).slice(0, 3).map((v) => {
+        const c = Number(v) / 255;
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+    };
+    const contrast = (a: string, b: string) => {
+      const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+      return (hi! + 0.05) / (lo! + 0.05);
+    };
+    const block = this.element.querySelector('#proxy-input-block') as HTMLElement;
+    const blockBackground = getComputedStyle(block).backgroundColor;
+    const proxyRequired = block.querySelectorAll('label .text-muted');
+    assert.strictEqual(proxyRequired.length, 2);
+    proxyRequired.forEach((span) => {
+      const ratio = contrast(getComputedStyle(span).color, blockBackground);
+      assert.ok(ratio >= 4.5, `proxy "(required)" contrast ${ratio.toFixed(2)}:1 is at least 4.5:1`);
+    });
+    const titleRequired = this.element.querySelector('label[for="title"] .text-muted') as HTMLElement;
+    assert.notStrictEqual(
+      getComputedStyle(titleRequired).color,
+      getComputedStyle(proxyRequired[0] as HTMLElement).color,
+      'the title field "(required)" outside the proxy block keeps the default muted color',
+    );
+
     // The DOI leave-blank instruction is persistent text, not a placeholder
     assert.dom('#doi').doesNotHaveAttribute('placeholder');
     assert.dom('#doi').hasAttribute('aria-describedby', 'doi-blank-hint');

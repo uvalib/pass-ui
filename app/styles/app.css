@@ -337,6 +337,11 @@ td {
   color: black;
 }
 
+/* Bootstrap's .text-muted (#6c757d) is 4.21:1 on #f0f3f5; this is 4.93:1 */
+#proxy-input-block .text-muted {
+  color: #626a71 !important;
+}
+
 #on-behalf-of-block {
   background-color: #f0f3f5;
   color: black;
