@@ -121,11 +121,7 @@ body {
   font-size: var(--uva-font-size);
 }
 
-/*  Header */
-.navbar > .container {
-  flex-flow: row-reverse !important;
-}
-
+/*  Header: keep core's order (title, then logo) so the visual order matches the DOM and Tab order (#D-3) */
 #brand-logo {
   height: 50px;
   width: 100%;
