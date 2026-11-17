@@ -72,9 +72,11 @@ Open them in this order where noted: stacked branches include their base branch'
 | #1278 | `1278-link-states` | item 5, item 6 (GS-7), optional sample-overlay hover (D-4 + F3-3) | — |
 | #1279 | `1279-reflow-320` | item 2 | — |
 | #1280 | `1280-wizard-steps-text-resize` | item 1 | — |
+| none yet | `skip-to-main-link` | D-6 skip link (best practice, Ellie 2026-11-13) | file `pass-a11y-prs/issues/draft-skip-link.md` first, then rename the branch |
+| none yet | `file-removal-message` | FR-F6-1 visible file-removal message (best practice, Ellie 2026-11-13) | file `pass-a11y-prs/issues/draft-file-removal-message.md` first, then rename the branch |
 | none yet | `surveyjs-contrast` | item 3, optional form-control border 3:1 | file an issue first, then rename the branch |
 
-Not done: D-3 (header DOM order) did not reproduce on stock (the mismatch comes from UVA's own `row-reverse`), so it was dropped from #1275. D-6 (skip link) and D-5 are still optional.
+D-3 (header DOM order) did not reproduce on stock (the mismatch came from UVA's own `row-reverse`), so it was dropped from #1275; fixed UVA-only on 2026-11-17 by deleting the overlay's `row-reverse` rule (title left, logo right, matching DOM and Tab order). `1270-proxy-submitter-labels` also darkens its "(required)" text inside the gray proxy block (FR-F1-4, 4.21:1 → 4.93:1). The direct-load crash on `/submissions/new/basics` is eclipse-pass/main#1282 (no branch yet). D-6 (skip link) and D-5 are still optional.
 
 **UVA overrides already removed on `uvalib`** (no need to repeat these after Eclipse merges): duplicate brand-link rules (#1275); step-bar layout duplicates (#1280); reflow `.row > *` min-width, under-400px row stacking, `:has(> table.table)` scroller, funding-table self-scroll and PassTable footer stacking (#1279); `.form-control:disabled, :read-only` block (SurveyJS contrast). Also updated for #1279's markup: the hide-duplicate-buttons rule now targets the `.table-responsive` wrapper, and UVA `.btn-primary` width subtracts its side margins. UVA stylesheets now pass stylelint (tokens renamed to kebab-case, duplicate rules merged).
 
