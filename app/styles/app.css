@@ -234,6 +234,28 @@ td {
   flex: 1;
 }
 
+/* Skip link: hidden by .visually-hidden-focusable until keyboard focus (WCAG 2.4.1).
+   Class plus pseudo-class so it beats a:focus colour rules in the branding stylesheets. */
+.skip-link:focus,
+.skip-link:focus-visible {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1030;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-600, #1e40af);
+  color: #fff;
+  text-decoration: underline;
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+  border-radius: 0.25rem;
+}
+
+/* <main> is a programmatic focus target, not a control; skip the page-sized focus ring */
+#main-content:focus {
+  outline: none;
+}
+
 .row-eq-height {
   display: -webkit-box;
   display: flex;
