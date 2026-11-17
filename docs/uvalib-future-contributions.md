@@ -32,39 +32,32 @@ Restart a stopped pass-docker stack by naming the services, so the one-shot `loa
 
 ## Open PRs (wait, then clean up)
 
-### SweetAlert dialogs — eclipse-pass/main#1269 / pass-ui#1363
+None right now.
 
-- Branch: `1269-sweetalert-a11y` (opened 2026-10-22). Base for `1265-keyboard-scrollable-agreement` and `1267-draft-delete-button`: open those after this merges, rebased onto the new `main`.
-- Includes a darker stock sample overlay (`--primary-500` / `--primary-600` → `#b35400` / `#8a3f00`) so the confirm button passes 4.5:1 in pass-docker. `1278-link-states` makes the identical change.
-
-**uvalib cleanup after #1363 merges**
-
-- Merge `main` into `uvalib`. Expect a conflict in `public/branding-overrides.css` (UVA's file): keep `uvalib`'s side.
-- Keep the UVA `.swal2-confirm` block unless a visual check shows the token path is enough.
-- Delete `1269-sweetalert-a11y` locally and on `origin` (`git branch -D`, squash-merged).
+Filed, no branch yet: eclipse-pass/main#1301 (SweetAlert validation message's decorative "!" `::before` badge is announced; fix is `content: '!' / ''` on `.swal2-validation-message::before`). A second candidate, a repeated identical validation message possibly not being re-announced, is drafted in `workspace/pass/pass-a11y-prs/issues/draft-swal-validation-repeat.md` and waits on a VoiceOver/NVDA check before filing.
 
 ## Merged upstream
 
 | Issue | PR | Merged | uvalib cleanup |
 | --- | --- | --- | --- |
+| eclipse-pass/main#1269 SweetAlert dialogs (F6-2, F6-8, F6-4, F7-5) | pass-ui#1363 (squash `5953c140`) | 2026-11-16 | Done: `main` merged into `uvalib` (`145b7637`, no app files changed; `branding-overrides.css` kept UVA's side). UVA `.swal2-confirm` block kept. Branch `1269-sweetalert-a11y` to delete. Upstream took only `--primary-600: #8a3f00` in the sample overlay; `1278-link-states` still darkens `--primary-500`. |
 | eclipse-pass/main#1263 file upload/removal focus (F6-7, F6-9) | pass-ui#1351 (squash `912f1de7`) | 2026-10-20 | Done: `main` merged into `uvalib` (`b88eb33a`); branch `1263-keep-file-upload-focus` deleted. No overrides to remove. |
 | eclipse-pass/main#1261 heading hierarchy (D-2, F1-1, F2-1, F3-1, F7-2) | pass-ui#1350 (squash `1b20f569`), with pass-acceptance-testing#39 (merged first) | 2026-10-20 | Done: `main` merged into `uvalib` (`b88eb33a`); branch `1261-fix-heading-hierarchy` deleted. UVA `h1, h2` brand colour kept. |
 
-Both squashes matched the branches `uvalib` already had, so the `main` → `uvalib` merge changed no app files (conflicts in `application.gts`, `dashboard.gts` and `workflow-grants` kept `uvalib`'s side, which includes the later accessibility fixes). Eclipse squash-merges, so delete merged branches with `git branch -D`.
+All three squashes matched the branches `uvalib` already had, so the `main` → `uvalib` merge changed no app files (conflicts in `application.gts`, `dashboard.gts` and `workflow-grants` kept `uvalib`'s side, which includes the later accessibility fixes). Eclipse squash-merges, so delete merged branches with `git branch -D`.
 
 ---
 
 ## Ready to open upstream (branches pushed, already in `uvalib`)
 
-Built 2026-10-14 from the WCAG 2.1 AA audit queue. All branches were rebased onto `main` `b8a7b8d8` on 2026-10-20 (after #1350 and #1351 merged), re-tested one by one, and force-pushed; merged together they reproduce `uvalib`'s app and test code exactly. If `main` moves again before a PR is opened, rebase that branch first. Each branch is pushed to `origin`, passed lint, typecheck and the full suite on its own, and was merged into `uvalib` through `a11y-integration` (uvalib merge `e2e1f583`). The combined build passed 282/282 tests and a browser check (39 pass, 1 blocked: F3-4 PMC radios, no non-method-A PMC journal in the demo data). PR descriptions are drafted locally in `workspace/pass/pass-a11y-prs/<branch>.md`. Every PR body says `Part of eclipse-pass/main#718`.
+Built 2026-10-14 from the WCAG 2.1 AA audit queue. All branches were rebased onto `main` `5953c140` on 2026-11-17 (after #1363 merged; 1265 and 1267 dropped the 1269 commits they were stacked on) and re-tested one by one; merged together they reproduce `uvalib`'s app and test code exactly. If `main` moves again before a PR is opened, rebase that branch first. Each branch is pushed to `origin`, passed lint, typecheck and the full suite on its own, and was merged into `uvalib` through `a11y-integration` (uvalib merge `e2e1f583`). The combined build passed 282/282 tests and a browser check (39 pass, 1 blocked: F3-4 PMC radios, no non-method-A PMC journal in the demo data). PR descriptions are drafted locally in `workspace/pass/pass-a11y-prs/<branch>.md`. Every PR body says `Part of eclipse-pass/main#718`.
 
 Open them in this order where noted: stacked branches include their base branch's commit until it merges.
 
 | Issue | Branch | Covers (backlog items below) | Open after |
 | --- | --- | --- | --- |
-| #1269 | `1269-sweetalert-a11y` | F6-2 + F6-8, item 4 (F6-4 + F7-5) | **Opened as pass-ui#1363** (base for #1265, #1267) |
-| #1265 | `1265-keyboard-scrollable-agreement` | F7-8 | #1269 |
-| #1267 | `1267-draft-delete-button` | GS-11 + GS-14 + GS-16 | #1269 |
+| #1265 | `1265-keyboard-scrollable-agreement` | F7-8 | — (#1269 merged) |
+| #1267 | `1267-draft-delete-button` | GS-11 + GS-14 + GS-16 | — (#1269 merged) |
 | #1273 | `1273-file-icon-names` | F7-1, F6-1, F7-4 (File Type header) | — (base for #1274) |
 | #1274 | `1274-review-details-row-headers` | F7-3, optional `<b>` label/value pairs | #1273 |
 | #1266 | `1266-grant-select-checkboxes` | F2-4, F2-2 (Remove header) | — |
