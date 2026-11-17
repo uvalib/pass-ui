@@ -15,11 +15,22 @@ interface Signature {
   };
 }
 
+// Moves focus to <main> without changing the URL, so the history router never sees a #fragment
+const skipToMain = (event: MouseEvent) => {
+  const main = document.getElementById('main-content');
+  if (!main) return;
+  event.preventDefault();
+  main.focus();
+};
+
 // prettier-ignore
 <template>
   {{! template-lint-disable require-valid-alt-text }}
   <BasicDropdownWormhole />
   <div id='brand-site-container' class='site' tabindex='-1'>
+    <a href='#main-content' class='skip-link visually-hidden-focusable' data-test-skip-link {{on 'click' skipToMain}}>
+      Skip to main content
+    </a>
     <header id='brand-header' class='navbar navbar-expand-xs justify-content-center mb-0'>
       <div class={{if @controller.fullWidth 'container-fluid' 'container'}}>
         <a href='/' class='navbar-brand d-none d-sm-block'>
@@ -51,7 +62,7 @@ interface Signature {
     <div id='navbar-container'>
       <NavBar @fullWidth={{@controller.fullWidth}} />
     </div>
-    <main class='container-fluid site-content'>
+    <main id='main-content' class='container-fluid site-content' tabindex='-1'>
       <div class='flash-message-container'>
         {{#each @controller.flashMessages.queue as |flash|}}
           <FlashMessage @flash={{flash}} as |component flash close|>
