@@ -295,7 +295,12 @@ module('Integration | Component | workflow files', (hooks) => {
     workflow.setFiles([file1 as unknown as WorkflowFile, file2 as unknown as WorkflowFile]);
 
     try {
-      await render(hbs`<WorkflowFiles
+      this.flashMessages = this.owner.lookup('service:flash-messages');
+
+      await render(hbs`{{#each this.flashMessages.queue as |flash|}}
+  <FlashMessage @flash={{flash}} />
+{{/each}}
+<WorkflowFiles
   @submission={{this.submission}}
   @next={{this.fakeAction}}
   @back={{this.fakeAction}}
@@ -309,7 +314,9 @@ module('Integration | Component | workflow files', (hooks) => {
       await click(sweetAlertBtn!);
 
       assert.dom('#file-remove-file-2').isFocused();
-      assert.dom('[aria-live="polite"]').hasText('First-file.pdf removed.');
+      assert.dom('.flash-message.alert-success').hasText('First-file.pdf removed.');
+      // Announced once, by the flash, not again by the component's own live region
+      assert.dom('[aria-live="polite"]').hasNoText();
     } finally {
       fetchStub.restore();
     }
@@ -333,7 +340,12 @@ module('Integration | Component | workflow files', (hooks) => {
     workflow.setFiles([file1 as unknown as WorkflowFile]);
 
     try {
-      await render(hbs`<WorkflowFiles
+      this.flashMessages = this.owner.lookup('service:flash-messages');
+
+      await render(hbs`{{#each this.flashMessages.queue as |flash|}}
+  <FlashMessage @flash={{flash}} />
+{{/each}}
+<WorkflowFiles
   @submission={{this.submission}}
   @next={{this.fakeAction}}
   @back={{this.fakeAction}}
@@ -347,7 +359,9 @@ module('Integration | Component | workflow files', (hooks) => {
       await click(sweetAlertBtn!);
 
       assert.dom('#file-multiple-input').isFocused();
-      assert.dom('[aria-live="polite"]').hasText('Only-file.pdf removed.');
+      assert.dom('.flash-message.alert-success').hasText('Only-file.pdf removed.');
+      // Announced once, by the flash, not again by the component's own live region
+      assert.dom('[aria-live="polite"]').hasNoText();
     } finally {
       fetchStub.restore();
     }
@@ -401,7 +415,12 @@ module('Integration | Component | workflow files', (hooks) => {
     workflow.setFiles([file1 as unknown as WorkflowFile]);
 
     try {
-      await render(hbs`<WorkflowFiles
+      this.flashMessages = this.owner.lookup('service:flash-messages');
+
+      await render(hbs`{{#each this.flashMessages.queue as |flash|}}
+  <FlashMessage @flash={{flash}} />
+{{/each}}
+<WorkflowFiles
   @submission={{this.submission}}
   @next={{this.fakeAction}}
   @back={{this.fakeAction}}
@@ -416,7 +435,8 @@ module('Integration | Component | workflow files', (hooks) => {
 
       assert.dom('#file-remove-file-fail').isFocused();
       assert.dom('[data-test-added-manuscript-row]').exists();
-      assert.dom('[aria-live="polite"]').includesText('error when removing this file');
+      assert.dom('.flash-message.alert-danger').includesText('error when removing this file');
+      assert.dom('[aria-live="polite"]').hasNoText();
     } finally {
       fetchStub.restore();
     }

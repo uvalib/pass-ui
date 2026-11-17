@@ -127,10 +127,10 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
             if (input) {
               input.value = '';
             }
-            this.announce(`${fileName} removed.`);
+            this.flashMessages.success(`${fileName} removed.`);
             this.focusElementId(fallbackId);
           } else {
-            this.announce('We encountered an error when removing this file');
+            // deleteFile() has already shown (and announced) the error flash
             this.focusElementId(triggerId);
           }
         } else {
