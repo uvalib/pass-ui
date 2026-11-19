@@ -34,7 +34,7 @@ Restart a stopped pass-docker stack by naming the services, so the one-shot `loa
 
 None right now.
 
-Filed, no branch yet: eclipse-pass/main#1301 (SweetAlert validation message's decorative "!" `::before` badge is announced; fix is `content: '!' / ''` on `.swal2-validation-message::before`). A second candidate, a repeated identical validation message possibly not being re-announced, is drafted in `workspace/pass/pass-a11y-prs/issues/draft-swal-validation-repeat.md` and waits on a VoiceOver/NVDA check before filing.
+Filed, no branch yet: eclipse-pass/main#1282 (direct load of `/submissions/new/basics` crashes; fix verified in an acceptance test, see the issue) and eclipse-pass/main#1301 (SweetAlert validation message's decorative "!" `::before` badge is announced; fix is `content: '!' / ''` on `.swal2-validation-message::before`). A second candidate, a repeated identical validation message possibly not being re-announced, is drafted in `workspace/pass/pass-a11y-prs/issues/draft-swal-validation-repeat.md` and waits on a VoiceOver/NVDA check before filing.
 
 ## Merged upstream
 
@@ -72,8 +72,8 @@ Open them in this order where noted: stacked branches include their base branch'
 | #1278 | `1278-link-states` | item 5, item 6 (GS-7), optional sample-overlay hover (D-4 + F3-3) | — |
 | #1279 | `1279-reflow-320` | item 2 | — |
 | #1280 | `1280-wizard-steps-text-resize` | item 1 | — |
-| none yet | `skip-to-main-link` | D-6 skip link (best practice, Ellie 2026-11-13) | file `pass-a11y-prs/issues/draft-skip-link.md` first, then rename the branch |
-| none yet | `file-removal-message` | FR-F6-1 visible file-removal message (best practice, Ellie 2026-11-13) | file `pass-a11y-prs/issues/draft-file-removal-message.md` first, then rename the branch |
+| #1304 | `1304-skip-to-main-link` | D-6 skip link (best practice, Ellie 2026-11-13) | — |
+| #1305 | `1305-file-removal-message` | FR-F6-1 visible file-removal message (best practice, Ellie 2026-11-13) | — |
 | none yet | `surveyjs-contrast` | item 3, optional form-control border 3:1 | file an issue first, then rename the branch |
 
 D-3 (header DOM order) did not reproduce on stock (the mismatch came from UVA's own `row-reverse`), so it was dropped from #1275; fixed UVA-only on 2026-11-17 by deleting the overlay's `row-reverse` rule (title left, logo right, matching DOM and Tab order). `1270-proxy-submitter-labels` also darkens its "(required)" text inside the gray proxy block (FR-F1-4, 4.21:1 → 4.93:1). The direct-load crash on `/submissions/new/basics` is eclipse-pass/main#1282 (no branch yet). D-6 (skip link) and D-5 are still optional.
