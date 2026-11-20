@@ -313,8 +313,14 @@ module('Integration | Component | workflow files', (hooks) => {
       assert.ok(sweetAlertBtn);
       await click(sweetAlertBtn!);
 
+      // The message waits for the dialog to finish closing and for focus to move
+      await waitFor('.flash-message.alert-success');
       assert.dom('#file-remove-file-2').isFocused();
       assert.dom('.flash-message.alert-success').hasText('First-file.pdf removed.');
+      assert.notOk(
+        document.querySelector('.flash-message.alert-success')!.closest('[aria-hidden="true"]'),
+        'the message is not inside content hidden from screen readers',
+      );
       // Announced once, by the flash, not again by the component's own live region
       assert.dom('[aria-live="polite"]').hasNoText();
     } finally {
@@ -358,8 +364,14 @@ module('Integration | Component | workflow files', (hooks) => {
       assert.ok(sweetAlertBtn);
       await click(sweetAlertBtn!);
 
+      // The message waits for the dialog to finish closing and for focus to move
+      await waitFor('.flash-message.alert-success');
       assert.dom('#file-multiple-input').isFocused();
       assert.dom('.flash-message.alert-success').hasText('Only-file.pdf removed.');
+      assert.notOk(
+        document.querySelector('.flash-message.alert-success')!.closest('[aria-hidden="true"]'),
+        'the message is not inside content hidden from screen readers',
+      );
       // Announced once, by the flash, not again by the component's own live region
       assert.dom('[aria-live="polite"]').hasNoText();
     } finally {
