@@ -4,7 +4,8 @@ import { service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { fn } from '@ember/helper';
 import { on } from '@ember/modifier';
-import { cancel, debounce, next, schedule } from '@ember/runloop';
+import { cancel, debounce, later, next, schedule } from '@ember/runloop';
+import { isDestroying } from '@ember/destroyable';
 import ENV from 'pass-ui/config/environment';
 import swal from 'pass-ui/util/swal';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -104,6 +105,11 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
       }
     }
 
+    // SweetAlert resolves as soon as the dialog starts closing, but keeps the rest of the page
+    // aria-hidden until its hide animation ends; didClose fires once the page is exposed again
+    let dialogClosed: () => void = () => {};
+    const closed = new Promise<void>((resolve) => (dialogClosed = resolve));
+
     swal
       .fire({
         target: ENV.APP.rootElement,
@@ -116,6 +122,7 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
         confirmButtonText: 'I Agree',
         cancelButtonText: 'Never mind',
         returnFocus: false,
+        didClose: () => dialogClosed(),
       })
       .then(async (result) => {
         if (result.value) {
@@ -126,8 +133,14 @@ export default class WorkflowFiles extends Component<WorkflowFilesSignature> {
             if (input) {
               input.value = '';
             }
-            this.flashMessages.success(`${fileName} removed.`);
+            // Show the message only after the dialog has closed and focus has moved, so screen
+            // readers announce it after the newly focused control instead of dropping it
+            await closed;
+            if (isDestroying(this)) return;
             this.focusElementId(fallbackId);
+            later(() => {
+              if (!isDestroying(this)) this.flashMessages.success(`${fileName} removed.`);
+            }, 250);
           } else {
             // deleteFile() has already shown (and announced) the error flash
             this.focusElementId(triggerId);
